@@ -369,7 +369,7 @@ fr:
     get_annotations: Obtenir des annotations
     get_recommendations: Obtenir des recommandations
     index:
-      tagline: Le foyer des ontologies et des artefacts sémantiques dans l'agroalimentaire et les domaines connexes.
+      tagline: Le foyer des ontologies et des artefacts sémantiques du système Terre.
       title: Bienvenue sur %{site}
       welcome: Bienvenue sur %{site},
     ontology_upload: Vous souhaitez partager une ontologie ?
@@ -381,7 +381,7 @@ fr:
     recommender_annotator: Recommandeur et Annotateur
     support_and_collaborations: Support & Collaborations
     see_details: Voir les détails
-    info_tooltip_text: "Vous voyez les scores moyens pour toutes les ontologies publiques dans AgroPortal. Les scores FAIR sont calculés avec la méthodologie O'FAIRe. Plus de détails ici : https://github.com/agroportal/fairness"
+    info_tooltip_text: "Vous voyez les scores moyens pour toutes les ontologies publiques dans %{site}. Les scores FAIR sont calculés avec la méthodologie O'FAIRe. Plus de détails ici : https://github.com/agroportal/fairness"
     average: Moyenne
     min: Min
     max: Max
@@ -513,7 +513,7 @@ fr:
       contact_us: Contactez-nous
       wiki: Wiki
       documentation: Documentation
-      agro_documentation: Documentation d'AgroPortal
+      agro_documentation: Documentation d'%{site}
       agreements: Légal
       terms: Termes et conditions
       privacy_policy: Politique de confidentialité
@@ -1159,7 +1159,7 @@ fr:
     see_metadata_used_properties: Voir les propriétés de métadonnées utilisées
     not_found: non trouvé
     "null": "null"
-    view_fair_scores_definitions: "Vous voyez le score d'évaluation de l'équité FAIR pour cette ontologie dans AgroPortal. Les scores FAIR sont calculés avec la méthodologie O'FAIRe. Plus de détails ici : https://github.com/agroportal/fairness"
+    view_fair_scores_definitions: "Vous voyez le score d'évaluation de l'équité FAIR pour cette ontologie dans %{site}. Les scores FAIR sont calculés avec la méthodologie O'FAIRe. Plus de détails ici : https://github.com/agroportal/fairness"
 
   ontologies_metadata_curator:
     #bulk_edit: Commencer l'édition en masse

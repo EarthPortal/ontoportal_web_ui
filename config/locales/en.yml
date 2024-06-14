@@ -298,10 +298,7 @@ en:
     score: Score
     api_documentation: "Annotator API documentation"
     insert_sample_text: Insert sample text
-    sample_text: There has been many recent studies on the use of microbial antagonists to control diseases incited by soilborne and airborne plant pathogenic bacteria
-              and fungi, in an attempt to replace existing methods of chemical control and avoid extensive use of fungicides, which often lead to resistance in plant pathogens.
-              In agriculture, plant growth-promoting and biocontrol microorganisms have emerged as safe alternatives to chemical pesticides. Streptomyces spp. and their
-              metabolites may have great potential as excellent agents for controlling various fungal and bacterial phytopathogens.
+    sample_text: As the access to Solid Earth data is not facilitated for now, current activities are focused on the development of a new portal/service to evaluate automatically SO2 flux emissions by volcanoes by analysis of satellite observations from the Sentinel-5P/TROPOMI sensor together with ECMWF wind fields. Several publications are also in preparation for 1- the presentation of the new service (SO2 flux calculator) and its theoretical framework, 2- the scientific applications of these new services, in particular the analysis of specific eruptions and their impacts on the atmosphere (air quality, climate) using the VOLCPLUME webportal (under further development).
   concepts:
     error_valid_concept: "Error: You must provide a valid concept id"
     missing_roots: Missing roots
@@ -354,7 +351,7 @@ en:
     notice_feedback: Feedback has been sent
     account_title: Account Information
     agroportal_figures: "%{site} in figures"
-    benefit1: Discover new insights and knowledge by exploring other ontologies or smeantic resources in the repository.
+    benefit1: Discover new insights and knowledge by exploring other ontologies or semantic resources in the repository.
     benefit2: Contribute to knowledge sharing and semantic interoperability in your domain.
     benefit3: Map your ontology to other relevant ones in the domain and collaborate with other users.
     benefit4: Get feedback and suggestions from other users who can use and comment on your ontology.
@@ -364,7 +361,7 @@ en:
     get_annotations: Get annotations
     get_recommendations: Get recommendations
     index:
-      tagline: The home of ontologies and semantic artefacts in agri-food and related domains.
+      tagline: The home of ontologies and semantic artefacts for Earth sciences.
       title: Welcome to %{site}
       welcome: Welcome to %{site},
     ontology_upload: Do you want to share an ontology?
@@ -377,7 +374,7 @@ en:
     support_and_collaborations: Support & Collaborations
     ontoportal_instances: Other OntoPortal Instances
     see_details: See details
-    info_tooltip_text: "You are seing the average scores for all the public ontologies in AgroPortal. FAIR scores are computed with the O'FAIRe methodology. More details here: https://github.com/agroportal/fairness"
+    info_tooltip_text: "You are seing the average scores for all the public ontologies in %{site}. FAIR scores are computed with the O'FAIRe methodology. More details here: https://github.com/agroportal/fairness"
     average: Average
     min: Min
     max: Max
@@ -507,7 +504,7 @@ en:
       contact_us: Contact Us
       wiki: Wiki
       documentation: Documentation
-      agro_documentation: AgroPortal documentation
+      agro_documentation: %{site} documentation
       agreements: Legal
       terms: Terms and Conditions
       privacy_policy: Privacy Policy
@@ -1135,7 +1132,7 @@ en:
     see_metadata_used_properties: See metadata used properties
     not_found: not found
     "null": "null"
-    view_fair_scores_definitions: "You are seeing the FAIRness assessment score for this ontology in AgroPortal. FAIR scores are computed with the O'FAIRe methodology. More details here: https://github.com/agroportal/fairness"
+    view_fair_scores_definitions: "You are seeing the FAIRness assessment score for this ontology in EarthPortal. FAIR scores are computed with the O'FAIRe methodology. More details here: https://github.com/agroportal/fairness"
   ontologies_metadata_curator:
     #bulk_edit: Start bulk edit
     #use_the_bulk_edit: To use the bulk edit select in the table submissions (the rows) and metadata properties (the columns) for which you want to edit
@@ -1351,7 +1348,7 @@ en:
   
     htaccess_modal_title: "Rewrite rules for %{acronym} ontology"
     instructions_servers: Instructions for %{server} servers
-    htaccess_redirection_description: "We offer a seamless solution to make your ontology URIs resolvable and content negotiable by allowing URL redirection for your ontology URIs to our Agroportal URIs. To facilitate this process, we've provided you with a set of .htaccess rewrite rules. By following the simple instructions below, you'll be able to implement these rules swiftly and efficiently, ensuring smooth redirection"
+    htaccess_redirection_description: "We offer a seamless solution to make your ontology URIs resolvable and content negotiable by allowing URL redirection for your ontology URIs to our %{site} URIs. To facilitate this process, we've provided you with a set of .htaccess rewrite rules. By following the simple instructions below, you'll be able to implement these rules swiftly and efficiently, ensuring smooth redirection"
     
     redirection_note: |
       This redirection works only for uri with the form of:  url/path/resource_id
