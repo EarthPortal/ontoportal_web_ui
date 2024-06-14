@@ -504,7 +504,7 @@ en:
       contact_us: Contact Us
       wiki: Wiki
       documentation: Documentation
-      agro_documentation: %{site} documentation
+      agro_documentation: "%{site} documentation"
       agreements: Legal
       terms: Terms and Conditions
       privacy_policy: Privacy Policy
