@@ -1265,7 +1265,7 @@ fr:
       admin_welcome: Bienvenue admin, cette coloration indique les fonctionnalités réservées aux administrateurs
       show_private_ontology: Afficher uniquement les ontologies privées
       show_ontology_views: Afficher les vues d'ontologie
-      show_retired_ontologies: Afficher les ontologies abandonner
+      show_retired_ontologies: Afficher les ontologies abandonnées
       search_placeholder: Commencez à taper pour filtrer les ontologies, par ex., AGROVOC...
     sections:
       classes: Classes
@@ -1379,7 +1379,7 @@ fr:
         description: Description
 
     htaccess_modal_title: "Règles de redirection pour l'ontologie %{acronym}"
-    instructions_servers: Instructions pour les servers %{server}
+    instructions_servers: Instructions pour les serveurs %{server}
     htaccess_redirection_description: "Nous proposons une solution transparente pour rendre les URI de votre ontologie résolubles et le contenu négociable en autorisant la redirection d'URL de vos URI d'ontologie vers nos URI d'Agroportal. Pour faciliter ce processus, nous vous avons fourni un ensemble de règles de réécriture .htaccess. En suivant les instructions simples ci-dessous, vous serez en mesure de mettre en œuvre ces règles rapidement et efficacement, garantissant ainsi une redirection fluide"
     
     redirection_note: >
@@ -1443,7 +1443,7 @@ fr:
     watch: Surveiller
     resource: "%{sub_text} cette ressource"
     notified_of_all_updates: Soyez le premier à surveiller cette ressource et soyez informé de toutes ses mises à jour
-    join_the_count: Rejoignez les %{count} utilisateurs, surveillant cette ressource et soyez informé de toutes ses mises à jour
+    join_the_count: Rejoignez les %{count} utilisateurs surveillant cette ressource et soyez informé de toutes ses mises à jour
     see_more: Voir plus...
     see_less: Voir moins...
     tree_view_empty: Pas de résultat
@@ -1468,7 +1468,7 @@ fr:
     ontologies_advanced_selection: Sélection avancée des ontologies
     search_hint: Filtrer les ontologies...
     show_ontology_view: Afficher les vues d'ontologie
-    hide_retired_ontologies: Masquer les ontologies abandonner
+    hide_retired_ontologies: Masquer les ontologies abandonnées
     tabs_title:
       categories: Catégories
       groups: Groupes
@@ -1485,7 +1485,7 @@ fr:
     search:
       title: "Rechercher du contenu (à venir)"
       description: >
-        Cet outil/service permet aux utilisateurs de rechercher n'importe quel élément du Cadre de Description des Ressources (RDF) dans le portail.
+        Cet outil/service permet aux utilisateurs de rechercher n'importe quel élément Resource Description Framework (RDF) dans le portail.
         Les utilisateurs peuvent rechercher soit par l'identifiant unique (URI) associé à l'élément RDF, soit par son libellé.
         Il facilite la navigation efficace et la récupération d'éléments RDF spécifiques, améliorant ainsi l'expérience utilisateur et la productivité au sein du portail.
 
