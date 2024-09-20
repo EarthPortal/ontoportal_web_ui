@@ -47,11 +47,12 @@ class SearchController < ApplicationController
       # record_type = format_record_type(result[:recordType], result[:obsolete])
       record_type = ""
 
-      target_value = result.prefLabel.select{|x| x.include?( params[:q].delete('*'))}.first || result.prefLabel.first
+      label = search_concept_label(result.prefLabel)
+      target_value = label
 
       case params[:target]
       when "name"
-        target_value = result.prefLabel
+        target_value = label
       when "shortid"
         target_value = result.id
       when "uri"
@@ -131,9 +132,6 @@ class SearchController < ApplicationController
         params[:ontologies] = params[:ontologies].split(",")
       else
         params[:ontologies] = [params[:ontologies]]
-      end
-      if params[:ontologies].first.to_i > 0
-        params[:ontologies].map! {|o| BpidResolver.id_to_acronym(o)}
       end
       params[:ontologies] = params[:ontologies].join(",")
     end

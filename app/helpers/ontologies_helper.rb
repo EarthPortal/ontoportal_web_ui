@@ -5,6 +5,10 @@ module OntologiesHelper
   API_KEY = $API_KEY
   LANGUAGE_FILTERABLE_SECTIONS = %w[classes schemes collections instances properties].freeze
 
+  def ontology_access_denied?
+    @ontology&.errors&.include?('Access denied for this resource')
+  end
+
   def concept_search_input(placeholder)
     content_tag(:div, class: 'search-inputs p-1') do
       text_input(placeholder: placeholder, label: '', name: "search", value: '', data: { action: "input->browse-filters#dispatchInputEvent" })
@@ -100,8 +104,8 @@ module OntologiesHelper
     end
   end
 
-  def ontologies_filter_url(filters, page: 1, count: false)
-    url = 'ontologies_filter?'
+  def ontologies_with_filters_url(filters, page: 1, count: false)
+    url = '/ontologies_filter?'
     url += "page=#{page}" if page
     url += "count=#{page}" if count
     if filters
@@ -320,11 +324,22 @@ module OntologiesHelper
     "<a href='#{ont_url}/?p=#{page_name}'>#{link_name}</a>"
   end
 
-  def show_category_name(domain)
-    return domain unless link?(domain)
+  def category_name_chip_component(domain)
+    text = domain.split('/').last.titleize
+
+
+    return render(ChipButtonComponent.new(text: text, tooltip: domain,  type: "static")) unless link?(domain)
+
+
     acronym = domain.split('/').last.upcase.strip
     category = LinkedData::Client::Models::Category.find(acronym)
-    category.name ? category.name : acronym.titleize
+
+    if category.name
+      render ChipButtonComponent.new(text: text, tooltip: category.name,  type: "static")
+    else
+      render ChipButtonComponent.new(text: text, tooltip: domain,  url: domain, type: "clickable", target: '_blank')
+    end
+
   end
 
 
@@ -416,7 +431,7 @@ module OntologiesHelper
       block.call
     else
       render TurboFrameComponent.new(id: section_title, src: "/ontologies/#{@ontology.acronym}?p=#{section_title}",
-                                     loading: Rails.env.development?  ? "lazy" : "eager",
+                                     loading: Rails.env.development? ? "lazy" : "eager",
                                      target: '_top', data: { "turbo-frame-target": "frame" })
     end
   end
@@ -763,6 +778,13 @@ module OntologiesHelper
 
   def id_to_acronym(id)
     id.split('/').last
+  end
+
+  def browse_taxonomy_tooltip(texonomy)
+    content_tag(:div, class: 'd-flex') do
+      content_tag(:div, "See more information about #{texonomy} in ", class: 'mr-1') +
+        content_tag(:a, 'here', href: "/#{texonomy}", target: '_blank')
+    end
   end
 
 
