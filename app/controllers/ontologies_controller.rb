@@ -14,6 +14,7 @@ class OntologiesController < ApplicationController
   include SubmissionFilter
   include OntologyContentSerializer
   include UriRedirection
+  include PropertiesHelper
 
   require 'multi_json'
   require 'cgi'
@@ -97,11 +98,12 @@ class OntologiesController < ApplicationController
   def properties
     @acronym = @ontology.acronym
     @properties = LinkedData::Client::HTTP.get("/ontologies/#{@acronym}/properties/roots", { lang: request_lang })
+    @property = get_property(params[:propertyid] || @properties.first.id,  @acronym, include: 'all') unless @property || @properties.empty?
 
     if request.xhr?
-      return render 'ontologies/sections/properties', layout: false
+      render 'ontologies/sections/properties', layout: false
     else
-      return render 'ontologies/sections/properties', layout: 'ontology_viewer'
+      render 'ontologies/sections/properties', layout: 'ontology_viewer'
     end
   end
 
@@ -152,6 +154,8 @@ class OntologiesController < ApplicationController
     @ontology.viewOf = params.dig(:ontology, :viewOf)
     @submission = LinkedData::Client::Models::OntologySubmission.new
     @submission.hasOntologyLanguage = 'OWL'
+    @submission.released = Date.today.to_s
+    @submission.status = 'production'
     @ontologies = LinkedData::Client::Models::Ontology.all(include: 'acronym', include_views: true, display_links: false, display_context: false)
     @categories = LinkedData::Client::Models::Category.all
     @groups = LinkedData::Client::Models::Group.all
@@ -173,6 +177,8 @@ class OntologiesController < ApplicationController
   end
 
   def instances
+
+    params[:instanceid] = params[:instanceid] || search_first_instance_id
 
     if params[:instanceid]
       @instance = helpers.get_instance_details_json(@ontology.acronym, params[:instanceid], {include: 'all'})
@@ -232,21 +238,20 @@ class OntologiesController < ApplicationController
       else
         params[:conceptid] = params.delete(:purl_conceptid)
       end
-      redirect_to "/ontologies/#{params[:acronym]}?p=classes#{params_string_for_redirect(params, prefix: "&")}", status: :moved_permanently
+      redirect_to "/ontologies/#{params[:acronym]}?p=classes&conceptid=#{params[:conceptid]}", status: :moved_permanently
       return
     end
 
-    if params[:ontology].to_i > 0
-      acronym = BPIDResolver.id_to_acronym(params[:ontology])
-      if acronym
-        redirect_new_api
+    @ontology = LinkedData::Client::Models::Ontology.find_by_acronym(params[:ontology]).first
+
+    if @ontology.nil? || @ontology.errors
+      if ontology_access_denied?
+        redirect_to "/login?redirect=/ontologies/#{params[:ontology]}", alert: t('login.private_ontology')
         return
+      else
+        ontology_not_found(params[:ontology])
       end
     end
-
-    # Note: find_by_acronym includes ontology views
-    @ontology = LinkedData::Client::Models::Ontology.find_by_acronym(params[:ontology]).first
-    ontology_not_found(params[:ontology]) if @ontology.nil? || @ontology.errors
 
     # Handle the case where an ontology is converted to summary only.
     # See: https://github.com/ncbo/bioportal_web_ui/issues/133.
@@ -279,9 +284,6 @@ class OntologiesController < ApplicationController
 
     # This action is now a router using the 'p' parameter as the page to show
     case params[:p]
-    when 'terms'
-      params[:p] = 'classes'
-      redirect_to "/ontologies/#{params[:ontology]}#{params_string_for_redirect(params)}", status: :moved_permanently
     when 'classes'
       self.classes # rescue self.summary
     when 'mappings'
@@ -328,13 +330,15 @@ class OntologiesController < ApplicationController
     @views = get_views(@ontology)
     @view_decorators = @views.map { |view| ViewDecorator.new(view, view_context) }
     @ontology_relations_data = ontology_relations_data
-
-    category_attributes = submission_metadata.group_by { |x| x['category'] }.transform_values { |x| x.map { |attr| attr['attribute'] } }
     @relations_array_display = @relations_array.map do |relation|
       attr = relation.split(':').last
       ["#{helpers.attr_label(attr, attr_metadata: helpers.attr_metadata(attr), show_tooltip: false)}(#{relation})",
        relation]
     end
+    @relations_array_display.unshift(['View of (bpm:viewOf)', 'bpm:viewOf'])
+
+    category_attributes = submission_metadata.group_by { |x| x['category'] }.transform_values { |x| x.map { |attr| attr['attribute'] } }
+
     @config_properties = properties_hash_values(category_attributes["object description properties"])
     @methodology_properties = properties_hash_values(category_attributes["methodology"])
     @agents_properties = properties_hash_values(category_attributes["persons and organizations"])
@@ -344,7 +348,7 @@ class OntologiesController < ApplicationController
     @community_properties = properties_hash_values(category_attributes["community"] + [:notes])
     @identifiers = properties_hash_values([:URI, :versionIRI, :identifier])
     @identifiers["ontology_portal_uri"] = ["#{$UI_URL}/ontologies/#{@ontology.acronym}", "#{portal_name} URI"]
-    @projects_properties = properties_hash_values(category_attributes["usage"])
+    @projects_properties = properties_hash_values(category_attributes["usage"] - ["hasDomain"])
     @ontology_icon_links = [%w[summary/download dataDump],
                             %w[summary/homepage homepage],
                             %w[summary/documentation documentation],
@@ -370,7 +374,7 @@ class OntologiesController < ApplicationController
     ontology_acronym = ontology_id.split('/').last
 
     if session[:user].nil?
-      link = "/login?redirect=#{request.url}"
+      link = "/login?redirect=/ontologies/#{ontology_acronym}"
       subscribed = false
       user_id = nil
     else
@@ -379,19 +383,10 @@ class OntologiesController < ApplicationController
       link = "javascript:void(0);"
       user_id = user.id
     end
-
     count = helpers.count_subscriptions(params[:ontology_id])
     render inline: helpers.turbo_frame_tag('subscribe_button') {
       render_to_string(OntologySubscribeButtonComponent.new(id: '', ontology_id: ontology_id, subscribed: subscribed, user_id: user_id, count: count, link: link), layout: nil)
     }
-  end
-
-  def virtual
-    redirect_new_api
-  end
-
-  def visualize
-    redirect_new_api(true)
   end
 
   def widgets
@@ -503,7 +498,7 @@ class OntologiesController < ApplicationController
 
   def ontology_relations_data(sub = @submission_latest)
     ontology_relations_array = []
-    @relations_array = ["omv:useImports", "door:isAlignedTo", "door:ontologyRelatedTo", "omv:isBackwardCompatibleWith", "omv:isIncompatibleWith", "door:comesFromTheSameDomain", "door:similarTo",
+    @relations_array = ["bpm:viewOf", "omv:useImports", "door:isAlignedTo", "door:ontologyRelatedTo", "omv:isBackwardCompatibleWith", "omv:isIncompatibleWith", "door:comesFromTheSameDomain", "door:similarTo",
                         "door:explanationEvolution", "voaf:generalizes", "door:hasDisparateModelling", "dct:hasPart", "voaf:usedBy", "schema:workTranslation", "schema:translationOfWork"]
 
     return if sub.nil?
@@ -538,6 +533,11 @@ class OntologiesController < ApplicationController
       end
     end
 
+    if ont.viewOf
+      target_ont = LinkedData::Client::Models::Ontology.find(ont.viewOf)
+      ontology_relations_array.push({ source: ont.acronym, target: target_ont.acronym, relation: "bpm:viewOf", targetInPortal: true })
+    end
+
     ontology_relations_array
   end
 
@@ -557,5 +557,15 @@ class OntologiesController < ApplicationController
     end
   end
 
+  def search_first_instance_id
+    query, page, page_size = helpers.search_content_params
+    results, _, _, _ = search_ontologies_content(query: query,
+                        page: page,
+                        page_size: page_size,
+                        filter_by_ontologies: [@ontology.acronym],
+                        filter_by_types: ["NamedIndividual"])
+    results.shift # Remove the ontology entry
+    return !results.blank? ? results.first[:name] : nil
+  end
 
 end

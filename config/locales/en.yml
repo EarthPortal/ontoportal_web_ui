@@ -203,6 +203,7 @@ en:
         description: Description
         created: Created
         ontologies: Ontologies
+        parent_category: Parent category
       edit:
         edit_category: Edit category
         save: Save
@@ -390,7 +391,8 @@ en:
       error_on_form: Errors On Form
       leave_your_feedback: Leave your feedback
       feedback_hi_text: Hi
-      feedback_info_text: you can use the form below or email us directly at
+      feedback_info_text: You can use the form below, email us directly at
+      feedback_info_text_rest: or leave us a github issue here
       email: Email
       name: Name
       proposition_url_page: Error/Proposition page URL
@@ -405,6 +407,11 @@ en:
       feedback_complete:
         title: Feedback sent successfully
         message: Thank you for taking the time to share your feedback with us. Our support team will review your message and get back to you as soon as possible with a response. We value your opinion and appreciate your help in improving our services. Thank you for your support!
+    suggest_slice: Suggest a new group/slice
+    slices_description: Slices allow users to interact (both via API or UI) only with a subset of ontologies in AgroPortal. If browsing the slice, all the portal features will be restricted to the chosen subset, enabling users to focus on their specific use cases. On AgroPortal, slices and groups are synchronized, so every group has a corresponding slice displaying only the ontologies from that group.
+    ontoportal_description: "The OntoPortal Alliance %{ontoportal_link} is a consortium of research and infrastructure teams dedicated to promoting the development of ontology repositories and semantic artefact catalogues based on the open, collaboratively developed OntoPortal software %{github_link}. Hereafter are the current public and open repositories built with the technology maintained by the Alliance."
+    viewing_slice: "Viewing the slice:"
+    view_full_site: View full website
   landscape:
     #select_ontologies: Start typing to select ontologies or leave blank to use them all
     classes: Number of classes
@@ -505,6 +512,7 @@ en:
       wiki: Wiki
       documentation: Documentation
       agro_documentation: "%{site} documentation"
+      issues_and_requests: Issues and Requests
       agreements: Legal
       terms: Terms and Conditions
       privacy_policy: Privacy Policy
@@ -533,7 +541,7 @@ en:
     enter_email: Enter your username
     enter_password: Enter your password
     forgot_password: Forgot password?
-    invalid_login: Errors on the form
+    private_ontology: This ontology is private. Please login.
     no_account: Do not have an account?
     password: Password
     register: Register
@@ -642,6 +650,10 @@ en:
         actions: Actions
         see_other_properties: See other properties
   agents:
+    errors:
+      required: is required and cannot be empty
+      used_identifier: This identifier is already used by another agent
+      invalid_url: The identifier must be a valid ORCID/ROR URL
     not_found_agent: Agent with id %{id}
     add_agent: New Agent added successfully
     update_agent: Agent successfully updated
@@ -670,6 +682,7 @@ en:
     index:
       create_new_agent: Create New Agent
       first_name: First name
+      acronym: Acronym
       usages: Usages
       actions: Actions
       no_agents: There are currently no  agents.
@@ -935,7 +948,7 @@ en:
       synonym: Synonym
       definition: Definition
       parent: Parent
-      save: save
+      save: Save
     note_line:
       alert_text: "Are you sure you want to delete the note <span style='color:red;font-weight:bold;'> ''%{subject}''</span> created by <span style='color:red;font-weight:bold;'>%{creator}</span>?<br/><b>This action CAN NOT be undone!!!</b>"
       delete: Delete
@@ -946,8 +959,8 @@ en:
     reply:
       about_note_decorator: about %{note_decorator}
       comment: Comment
-      save: save
-      cancel: cancel
+      save: Save
+      cancel: Cancel
   ontolobridge:
     problem_of_creating_new_term: "Problem creating a new term %{endpoint}: %{class} - %{message}"
     new_term_instructions_saved: New term request instructions for %{acronym} saved
@@ -1073,21 +1086,21 @@ en:
     close: Close
     submit: Submit
   check_resolvability:
-    check_resolvability_message_1: "The URL is resolvable and support the following formats: %{supported_format}"
-    check_resolvability_message_2: "The URL resolvable but is not content negotiable, support only: %{supported_format}"
-    check_resolvability_message_3: The URL is not resolvable and not content negotiable (returns %{status}).
+    check_resolvability_message_1: "The URI is resolvable and support the following formats: %{supported_format}"
+    check_resolvability_message_2: "The URI resolvable but is not content negotiable, support only: %{supported_format}"
+    check_resolvability_message_3: The URI is not resolvable and not content negotiable (returns %{status}).
     uri_placeholder: Type a URI to test its resolvability
     show_help: Show help
     format_not_specified: Format not specified
     how_it_works:
       title: How it works
       content_1: |
-        The check resolvability tool allows you to test if a given URL is resolvable. It is based on the HTTP HEAD method.
-        We check the resolvability of a URL by sending a HEAD request to the URL and checking if the response status code is 200 (OK) and
+        The check resolvability tool allows you to test if a given URI is resolvable. It is based on the HTTP HEAD method.
+        We check the resolvability of a URI by sending a HEAD request to the URI and checking if the response status code is 200 (OK) and
         the returned content type is equal to one of the following %{resolvability_formats}.
       content_2: |
-        We have a timeout set to %{resolvability_timeout} seconds, so if the URL is not resolvable within that time, the check will fail.
-        And a max redirections set to %{resolvability_max_redirections}, so if the URL is not resolvable within that number of redirections, the check will fail.
+        We have a timeout set to %{resolvability_timeout} seconds, so if the URI is not resolvable within that time, the check will fail.
+        And a max redirections set to %{resolvability_max_redirections}, so if the URI is not resolvable within that number of redirections, the check will fail.
     resolving_uri:
       title: Resolving a URI
       content: |
@@ -1260,6 +1273,7 @@ en:
       community: Community
       content: Content
       info_tooltip_properties_dropdown: Metadata properties primarily encompass the design, methods, and actions to create the ontology. This includes elements such as the tools and software employed by the creator of the ontology during its configuration.
+      info_tooltip_community_dropdown: Metadata properties related to community information such as the code repository and issue tracker, the mailing list or the target audience. This includes also the Groups in %{site}. See more information about Groups and Categories.
       visits: Visits
       views: Views of %{acronym}
       create_new_view: Create new view
@@ -1373,7 +1387,7 @@ en:
       instruction_4_content: "Run the following command to test the redirection configuration `sudo nginx -t`"
       instruction_5: "Reload Nginx to apply the changes:"
       instruction_5_content: "Restart the nginx server to apply the redirection using this command `sudo systemctl reload nginx`"
-    
+
   components:
     check_resolvability: checking resolvability...
     error_block: child_data_generator block did not provide all the child arguements
@@ -1405,7 +1419,7 @@ en:
     view: View
     debug: Debug
     loading: Loading
-    unwatch: UnWatch
+    unwatch: Unwatch
     watch: Watch
     resource: "%{sub_text} this resource"
     notified_of_all_updates: Be the first to watch this resource and  be notified of all its updates
@@ -1421,6 +1435,8 @@ en:
     preferred_name: Preferred name
     definitions: Definitions
     parent: Parent
+    domain: Domain
+    range: Range
     no_properties_alert: "%{acronym} does not contain properties"
   visits:
     ontology_visits: Ontology visits
@@ -1468,3 +1484,13 @@ en:
     location: "Location: %{location}"
     tags: Tags
     feedback: Feedback
+  cookies_modal:
+    title: "Manage Cookie Consent"
+    paragraph1: "%{portal} uses cookies to help you navigate efficiently and for audience measurement. You will find detailed information about all cookies in the \"Privacy policy\" link"
+    paragraph2: "The cookies are functional and non-optional. By staying on %{portal}, you acknowledge the information was delivered to you."
+    accept_button: "Accept"
+    privacy_link: "Privacy policy"
+  taxonomy:
+    groups_and_categories: Groups and Categories
+    description: In AgroPortal, ontologies are organized in groups and tagged with categories. Typically, groups associate ontologies from the same project or organization for better identification of the provenance. Whereas categories are about subjects/topics and enable to classify ontologies. As of 2016, AgroPortal's categories were established in cooperation with FAO AIMS. In 2024, we moved to UNESCO nomenclature for fields of science and technology. Groups and categories, along with other metadata, can be used on the “Browse” page of AgroPortal to filter out the list of ontologies.
+    show_sub_categories: Show sub categories
