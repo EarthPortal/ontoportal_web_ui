@@ -299,6 +299,7 @@ en:
     score: Score
     api_documentation: "Annotator API documentation"
     insert_sample_text: Insert sample text
+    select_ontologies: Select ontologies
     sample_text: As the access to Solid Earth data is not facilitated for now, current activities are focused on the development of a new portal/service to evaluate automatically SO2 flux emissions by volcanoes by analysis of satellite observations from the Sentinel-5P/TROPOMI sensor together with ECMWF wind fields. Several publications are also in preparation for 1- the presentation of the new service (SO2 flux calculator) and its theoretical framework, 2- the scientific applications of these new services, in particular the analysis of specific eruptions and their impacts on the atmosphere (air quality, climate) using the VOLCPLUME webportal (under further development).
   concepts:
     error_valid_concept: "Error: You must provide a valid concept id"
@@ -516,8 +517,11 @@ en:
       issues_and_requests: Issues and Requests
       agreements: Legal
       terms: Terms and Conditions
+      terms_anchor: "#h-agroportal-terms-and-conditions-english"
       privacy_policy: Privacy Policy
+      privacy_policy_anchor: "#h-privacy-policy"
       legal_notices: Legal Notices
+      legal_notices_anchor: "#h-legal-notice"
       cite_us: Cite Us
       acknowledgments: Acknowledgments
       about: About
@@ -566,12 +570,19 @@ en:
     date: Date
     ontology_visits: Ontology visits
   mappings:
+    create_new_mapping: Create new mapping
     all: All
     description: Dive into an overview of the mappings in the bubble view, efficiently locate a specific ontology in the table view or upload your own mappings.
     tabs:
       bubble_view: Bubbles view
       table_view: Table view
       upload_mappings: Upload mappings
+    types_description:
+      cui: Created between 2 concepts that have the same CUI (Concept Unique Identifiers)
+      loom: Lexical mappings created between 2 concepts with very similar labels (preferred name)
+      rest: A mapping added by a user using the REST API (or the UI, which is calling the API to create it)
+      same_uri: Created between 2 concepts with the same URI.
+      skos: Mappings based on SKOS relationships, (e.g. skos:exactMatch or skos:closeMatch)
     filter_ontologies: Filter ontologies in the bubble view
     filter_bubbles: Filter bubbles
     external_mappings: "External Mappings (%{number_with_delimiter})"
@@ -915,8 +926,7 @@ en:
         classes_with_definitions: Classes with definitions
     show_advanced_options: Show options
     hide_advanced_options: Hide options
-    match_in: Match in
-    ontologies: ontologies
+    match_in: Match in %{results_size} ontologies from %{portals}
     result_component:
       details: Details
       visualize: Vizualize
@@ -1160,7 +1170,7 @@ en:
     update_the_current_displayed_content: "will update the current displayed content to all the following submissions:"
     save: Save
   ontologies:
-    showing_ontologies_size: "Showing %{ontologies_size} of %{analytics_size}"
+    showing_ontologies_size: "Showing %{ontologies_size} of %{analytics_size} from %{portals}"
     filters: Filters
     no_license: No license
     view_license: View license
@@ -1485,6 +1495,10 @@ en:
     location: "Location: %{location}"
     tags: Tags
     feedback: Feedback
+  federation:
+    results_from_external_portals: Results from external portals
+    not_responding: is not responding.
+    check_status: Checking %{portal} availability
   cookies_modal:
     title: "Manage Cookie Consent"
     paragraph1: "%{portal} uses cookies to help you navigate efficiently and for audience measurement. You will find detailed information about all cookies in the \"Privacy policy\" link"

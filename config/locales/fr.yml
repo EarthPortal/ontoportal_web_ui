@@ -302,6 +302,7 @@ fr:
     total_results: Résultats totaux
     insert_sample_text: Insérer un texte d'exemple
     sample_text: Il y a eu de nombreuses études récentes sur l'utilisation d'antagonistes microbiens pour contrôler les maladies causées par des bactéries phytopathogènes telluriques
+    select_ontologies: Sélectionner des ontologies
       et aériennes, dans le but de remplacer les méthodes actuelles de contrôle chimique et d'éviter l'utilisation extensive de fongicides, qui conduisent souvent à une résistance chez les pathogènes des plantes.
       En agriculture, les microorganismes promoteurs de croissance des plantes et de biocontrôle ont émergé comme des alternatives sûres aux pesticides chimiques. Les espèces de Streptomyces et leurs
       métabolites peuvent avoir un grand potentiel en tant qu'agents excellents pour contrôler divers phytopathogènes fongiques et bactériens.
@@ -525,8 +526,11 @@ fr:
       issues_and_requests: Problèmes et demandes
       agreements: Légal
       terms: Termes et conditions
+      terms_anchor: "#h-conditions-generales-dutilisation-dagroportal-francais"
       privacy_policy: Politique de confidentialité
+      privacy_policy_anchor: "#h-vie-privee"
       legal_notices: Mentions légales
+      legal_notices_anchor: "#h-mentions-legales"
       cite_us: Citez-nous
       acknowledgments: Remerciements
       about: À propos
@@ -578,12 +582,20 @@ fr:
     ontology_visits: Visites d'ontologies
 
   mappings:
+    create_new_mapping: Créer un nouveau mapping
     all: Tous
     description: Plongez dans une vue d'ensemble des mappings dans la vue en bulles, localisez efficacement une ontologie spécifique dans la vue en tableau ou téléchargez vos propres mappings.
     tabs:
       bubble_view: Vue en bulles
       table_view: Vue en tableau
       upload_mappings: Télécharger des mappings
+    types_description:
+      cui: Créé entre 2 concepts ayant le même CUI (Identifiants Uniques de Concepts)
+      loom: Mappings lexicaux créés entre 2 concepts avec des libellés très similaires (nom préféré)
+      rest: Un mapping ajouté par un utilisateur via l'API REST (ou l'interface utilisateur, qui appelle l'API pour le créer)
+      same_uri: Créé entre 2 concepts ayant la même URI.
+      skos: Mapping basés sur des relations SKOS (par exemple, skos:exactMatch ou skos:closeMatch)
+
     filter_ontologies: Filtrer les ontologies dans la vue en bulles
     filter_bubbles: Filtrer les bulles
     external_mappings: "Mappings externes (%{number_with_delimiter})"
@@ -935,8 +947,7 @@ fr:
         classes_with_definitions: Classes avec définitions
     show_advanced_options: Afficher les options
     hide_advanced_options: Cacher les options
-    match_in: Correspondance dans
-    ontologies: ontologies
+    match_in: Correspondance dans %{results_size} ontologies de %{portals}
     result_component:
       details: Détails
       visualize: Visualiser
@@ -1189,7 +1200,7 @@ fr:
     save: Sauvegarder
 
   ontologies:
-    showing_ontologies_size: "Affichage de %{ontologies_size} sur %{analytics_size}"
+    showing_ontologies_size: "Affichage de %{ontologies_size} sur %{analytics_size} de %{portals}"
     filters: Filtres
     no_license: Pas de licence
     view_license: Voir la licence
@@ -1527,6 +1538,10 @@ fr:
     tags: Tags
     feedback: Feedback
 
+  federation:
+    results_from_external_portals: Résultats provenant de portails externes
+    not_responding: ne répond pas.
+    check_status: Vérification de la disponibilité de %{portal}
   cookies_modal:
     title: "Gérer le consentement des cookies"
     paragraph1: "%{portal} utilise des cookies pour vous aider à naviguer efficacement et pour mesurer l'audience. Vous trouverez des informations détaillées sur tous les cookies dans le lien \"Vie privé\""
