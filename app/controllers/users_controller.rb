@@ -1,39 +1,45 @@
 class UsersController < ApplicationController
-  
-  before_action :unescape_id, only: [:edit, :show, :update]
-  before_action :verify_owner, only: [:edit, :show, :subscribe, :un_subscribe]
+
+  before_action :verify_owner, only: [:edit, :subscribe, :un_subscribe]
   before_action :authorize_admin, only: [:index,:subscribe, :un_subscribe]
   layout :determine_layout
 
-  # GET /users
-  # GET /users.xml
+  include TurboHelper
+
+
   def index
-    @users = LinkedData::Client::Models::User.all
-    respond_to do |format|
-      format.html
-      format.xml { render xml: @users.to_xml }
+
+    onts = LinkedData::Client::Models::Ontology.all(include: 'administeredBy')
+    projects = LinkedData::Client::Models::Project.all(include: 'creator')
+
+    @users =  LinkedData::Client::Models::User.all(include: 'all')
+    @users.each do |user|
+      user.ontologies = onts.select {|o| o.administeredBy.include? user.id }
+      user.project = projects.select {|p| p.creator.include? user.id }
     end
+
   end
 
   # GET /users/1
   # GET /users/1.xml
   def show
+    @title = t('home.account_title')
+    if session[:user].nil?
+      redirect_to controller: 'login', action: 'index', redirect: '/account'
+      return
+    end
     @user = if session[:user].admin? && params.has_key?(:id)
-              LinkedData::Client::Models::User.find_by_username(params[:id]).first
+              find_user(params[:id])
             else
-              LinkedData::Client::Models::User.find(session[:user].id)
+              find_user(session[:user].id)
             end
+    @ontologies = LinkedData::Client::Models::Ontology.all(ignore_custom_ontologies: true);
+    @all_ontologies_for_select = @ontologies.map {|x| ["#{x.name} (#{x.acronym})", x.acronym]}
 
-    @all_ontologies = LinkedData::Client::Models::Ontology.all(ignore_custom_ontologies: true)
-
-    logger.info 'user show'
-    logger.info @user.bring_remaining
-    logger.info @user
     @user_ontologies = @user.customOntology
+    @user_ontologies ||= []
 
-    ## Copied from home controller , account action
-    onts = LinkedData::Client::Models::Ontology.all;
-    @admin_ontologies = onts.select {|o| o.administeredBy.include? @user.id }
+    @admin_ontologies = @ontologies.select {|o| o.administeredBy.include? @user.id }
 
     projects = LinkedData::Client::Models::Project.all;
     @user_projects = projects.select {|p| p.creator.include? @user.id }
@@ -46,10 +52,9 @@ class UsersController < ApplicationController
 
   # GET /users/1;edit
   def edit
-    @user = LinkedData::Client::Models::User.find(params[:id])
-    @user ||= LinkedData::Client::Models::User.find_by_username(params[:id]).first
+    @user = find_user
 
-    if (params[:password].eql?("true"))
+    if params[:password].eql?("true")
       @user.validate_password = true
     end
   end
@@ -72,7 +77,7 @@ class UsersController < ApplicationController
           SubscribeMailer.register_for_announce_list(@user.email,@user.firstName,@user.lastName).deliver rescue nil
         end
 
-        flash[:notice] = 'Account was successfully created'
+        flash[:notice] = t('users.account_successfully_created')
         session[:user] = LinkedData::Client::Models::User.authenticate(@user.username, @user.password)
         redirect_to_browse
       end
@@ -84,8 +89,7 @@ class UsersController < ApplicationController
   # PUT /users/1
   # PUT /users/1.xml
   def update
-    @user = LinkedData::Client::Models::User.find(params[:id])
-    @user = LinkedData::Client::Models::User.find_by_username(params[:id]).first if @user.nil?
+    @user = find_user
     @errors = validate_update(user_params)
     if @errors.size < 1
 
@@ -107,7 +111,7 @@ class UsersController < ApplicationController
         # @errors = {acronym: "Username already exists, please use another"} if error_response.status == 409
         render action: "edit"
       else
-        flash[:notice] = 'Account was successfully updated'
+        flash[:notice] = t('users.account_successfully_updated')
 
         if session[:user].username == @user.username
           session[:user].update_from_params(user_params)
@@ -121,64 +125,81 @@ class UsersController < ApplicationController
 
   # DELETE /users/1
   def destroy
-    response = {errors: '', success: ''}
-    @user = LinkedData::Client::Models::User.find(params[:id])
-    @user = LinkedData::Client::Models::User.find_by_username(params[:id]).first if @user.nil?
-    if(session[:user].admin?)
+    response = {errors: nil, success: ''}
+    @user = find_user
+
+    if session[:user].admin?
       @user.delete
-      response[:success] << 'User deleted successfully '
+      response[:success] << t('users.user_deleted_successfully')
 
     else
-      response[:errors] << 'Not permitted '
+      response[:errors] << t('users.not_permitted')
     end
 
-    render json: response
+    respond_to do |format|
+      format.turbo_stream do
+        if response[:errors]
+          render_turbo_stream alert(type: 'danger') { response[:errors].to_s }
+        else
+          render turbo_stream: [
+            alert(type: 'success') { response[:success] },
+            turbo_stream.remove(params[:id])
+          ]
+        end
+      end
+    end
   end
 
   def custom_ontologies
-    @user = LinkedData::Client::Models::User.find(params[:id])
-    @user = LinkedData::Client::Models::User.find_by_username(params[:id]).first if @user.nil?
+    @user = find_user
+    custom_ontologies = params[:ontologies] || []
 
-    custom_ontologies = params[:ontology] ? params[:ontology][:ontologyId] : []
-    custom_ontologies.reject!(&:blank?)
     @user.update_from_params(customOntology: custom_ontologies)
-    error_response = @user.update
-
+    error_response = !@user.update
     if error_response
-      flash[:notice] = 'Error saving Custom Ontologies, please try again'
+      flash[:notice] = t('users.error_saving_custom_ontologies')
     else
-      updated_user = LinkedData::Client::Models::User.find(@user.id)
-      session[:user].update_from_params(customOntology: updated_user.customOntology)
-      flash[:notice] = if updated_user.customOntology.empty?
-                         'Custom Ontologies were cleared'
+      session[:user].update_from_params(customOntology: @user.customOntology)
+      flash[:notice] = if @user.customOntology.empty?
+                        t('users.custom_ontologies_cleared')
                        else
-                         'Custom Ontologies were saved'
+                        t('users.custom_ontologies_saved')
                        end
     end
     redirect_to user_path(@user.username)
   end
 
-  
+
   def subscribe
-    @user = LinkedData::Client::Models::User.find_by_username(params[:username]).first
+    @user = find_user
     deliver "subscribe", SubscribeMailer.register_for_announce_list(@user.email,@user.firstName,@user.lastName)
   end
 
+
   def un_subscribe
-    @email = params[:email] 
+    @email = params[:email]
     deliver "unsubscribe", SubscribeMailer.unregister_for_announce_list(@email)
   end
 
-  
+
   private
+
+  def find_user(id = params[:id])
+    id = helpers.unescape(id)
+    @user = LinkedData::Client::Models::User.find(id.split('/').last, {include: 'all'})
+
+    not_found("User with id #{id} not found") if @user.nil?
+
+    @user
+  end
 
   def deliver(action,job)
     begin
       job.deliver
       to_or_from = action.eql?("subscribe") ? "to" : "from"
-      flash[:success] = "You have successfully  #{action} #{to_or_from} our user mailing list: #{$ANNOUNCE_LIST}"
+      flash[:success] = t('users.subscribe_flash_message', action: action, to_or_from: to_or_from, list: $ANNOUNCE_LIST)
     rescue => exception
-      flash[:error] = "Something went wrong ..."
+      flash[:error] = t('users.error_subscribe')
     end
     redirect_to '/account'
   end
@@ -187,13 +208,13 @@ class UsersController < ApplicationController
     params[:user]["orcidId"] = extract_id_from_url(params[:user]["orcidId"], 'orcid.org')
     params[:user]["githubId"] = extract_id_from_url(params[:user]["githubId"], 'github.com')
     p = params.require(:user).permit(:firstName, :lastName, :username, :orcidId, :githubId, :email, :email_confirmation, :password,
-                                     :password_confirmation, :register_mail_list, :admin)
+                                     :password_confirmation, :register_mail_list, :admin, :terms_and_conditions)
     p.to_h
   end
-  
+
   def extract_id_from_url(url, pattern)
-    if url.include? (pattern)
-      url.split('/').last 
+    if url && url.include?(pattern)
+      url.split('/').last
     else
       url
     end
@@ -222,30 +243,54 @@ class UsersController < ApplicationController
   def validate(params)
     errors = []
     if params[:email].nil? || params[:email].length < 1 || !params[:email].match(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i)
-      errors << "Please enter an email address"
+      errors << t('users.validate_email_address')
     end
     if params[:password].nil? || params[:password].length < 1
-      errors << "Please enter a password"
+      errors << t('users.validate_password')
     end
     if !params[:password].eql?(params[:password_confirmation])
-      errors << "Your Password and Password Confirmation do not match"
+      errors << t('users.validate_password_confirmation')
     end
     if using_captcha?
       if !verify_recaptcha
-        errors << "Please fill in the proper text from the supplied image"
+        errors << t('users.recaptcha_validation')
       end
     end
 
+
+    if ((!params[:orcidId].match(/^\d{4}+(-\d{4})+$/)) || (params[:orcidId].length != 19)) && !(params[:orcidId].nil? || params[:orcidId].length < 1)
+      errors << t('users.validate_orcid')
+    end
+
+    if params[:username].nil? || params[:username].length < 1 || !params[:username].match(/^[a-zA-Z0-9]([._-](?![._-])|[a-zA-Z0-9]){3,18}[a-zA-Z0-9]$/)
+      errors << t('users.validate_username')
+    end
+
+    unless params[:terms_and_conditions]
+      errors << t('users.validate_terms_and_conditions')
+    end
     return errors
   end
 
   def validate_update(params)
     errors = []
     if params[:email].nil? || params[:email].length < 1 || !params[:email].match(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i)
-      errors << "Please enter an email address"
+      errors << t('users.valid_email_adresse')
+    end
+    if params[:firstName].nil? || params[:firstName].length < 1
+      errors << t('users.first_name_required')
+    end
+    if params[:lastName].nil? || params[:lastName].length < 1
+      errors << t('users.last_name_required')
+    end
+    if params[:username].nil? || params[:username].length < 1
+      errors << t('users.last_name_required')
+    end
+    if params[:orcidId].present? && ((!params[:orcidId].match(/^\d{4}-\d{4}-\d{4}-\d{4}$/)) || (params[:orcidId].length != 19))
+      errors << t('users.validate_orcid')
     end
     if !params[:password].eql?(params[:password_confirmation])
-      errors << "Your Password and Password Confirmation do not match"
+      errors << t('users.validate_password_confirmation')
     end
 
     return errors

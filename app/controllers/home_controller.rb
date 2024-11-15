@@ -3,75 +3,71 @@
 class HomeController < ApplicationController
   layout :determine_layout
 
-
-  include FairScoreHelper
+  include FairScoreHelper, FederationHelper,MetricsHelper
 
   def index
-    @ontologies_views = LinkedData::Client::Models::Ontology.all(include_views: true)
-    @ontologies = @ontologies_views.select {|o| !o.viewOf}
-    @ontologies_hash = Hash[@ontologies_views.map {|o| [o.acronym, o]}]
-    @groups = LinkedData::Client::Models::Group.all
-    @notes = LinkedData::Client::Models::Note.all
-    @last_notes = []
-    unless @notes.empty?
-      @notes.sort! {|a,b| b.created <=> a.created }
-      @notes[0..20].each do |n|
-        ont_uri = n.relatedOntology.first
-        ont = LinkedData::Client::Models::Ontology.find(ont_uri)
-        next if ont.nil?
-        username = n.creator.split("/").last
-        note = {
-            :uri => n.links['ui'],
-            :id => n.id,
-            :subject => n.subject,
-            :body => n.body,
-            :created => n.created,
-            :author => username,
-            :ont_name => ont.name
-        }
-        @last_notes.push note
-        break if @last_notes.length >= [$HOME_LATEST_NOTES_COUNT.to_i, 5].max
-      end
-    end
-    # Get the latest manual mappings
-    # All mapping classes are bidirectional.
-    # Each class in the list maps to all other classes in the list.
-    if $DISPLAY_RECENT.nil? || $DISPLAY_RECENT == true
-      @recent_mappings = get_recent_mappings  # application_controller
-    end
-    
-    organize_groups
+    @analytics = helpers.ontologies_analytics
 
-    # Calculate BioPortal summary statistics
-    @ont_count = @ontologies.length
-    @cls_count = LinkedData::Client::Models::Metrics.all.map { |m| m.classes.to_i }.sum
-    @individuals_count = LinkedData::Client::Models::Metrics.all.map {|m| m.individuals.to_i}.sum
-    @prop_count = 36286
-    @map_count = total_mapping_count
-    @analytics = LinkedData::Client::Analytics.last_month
+    @slices = LinkedData::Client::Models::Slice.all
 
-    @ontology_names = @ontologies.map { |ont| ["#{ont.name} (#{ont.acronym})", ont.acronym] }
+    @metrics = portal_metrics(@analytics)
 
-    @anal_ont_names = {}
+
+    @upload_benefits = [
+      t('home.benefit1'),
+      t('home.benefit2'),
+      t('home.benefit3'),
+      t('home.benefit4'),
+      t('home.benefit5')
+    ]
+
+    @anal_ont_names = []
     @anal_ont_numbers = []
-    @analytics.onts[0..4].each do |visits|
-      ont = @ontologies_hash[visits[:ont].to_s]
-      @anal_ont_names[ont.acronym] = ont.name
-      @anal_ont_numbers << visits[:views]
+    @analytics.sort_by{|ont, count| -count}[0..4].each do |ont, count|
+      @anal_ont_names << ont
+      @anal_ont_numbers << count
     end
 
-
   end
 
-  def render_layout_partial
-    partial = params[:partial]
-    render partial: "layouts/#{partial}"
+  def set_cookies
+    cookies.permanent[:cookies_accepted] = params[:cookies] if params[:cookies]
+    render 'cookies', layout: nil
   end
 
-  def help
-    # Show the header/footer or not
-    layout = params[:pop].eql?('true') ? 'popup' : 'ontology'
-    render layout: layout
+  def portal_config
+    @config = $PORTALS_INSTANCES.select { |x| x[:name].downcase.eql?((params[:portal] || helpers.portal_name).downcase) }.first
+    if @config && @config[:api]
+      @portal_config = LinkedData::Client::Models::Ontology.top_level_links(@config[:api]).to_h
+    else
+      @portal_config = {}
+    end
+  end
+
+  def tools
+    @tools = {
+      search: {
+        link: "search/ontologies/content",
+        icon: "icons/search.svg",
+        title: t('tools.search.title'),
+        description: t('tools.search.description'),
+      },
+      converter: {
+        link: "/content_finder",
+        icon: "icons/settings.svg",
+        title: t('tools.converter.title'),
+        description: t('tools.converter.description'),
+      },
+      url_checker: {
+        link: check_resolvability_path,
+        icon: "check.svg",
+        title: t('tools.url_checker.title'),
+        description: t('tools.url_checker.description')
+      }
+    }
+
+    @title = "#{helpers.portal_name} #{t('layout.footer.tools')}"
+    render 'tools', layout: 'tool'
   end
 
   def all_resources
@@ -95,37 +91,37 @@ class HomeController < ApplicationController
 
     @tags = []
     unless params[:bug].nil? || params[:bug].empty?
-      @tags << "Bug"
+      @tags << t('home.bug')
     end
     unless params[:proposition].nil? || params[:proposition].empty?
-      @tags << "Proposition"
+      @tags << t('home.proposition')
     end
     unless params[:question].nil? || params[:question].empty?
-      @tags << "Question"
+      @tags << t('home.question')
     end
-    unless params[:ontology_submissions_request].nil? || params[:bug].empty?
-      @tags << "Ontology submissions request"
+    unless params[:ontology_submissions_request].nil? || params[:ontology_submissions_request].empty?
+      @tags << t('home.ontology_submissions_request')
     end
 
     @errors = []
 
     if params[:name].nil? || params[:name].empty?
-      @errors << 'Please include your name'
+      @errors << t('home.include_name')
     end
     if params[:email].nil? || params[:email].length < 1 || !params[:email].match(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i)
-      @errors << 'Please include your email'
+      @errors << t('home.include_email')
     end
     if params[:comment].nil? || params[:comment].empty?
-      @errors << 'Please include your comment'
+      @errors << t('home.include_comment')
     end
     if using_captcha? && !session[:user]
       unless verify_recaptcha
-        @errors << 'Please fill in the proper text from the supplied image'
+        @errors << t('home.fill_text')
       end
     end
 
     unless @errors.empty?
-      render render 'home/feedback/feedback', layout: feedback_layout
+      render 'home/feedback/feedback', layout: feedback_layout
       return
     end
 
@@ -134,47 +130,34 @@ class HomeController < ApplicationController
     if params[:pop].eql?('true')
       render 'home/feedback/feedback_complete', layout: 'popup'
     else
-      flash[:notice] = 'Feedback has been sent'
+      flash[:notice] = t('home.notice_feedback')
       redirect_to_home
     end
   end
 
-  def user_intention_survey
-    render partial: 'user_intention_survey', layout: false
-  end
 
   def site_config
     render json: bp_config_json
   end
 
-  def account
-    @title = 'Account Information'
-    if session[:user].nil?
-      redirect_to controller: 'login', action: 'index', redirect: '/account'
-      return
-    end
-
-    @user = LinkedData::Client::Models::User.get(session[:user].id, include: 'all')
-
-    @user_ontologies = @user.customOntology
-    @user_ontologies ||= []
-
-    onts = LinkedData::Client::Models::Ontology.all
-    @admin_ontologies = onts.select { |o| o.administeredBy.include? @user.id }
-
-    projects = LinkedData::Client::Models::Project.all
-    @user_projects = projects.select { |p| p.creator.include? @user.id }
-
-    render 'users/show'
-  end
-
   def feedback_complete; end
 
-  def validate_ontology_file_show; end
+  def annotator_recommender_form
+    if params[:submit_button] == "annotator"
+      redirect_to "/annotator?text=#{helpers.escape(params[:input])}"
+    elsif params[:submit_button] == "recommender"
+      redirect_to "/recommender?input=#{helpers.escape(params[:input])}"
+    end
+  end
 
-  def validate_ontology_file
-    response = LinkedData::Client::HTTP.post('/validate_ontology_file', ontology_file: params[:ontology_file])
-    @process_id = response.process_id
+
+  def federation_portals_status
+    @name = params[:name]
+    @acronym = params[:acronym]
+    @key = params[:portal_name]
+    @checked = params[:checked].eql?('true')
+    @portal_up = federation_portal_status(portal_name: @key.downcase.to_sym)
+    render inline: helpers.federation_chip_component(@key, @name, @acronym, @checked, @portal_up)
   end
 
   private

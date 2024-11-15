@@ -22,17 +22,17 @@ class ProjectsController < ApplicationController
   def show
     projects = LinkedData::Client::Models::Project.find_by_acronym(params[:id])
     if projects.nil? || projects.empty?
-      flash[:notice] = flash_error("Project not found: #{params[:id]}")
+      flash[:notice] = flash_error(t('projects.project_not_found', id: params[:id]))
       redirect_to projects_path
       return
     end
-    
+
     @project = projects.first
     @ontologies_used = []
     onts_used = @project.ontologyUsed
     onts_used.each do |ont_used|
       ont = LinkedData::Client::Models::Ontology.find(ont_used)
-      unless ont.nil?
+      unless ont.nil? || ont.errors
         @ontologies_used << Hash["name", ont.name, "acronym", ont.acronym]
       end
     end
@@ -55,14 +55,14 @@ class ProjectsController < ApplicationController
   def edit
     projects = LinkedData::Client::Models::Project.find_by_acronym(params[:id])
     if projects.nil? || projects.empty?
-      flash[:notice] = flash_error("Project not found: #{params[:id]}")
+      flash[:notice] = flash_error(t('projects.project_not_found', id: params[:id]))
       redirect_to projects_path
       return
     end
     @project = projects.first
     @user_select_list = LinkedData::Client::Models::User.all.map {|u| [u.username, u.id]}
     @user_select_list.sort! {|a,b| a[1].downcase <=> b[1].downcase}
-    @usedOntologies = @project.ontologyUsed || []
+    @usedOntologies = @project.ontologyUsed&.map{|o| o.split('/').last}
     @ontologies = LinkedData::Client::Models::Ontology.all
   end
 
@@ -76,17 +76,17 @@ class ProjectsController < ApplicationController
 
     @project = LinkedData::Client::Models::Project.new(values: project_params)
     @project_saved = @project.save
-    
+
     # Project successfully created.
     if response_success?(@project_saved)
-      flash[:notice] = 'Project successfully created'
+      flash[:notice] = t('projects.project_successfully_created')
       redirect_to project_path(@project.acronym)
       return
     end
 
     # Errors creating project.
     if @project_saved.status == 409
-      error = OpenStruct.new existence: "Project with acronym #{params[:project][:acronym]} already exists.  Please enter a unique acronym."
+      error = OpenStruct.new existence: t('projects.error_unique_acronym', acronym: params[:project][:acronym])
       @errors = Hash[:error, OpenStruct.new(acronym: error)]
     else
       @errors = response_errors(@project_saved)
@@ -107,7 +107,7 @@ class ProjectsController < ApplicationController
     end
     projects = LinkedData::Client::Models::Project.find_by_acronym(params[:id])
     if projects.nil? || projects.empty?
-      flash[:notice] = flash_error("Project not found: #{params[:id]}")
+      flash[:notice] = flash_error(t('projects.project_not_found', id: params[:id]))
       redirect_to projects_path
       return
     end
@@ -122,7 +122,7 @@ class ProjectsController < ApplicationController
       @errors = response_errors(error_response)
       render :edit
     else
-      flash[:notice] = 'Project successfully updated'
+      flash[:notice] = t('projects.project_successfully_updated')
       redirect_to project_path(@project.acronym)
     end
   end
@@ -132,7 +132,7 @@ class ProjectsController < ApplicationController
   def destroy
     projects = LinkedData::Client::Models::Project.find_by_acronym(params[:id])
     if projects.nil? || projects.empty?
-      flash[:notice] = flash_error("Project not found: #{params[:id]}")
+      flash[:notice] = flash_error(t('projects.project_not_found', id: params[:id]))
       redirect_to projects_path
       return
     end
@@ -140,13 +140,13 @@ class ProjectsController < ApplicationController
     error_response = @project.delete
     if response_error?(error_response)
       @errors = response_errors(error_response)
-      flash[:notice] = "Project delete failed: #{@errors}"
+      flash[:notice] = t('projects.error_delete_project', errors: @errors)
       respond_to do |format|
         format.html { redirect_to projects_path }
         format.xml  { head :internal_server_error }
       end
     else
-      flash[:notice] = 'Project successfully deleted'
+      flash[:notice] = t('projects.project_successfully_deleted')
       respond_to do |format|
         format.html { redirect_to projects_path }
         format.xml  { head :ok }
@@ -160,9 +160,10 @@ class ProjectsController < ApplicationController
   def project_params
     p = params.require(:project).permit(:name, :acronym, :institution, :contacts, { creator:[] }, :homePage,
                                         :description, { ontologyUsed:[] })
-    p[:creator].reject!(&:blank?)
-    p[:ontologyUsed].reject!(&:blank?)
-    p.to_h
+                                        
+    p[:creator]&.reject!(&:blank?)
+    p[:ontologyUsed] ||= []
+    p = p.to_h
   end
 
   def flash_error(msg)
