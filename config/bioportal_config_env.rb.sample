@@ -278,6 +278,8 @@ $PORTALS_INSTANCES = [
     'light-color': '#EBF5F5',
   }
 ]
+$ONTOPORTAL_WEBSITE_LINK = "https://ontoportal.org/"
+$ONTOPORTAL_GITHUB_REPO = "https://github.com/ontoportal"
 
 
 $ONTOPORTAL_WEBSITE_LINK = "https://ontoportal.org/"

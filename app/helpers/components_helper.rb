@@ -81,7 +81,7 @@ module ComponentsHelper
           end
         end)
       end
-
+      
       concepts = c.collection
       if concepts && !concepts.empty?
         concepts.each do |concept|
@@ -151,11 +151,11 @@ module ComponentsHelper
 
   def tree_component(root, selected, target_frame:, sub_tree: false, id: nil, auto_click: false, submission: nil, &child_data_generator)
     root.children.sort! { |a, b| (a.prefLabel || a.id).downcase <=> (b.prefLabel || b.id).downcase }
-
+    
     render TreeViewComponent.new(id: id, sub_tree: sub_tree, auto_click: auto_click) do |tree_child|
       root.children.each do |child|
         children_link, data, href = child_data_generator.call(child)
-
+  
         if children_link.nil? || data.nil? || href.nil?
           raise ArgumentError, t('components.error_block')
         end
