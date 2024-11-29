@@ -1198,7 +1198,7 @@ fr:
     no_projects_using_ontology: Aucun projet n'utilise %{acronym}
     outside: extérieur
     relation_with_other_ontologies: Relation avec d'autres ontologies soit à l'intérieur soit à l'extérieur
-    ontology_search_prompt: 'Rechercher une ontologie ou un terme (par exemple, hauteur de plante)'
+    ontology_search_prompt: 'Rechercher une ontologie ou un terme (par exemple, oxygène)'
     views: Vues
     create_new_view: Créer une nouvelle vue
     expand_all: Tout déplier

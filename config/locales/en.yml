@@ -1202,7 +1202,7 @@ en:
     no_projects_using_ontology: No projects using %{acronym}
     outside: outside
     relation_with_other_ontologies: Relation with other ontologies either in %{inside} or %{outside}
-    ontology_search_prompt: 'Search an ontology or a term (e.g., plant height)'
+    ontology_search_prompt: 'Search an ontology or a term (e.g., oxygen)'
     views: Views
     create_new_view: Create new view
     expand_all: Expand All
