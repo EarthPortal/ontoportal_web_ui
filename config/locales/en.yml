@@ -409,7 +409,7 @@ en:
         title: Feedback sent successfully
         message: Thank you for taking the time to share your feedback with us. Our support team will review your message and get back to you as soon as possible with a response. We value your opinion and appreciate your help in improving our services. Thank you for your support!
     suggest_slice: Suggest a new group/slice
-    slices_description: Slices allow users to interact (both via API or UI) only with a subset of ontologies in EarthPortal. If browsing the slice, all the portal features will be restricted to the chosen subset, enabling users to focus on their specific use cases.
+    slices_description: Slices allow users to interact (both via API or UI) only with a subset of ontologies in EarthPortal. If browsing the slice, all the portal features will be restricted to the chosen subset, enabling users to focus on their specific use cases. On EarthPortal, slices and groups are synchronized, so every group has a corresponding slice displaying only the ontologies from that group.
     ontoportal_description: "The <a href=%{ontoportal_link}>OntoPortal Alliance</a> is a consortium of research and infrastructure teams dedicated to promoting the development of ontology repositories and semantic artefact catalogues based on the open, collaboratively developed <a href=%{github_link}>OntoPortal</a> software . Hereafter are the current public and open repositories built with the technology maintained by the Alliance."
     viewing_slice: "Viewing the slice:"
     view_full_site: View full website
@@ -926,10 +926,11 @@ en:
         classes_with_definitions: Classes with definitions
     show_advanced_options: Show options
     hide_advanced_options: Hide options
-    match_in: Match in %{results_size} ontologies from %{portals}
+    match_in: "Match in %{results_size} ontologies from %{portals}"
+    ontologies: ontologies
     result_component:
       details: Details
-      visualize: Vizualize
+      visualize: Visualize
       more_from_ontology: more from this ontology
       reuses_in: Reuses in
   notes:
@@ -1201,7 +1202,7 @@ en:
     no_projects_using_ontology: No projects using %{acronym}
     outside: outside
     relation_with_other_ontologies: Relation with other ontologies either in %{inside} or %{outside}
-    ontology_search_prompt: 'Search an ontology or a term (e.g., plant height)'
+    ontology_search_prompt: 'Search an ontology or a term (e.g., oxygen)'
     views: Views
     create_new_view: Create new view
     expand_all: Expand All
@@ -1453,6 +1454,7 @@ en:
     ontology_visits: Ontology visits
     name: name
     visits: visits
+    count: concepts
   ontologies_selector:
     clear_selection: Clear selection
     ontologies_advanced_selection: Ontologies advanced selection
@@ -1507,5 +1509,5 @@ en:
     privacy_link: "Privacy policy"
   taxonomy:
     groups_and_categories: Groups and Categories
-    description: In EarthPortal, ontologies are organized in groups and tagged with categories. Typically, groups associate ontologies from the same project or organization for better identification of the provenance. Whereas categories are about subjects/topics and enable to classify ontologies. In 2024, we moved to UNESCO nomenclature for fields of science and technology. Groups and categories, along with other metadata, can be used on the “Browse” page of EarthPortal to filter out the list of ontologies.
+    description: "In %{portal}, ontologies are organized in groups and tagged with categories. Typically, groups associate ontologies from the same project or organization for better identification of the provenance. Whereas categories are about subjects/topics and enable to classify ontologies. As of 2016, %{portal}'s categories were established in cooperation with FAO AIMS. In 2024, we moved to UNESCO Thesaurus (https://vocabularies.unesco.org). Groups and categories, along with other metadata, can be used on the “Browse” page of %{portal} to filter out the list of ontologies."
     show_sub_categories: Show sub categories
