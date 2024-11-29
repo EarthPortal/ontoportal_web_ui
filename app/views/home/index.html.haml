@@ -209,7 +209,7 @@
 
       .home-section-description
         .div
-          = home_ontoportal_description
+          = t('home.ontoportal_description').html_safe
       .home-support-items
         - $PORTALS_INSTANCES&.each do |portal|
           = portal_config_tooltip(portal[:name]) do
