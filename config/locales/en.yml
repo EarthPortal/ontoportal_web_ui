@@ -314,6 +314,7 @@ en:
       Click 'Submit Changes' to save or 'Cancel' to discard your changes.
     submit_changes: Submit Changes
     cancel: Cancel
+    confirm: Confirm
     request_new_term: Request New Term
     use_jump_to: Use the "Jump To" to find a class and display details, visualization, notes, and mappings
     instances: Instances
@@ -1195,6 +1196,8 @@ en:
     edit_natural_languages: Edit natural languages of %{acronym}
     edit_available_languages: Click here to edit available languages
     add_new_submission: Add new submission
+    confirm_submission_title: Confirm Submission
+    confirm_submission_message: By submitting this ontology to EarthPortal, you guarantee the update of the content and metadata. If you are not the owner, make sure to respect its license.
     edit_metadata: Edit metadata
     go_to_api: Go to API
     projects_using_ontology: Projects using %{acronym}
@@ -1243,6 +1246,8 @@ en:
     contact_support_at: "If you have any questions or problems, please email the %{site} support team at:"
     collecting_data_message: We are still collecting data for %{acronym}
     submit_new_ontology: Submit new ontology
+    confirm_submission_title: "Confirm Submission"
+    confirm_submission_message: "By submitting this ontology to EarthPortal, you guarantee the update of the content and metadata. If you are not the owner, make sure to respect its license."
     details: Details
     general_information: General information
     dates_and_contacts: Dates and contacts
