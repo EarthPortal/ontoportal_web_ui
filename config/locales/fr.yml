@@ -385,6 +385,9 @@ fr:
       question: Question
       ontology_submissions_request: Demande de soumissions d'ontologie
       optional: (optionnel)
+      suggest_a_slice: "Suggérer une nouvelle slice"
+      slice_name: "Nom de la slice"
+      reason_usage: "Pour quelle raison / utilisation souhaitez-vous créer cette slice"
       send: Envoyer
       feedback_complete:
         title: Retour envoyé avec succès
@@ -1193,6 +1196,8 @@ fr:
     edit_natural_languages: Modifier les langues naturelles de %{acronym}
     edit_available_languages: Cliquez ici pour modifier les langues disponibles
     add_new_submission: Ajouter une nouvelle soumission
+    confirm_submission_title: Confirmer la soumission
+    confirm_submission_message: En soumettant cette ontologie dans l’EarthPortal, vous vous portez garant de la mise à jour du contenu et des métadonnées. Si vous n’en êtes pas propriétaire, assurez-vous d’en respecter la licence.
     edit_metadata: Modifier les métadonnées
     projects_using_ontology: Projets utilisant %{acronym}
     create_new_project: Créer un nouveau projet

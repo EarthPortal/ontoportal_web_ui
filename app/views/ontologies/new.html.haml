@@ -50,3 +50,8 @@
                       = attribute_input('released',  label: t("ontologies.date_of_original_creation"),  max_date: Date.today)
                   .upload-ontology-contact{id: "submissioncontact_from_group_input"}
                     = contact_input(show_help: false)
+
+#submissionModal.modal.fade{'data-controller': 'submission-modal', 'data-submission-modal-target': 'modal'}
+  .modal-dialog
+    .modal-content
+      = render partial: 'ontologies/submission_modal/submission_modal'
