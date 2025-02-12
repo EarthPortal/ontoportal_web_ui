@@ -50,24 +50,8 @@
                       = attribute_input('released',  label: t("ontologies.date_of_original_creation"),  max_date: Date.today)
                   .upload-ontology-contact{id: "submissioncontact_from_group_input"}
                     = contact_input(show_help: false)
-                  :javascript
-                    document.addEventListener('DOMContentLoaded', function() {
-                      const finishButton = document.querySelector('[data-progress-pages-target="finishBtn"] button[type="submit"]');
-                      if (finishButton) {
-                        finishButton.setAttribute('type', 'button');
-                        finishButton.addEventListener('click', function(e) {
-                          e.preventDefault();
-                          $('#submissionModal').modal('show');
-                        });
-                      }
-                    });
 
-#submissionModal.modal.fade
+#submissionModal.modal.fade{'data-controller': 'submission-modal', 'data-submission-modal-target': 'modal'}
   .modal-dialog
     .modal-content
-      = render partial: 'ontologies/submission_modal'
-
-:javascript
-  function displayAnimation(element, loadingId){  
-    // override the default behavior of the button to remove the loading animation
-  }
+      = render partial: 'ontologies/submission_modal/submission_modal'
