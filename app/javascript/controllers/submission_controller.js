@@ -8,7 +8,6 @@ export default class extends Controller {
     }
 
     connect() {
-        console.log("Submission modal controller connected")
         this.modal = new UseModal()
         this.boundHide = this.hide.bind(this)
         this.modal.onClose(this.element, this.boundHide)

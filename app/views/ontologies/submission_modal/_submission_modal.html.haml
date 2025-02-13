@@ -10,7 +10,6 @@
     .modal-body
       %p
         = t('ontologies.confirm_submission_message')
-
     .modal-footer
       .cancel-button{'data-action': "click->submission-modal#cancel"}
         = render Buttons::RegularButtonComponent.new(id: 'cancel-button', value: t('concepts.cancel'), variant: 'secondary', size: 'slim', state: 'regular')
