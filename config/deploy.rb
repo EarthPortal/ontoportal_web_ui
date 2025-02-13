@@ -5,7 +5,6 @@ set :repo_url, "https://github.com/#{fetch(:author)}/#{fetch(:application)}.git"
 
 set :deploy_via, :remote_cache
 
-set :branch, "development"
 # Default branch is :master
 # ask :branch, proc { `git rev-parse --abbrev-ref HEAD`.chomp }
 
@@ -55,7 +54,7 @@ set :passenger_restart_with_touch, true
 # set :user, 'ontoportal'
 
 append :linked_files, 'config/database.yml', 'config/bioportal_config_appliance.rb'
-append :linked_dirs, 'log', 'tmp', '.bundle', 'config/locales'
+append :linked_dirs, 'log', 'tmp', '.bundle'
 append :linked_files, 'config/secrets.yml', 'config/site_config.rb', 'config/newrelic.yml','config/credentials/appliance.key', 'config/credentials/appliance.yml.enc'
 # If you want to restart using `passenger-config restart-app`, add this to your config/deploy.rb:
 # set :passenger_restart_with_touch, false # Note that `nil` is NOT the same as `false` here
