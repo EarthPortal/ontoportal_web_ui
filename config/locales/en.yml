@@ -352,6 +352,7 @@ en:
     include_comment: Please include your comment
     fill_text: Please fill in the proper text from the supplied image
     notice_feedback: Feedback has been sent
+    notice_slice: Slice has been requested
     account_title: Account Information
     agroportal_figures: "%{site} in figures"
     benefit1: Discover new insights and knowledge by exploring other ontologies or semantic resources in the repository.
@@ -391,6 +392,7 @@ en:
     twitter_news: News
     feedback:
       error_on_form: Errors On Form
+      leave_your_feedback: Leave your feedback
       feedback_hi_text: Hi
       feedback_info_text: You can use the form below, email us directly at
       feedback_info_text_rest: or leave us a github issue here
@@ -411,6 +413,15 @@ en:
       feedback_complete:
         title: Feedback sent successfully
         message: Thank you for taking the time to share your feedback with us. Our support team will review your message and get back to you as soon as possible with a response. We value your opinion and appreciate your help in improving our services. Thank you for your support!
+    slice:
+      suggest_a_slice: "Request a Slice"
+      error_on_form: "Please correct the following errors:"
+      email: "Email Address"
+      name: "Your Name"
+      slice_name: "Slice name"
+      reason_usage: "For which reason / usage do you want to create this slice"
+      send: "Send"
+
     suggest_slice: Suggest a new group/slice
     slices_description: Slices allow users to interact (both via API or UI) only with a subset of ontologies in EarthPortal. If browsing the slice, all the portal features will be restricted to the chosen subset, enabling users to focus on their specific use cases. On EarthPortal, slices and groups are synchronized, so every group has a corresponding slice displaying only the ontologies from that group.
     ontoportal_description: "The <a href=%{ontoportal_link}>OntoPortal Alliance</a> is a consortium of research and infrastructure teams dedicated to promoting the development of ontology repositories and semantic artefact catalogues based on the open, collaboratively developed <a href=%{github_link}>OntoPortal</a> software . Hereafter are the current public and open repositories built with the technology maintained by the Alliance."
@@ -1504,6 +1515,12 @@ en:
     location: "Location: %{location}"
     tags: Tags
     feedback: Feedback
+  slice_mail:
+    name: "Name: %{name}"
+    email: "Email: %{email}"
+    slice_name: "Slice Name: %{slice_name}"
+    ontologies: "Requested Ontologies :"
+    comment: "Reason for Request / Intended Usage :"
   federation:
     results_from_external_portals: Results from external portals
     not_responding: is not responding.

@@ -1,0 +1,21 @@
+!!!
+%html
+  %head
+    %meta{content: "text/html; charset=UTF-8", "http-equiv" => "Content-Type"}/
+    %meta{content: "no-cache", name: "turbo-cache-control"}/
+  %body
+    %p
+      = t("slice_mail.name", name: @name)
+    %p
+      = t("slice_mail.email", email: @email)
+    %p
+      = t("slice_mail.slice_name", slice_name: @slice_name)
+    %p= t("slice_mail.ontologies")
+    %ul
+      - @ontologies.split(',').each do |ontology|
+        %li
+          = ontology.strip
+    %p
+      %br/
+      %strong= t("slice_mail.comment")
+      = simple_format(@comment)

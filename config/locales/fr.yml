@@ -384,13 +384,18 @@ fr:
       question: Question
       ontology_submissions_request: Demande de soumissions d'ontologie
       optional: (optionnel)
-      suggest_a_slice: "Suggérer une nouvelle slice"
-      slice_name: "Nom de la slice"
-      reason_usage: "Pour quelle raison / utilisation souhaitez-vous créer cette slice"
       send: Envoyer
       feedback_complete:
         title: Retour envoyé avec succès
         message: Merci d'avoir pris le temps de partager votre retour avec nous. Notre équipe de support examinera votre message et vous répondra dès que possible. Nous apprécions votre opinion et sommes reconnaissants de votre aide pour améliorer nos services. Merci de votre soutien !
+    slice:
+      suggest_a_slice: Demander une Slice
+      error_on_form: "Veuillez corriger les erreurs suivantes :"
+      email: Adresse Email
+      name: Votre Nom
+      slice_name: Nom de la slice
+      reason_usage: Pour quelle raison / utilisation souhaitez-vous créer cette slice
+      send: Envoyer
     suggest_slice: Proposer un nouveau groupe/slice
     slices_description: Les "slices" permettent aux utilisateurs d'interagir (à la fois via l'API ou l'interface utilisateur) uniquement avec un sous-ensemble d'ontologies dans EarthPortal. Si vous parcourez une slice, toutes les fonctionnalités du portail seront limitées au sous-ensemble choisi; cela permet aux utilisateurs de se concentrer sur leurs cas d'utilisation spécifiques.
     ontoportal_description: "L'<a href=%{ontoportal_link}>Alliance Ontoportal</a> est un consortium d'équipes de recherche et d'infrastructure dédiées à promouvoir le développement de portails d'ontologies et de catalogues d'artefacts sémantiques basés sur le logiciel <a href=%{github_link}>OntoPortal</a> ouvert et collaboratif. Ci-dessous se trouvent les portails publics et ouverts actuels construits avec la technologie maintenue par l'Alliance."
@@ -1511,6 +1516,12 @@ fr:
     location: "Emplacement: %{location}"
     tags: Tags
     feedback: Feedback
+  slice_mail:
+    name: "Nom : %{name}"
+    email: "Email : %{email}"
+    slice_name: "Nom de la Slice : %{slice_name}"
+    ontologies: "Ontologies demandées :"
+    comment: "Motif de la demande / Utilisation prévue :"
 
   federation:
     results_from_external_portals: Résultats provenant de portails externes

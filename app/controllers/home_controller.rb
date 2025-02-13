@@ -87,10 +87,69 @@ class HomeController < ApplicationController
   end
 
   def feedback
+    # Show the header/footer or not
     feedback_layout = params[:pop].eql?('true') ? 'popup' : 'ontology'
+
+    # We're using a hidden form field to trigger for error checking
+    # If sim_submit is nil, we know the form hasn't been submitted and we should
+    # bypass form processing.
+    if params[:sim_submit].nil?
+      render 'home/feedback/feedback', layout: feedback_layout
+      return
+    end
+
+    @tags = []
+    unless params[:bug].nil? || params[:bug].empty?
+      @tags << t('home.bug')
+    end
+    unless params[:proposition].nil? || params[:proposition].empty?
+      @tags << t('home.proposition')
+    end
+    unless params[:question].nil? || params[:question].empty?
+      @tags << t('home.question')
+    end
+    unless params[:ontology_submissions_request].nil? || params[:ontology_submissions_request].empty?
+      @tags << t('home.ontology_submissions_request')
+    end
+
+    @errors = []
+
+    if params[:name].nil? || params[:name].empty?
+      @errors << t('home.include_name')
+    end
+    if params[:email].nil? || params[:email].length < 1 || !params[:email].match(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i)
+      @errors << t('home.include_email')
+    end
+    if params[:comment].nil? || params[:comment].empty?
+      @errors << t('home.include_comment')
+    end
+    if using_captcha? && !session[:user]
+      unless verify_recaptcha
+        @errors << t('home.fill_text')
+      end
+    end
+
+    unless @errors.empty?
+      render 'home/feedback/feedback', layout: feedback_layout
+      return
+    end
+
+    Notifier.feedback(params[:name], params[:email], params[:comment], params[:location], @tags).deliver_later
+
+    if params[:pop].eql?('true')
+      render 'home/feedback/feedback_complete', layout: 'popup'
+    else
+      flash[:notice] = t('home.notice_feedback')
+      redirect_to_home
+    end
+  end
+
+
+  def slice
+    slice_layout = params[:pop].eql?('true') ? 'popup' : 'ontology'
     
     # Skip processing if form not submitted
-    return render('home/feedback/feedback', layout: feedback_layout) if params[:sim_submit].nil?
+    return render('home/slice/slice', layout: slice_layout) if params[:sim_submit].nil?
   
     @errors = []
     
@@ -108,11 +167,11 @@ class HomeController < ApplicationController
   
     # Re-render form if errors exist
     if @errors.any?
-      return render('home/feedback/feedback', layout: feedback_layout)
+      return render('home/slice/slice', layout: slice_layout)
     end
   
-    # Process feedback
-    Notifier.feedback(
+    # Process slice
+    Notifier.slice(
       params[:name], 
       params[:email], 
       params[:comment], 
@@ -122,15 +181,14 @@ class HomeController < ApplicationController
   
     # Response based on popup status
     if params[:pop].eql?('true')
-      render 'home/feedback/feedback_complete', layout: 'popup'
+      render 'home/slice/slice_complete', layout: 'popup'
     else
-      flash[:notice] = t('home.notice_feedback')
+      flash[:notice] = t('home.notice_slice')
       redirect_to_home
     end
   end
-  
-  private
-  
+
+    
   def invalid_email?(email)
     email.blank? || !email.match?(/\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i)
   end

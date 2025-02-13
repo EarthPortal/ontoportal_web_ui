@@ -1,0 +1,66 @@
+- if params[:pop].eql?("true")
+  - pop = true
+- unless @errors.nil?
+  %div{style: "color:red;margin-bottom:1em;"}
+    = t("home.slice.error_on_form")
+    %ul
+      - @errors.each do |error|
+        %li= error
+= form_tag('/slice') do
+  = hidden_field_tag 'sim_submit', 'true'
+  = hidden_field_tag("pop", pop)
+  .d-flex.justify-content-center.m-3
+    .feedback-form.p-4{style: "max-width: 600px; width: 100%;"}
+      .feedback-title-container.text-center.mb-4
+        %h2.feedback-title
+          = t("home.slice.suggest_a_slice")
+        %hr#feedback-title-line.mb-4/
+
+      .form-group.mb-3{style: "max-width: 500px; margin: 0 auto;"}
+        %p.feedback-input-title
+          = t("home.slice.email")
+          %font{color: "red"} *
+        - if session[:user]
+          = hidden_field_tag "email", session[:user].email
+          %input.feedback-input.w-100{name: "email", type: "email", value: session[:user].email, disabled: true}/
+        - else
+          %input.feedback-input.w-100{name: "email", type: "email"}/
+
+      .form-group.mb-3{style: "max-width: 500px; margin: 0 auto;"}
+        %p.feedback-input-title
+          = t("home.slice.name")
+          %font{color: "red"} *
+        - if session[:user]
+          = hidden_field_tag "name", session[:user].username
+          %input.feedback-input.w-100{name: "name", type: "text", value: session[:user].username, disabled: true}/
+        - else
+          %input.feedback-input.w-100{name: "name", type: "text"}/
+
+      .form-group.mb-3{style: "max-width: 500px; margin: 0 auto;"}
+        %p.feedback-input-title
+          = t("home.slice.slice_name")
+          %font{color: "red"} *
+        %input.feedback-input.w-100{name: "slice_name", type: "text"}/
+
+      .form-group.mb-3{style: "max-width: 500px; margin: 0 auto;"}
+        %p.feedback-input-title
+          = t("search.advanced_options.ontologies")
+          %font{color: "red"} *
+        .field.w-100{style: "border: none;"}
+          = ontologies_selector(id:'slice_ontologies', 
+                              name: 'ontologies[]', 
+                              selected: params[:ontologies]&.split(','), 
+                              ontologies: onts_for_select(include_views: true))
+
+      .form-group.mb-4{style: "max-width: 500px; margin: 0 auto;"}
+        %p.feedback-input-title
+          = t("home.slice.reason_usage")
+          %font{color: "red"} *
+        %textarea.feedback-input.w-100{name: "comment", rows: "3"}
+
+      - if using_captcha?
+        .mb-3
+          = recaptcha_tags
+
+      .text-center
+        %input.feedback-button{type: "submit", value: t("home.slice.send")}
