@@ -1,10 +1,13 @@
 import { Controller } from "@hotwired/stimulus"
-import { UseModal } from "../../mixins/useModal"
+import { UseModal } from "../../../javascript/mixins/useModal"
 
 export default class extends Controller {
     static targets = ['pageItem', 'pageContent', 'backBtn', 'nextBtn', 'finishBtn']
+    static values = {} 
+
 
     connect() {
+        super.connect()
         this.pagesItems = this.pageItemTargets
         this.buttons = [this.backBtnTarget, this.nextBtnTarget, this.finishBtnTarget]
         this.currentForm = 1
@@ -79,7 +82,8 @@ export default class extends Controller {
         })
     }
 
-    showModal() {
+    showModal(event) {
+        event.preventDefault()
         const modalElement = document.querySelector('#submissionModal')
         if (modalElement) {
             this.modal.showModal(modalElement)

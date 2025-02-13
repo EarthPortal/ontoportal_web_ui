@@ -15,7 +15,6 @@
         - pages.each_with_index do |page, index|
           %div.progress-content.position-relative{'data-progress-pages-target': 'pageContent', class: index.zero? ? '' : 'hide'}
             = page
-
       .progress-pages-actions
         .progress-pages-back-button.hide{'data-action': "click->progress-pages#navigateBack", 'data-progress-pages-target': 'backBtn'}
           = render Buttons::RegularButtonComponent.new(id: 'progress-pages-back-button', value: t('components.back'), variant: "secondary", size: 'slim', state: 'regular') do |btn|
@@ -29,4 +28,3 @@
           = render Buttons::RegularButtonComponent.new(id: 'progress-pages-finish-button', value: t('components.finish'), size: 'slim', state: 'regular') do |btn|
             - btn.icon_right do
               = inline_svg "icons/white-check.svg"
-
