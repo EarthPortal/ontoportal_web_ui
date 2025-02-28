@@ -3,19 +3,63 @@
   %head
     %meta{content: "text/html; charset=UTF-8", "http-equiv" => "Content-Type"}/
     %meta{content: "no-cache", name: "turbo-cache-control"}/
+    :css
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 600px;
+        margin: 20px auto;
+        padding: 20px;
+      }
+      .header {
+        border-bottom: 2px solid #eee;
+        padding-bottom: 15px;
+        margin-bottom: 20px;
+      }
+      .content {
+        background: #fff;
+        padding: 20px;
+        border-radius: 5px;
+      }
+      .ontology-list {
+        background: #f9f9f9;
+        padding: 15px 30px;
+        border-radius: 5px;
+      }
+      .comment-section {
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+      }
+      .label {
+        color: #666;
+        font-weight: bold;
+      }
   %body
-    %p
-      = t("slice_mail.name", name: @name)
-    %p
-      = t("slice_mail.email", email: @email)
-    %p
-      = t("slice_mail.slice_name", slice_name: @slice_name)
-    %p= t("slice_mail.ontologies")
-    %ul
-      - @ontologies.split(',').each do |ontology|
-        %li
-          = ontology.strip
-    %p
-      %br/
-      %strong= t("slice_mail.comment")
-      = simple_format(@comment)
+    .content
+      .header
+        %h2{style: "color: #2c3e50;"} Slice Request Details
+      
+      %p
+        %span.label= t("slice_mail.name") + ": "
+        = @name
+      
+      %p
+        %span.label= t("slice_mail.email") + ": "
+        = @email
+      
+      %p
+        %span.label= t("slice_mail.slice_name") + ": "
+        = @slice_name
+      
+      .ontology-list
+        %h3{style: "color: #2c3e50; margin-top: 0;"}= t("slice_mail.ontologies")
+        %ul
+          - @ontologies.split(/\s*,\s*/).each do |ontology|
+            %li= ontology
+      
+      .comment-section
+        %h3{style: "color: #2c3e50; margin-top: 0;"}= t("slice_mail.comment")
+        .comment-content
+          = simple_format(@comment)

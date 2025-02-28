@@ -350,6 +350,8 @@ en:
     include_name: Please include your name
     include_email: Please include your email
     include_comment: Please include your comment
+    include_slice_name: Please provide a slice name
+    include_ontologies: Please select at least one ontology
     fill_text: Please fill in the proper text from the supplied image
     notice_feedback: Feedback has been sent
     notice_slice: Slice has been requested
@@ -406,9 +408,6 @@ en:
       question: Question
       ontology_submissions_request: Ontology submissions request
       optional: (optional)
-      suggest_a_slice: "Suggest a new slice"
-      slice_name: "Slice Name"
-      reason_usage: "For which reason / usage do you want to create this slice"
       send: Send
       feedback_complete:
         title: Feedback sent successfully
@@ -421,6 +420,8 @@ en:
       slice_name: "Slice name"
       reason_usage: "For which reason / usage do you want to create this slice"
       send: "Send"
+      login_required: "Please login to request a slice"
+      login: "Login"
 
     suggest_slice: Suggest a new group/slice
     slices_description: Slices allow users to interact (both via API or UI) only with a subset of ontologies in EarthPortal. If browsing the slice, all the portal features will be restricted to the chosen subset, enabling users to focus on their specific use cases. On EarthPortal, slices and groups are synchronized, so every group has a corresponding slice displaying only the ontologies from that group.

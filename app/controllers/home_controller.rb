@@ -146,10 +146,13 @@ class HomeController < ApplicationController
 
 
   def slice
-    slice_layout = params[:pop].eql?('true') ? 'popup' : 'ontology'
-    
+    unless session[:user]
+      redirect_to "/login?redirect=/slice", alert: t('home.slice.login_required')
+      return
+    end
+  
     # Skip processing if form not submitted
-    return render('home/slice/slice', layout: slice_layout) if params[:sim_submit].nil?
+    return render('home/slice/slice') if params[:sim_submit].nil?
   
     @errors = []
     
@@ -160,29 +163,22 @@ class HomeController < ApplicationController
     @errors << t('home.include_ontologies') if params[:ontologies].blank?
     @errors << t('home.include_comment') if params[:comment].blank?
   
-    # Captcha validation for non-logged in users
-    if using_captcha? && !session[:user]
-      @errors << t('home.fill_captcha') unless verify_recaptcha
-    end
-  
     # Re-render form if errors exist
     if @errors.any?
-      return render('home/slice/slice', layout: slice_layout)
+      return render('home/slice/slice')
     end
   
-    # Process slice
-    Notifier.slice(
-      params[:name], 
-      params[:email], 
-      params[:comment], 
-      params[:slice_name], 
-      params[:ontologies]
-    ).deliver_later
-  
-    # Response based on popup status
-    if params[:pop].eql?('true')
-      render 'home/slice/slice_complete', layout: 'popup'
-    else
+    begin
+      ontologies_str = params[:ontologies].join(", ")
+
+      # Process slice
+      Notifier.slice(
+        params[:name], 
+        params[:email], 
+        params[:comment], 
+        params[:slice_name], 
+        ontologies_str
+      ).deliver_later
       flash[:notice] = t('home.notice_slice')
       redirect_to_home
     end
