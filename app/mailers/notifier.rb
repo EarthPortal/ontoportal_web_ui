@@ -23,4 +23,16 @@ class Notifier < ApplicationMailer
          :subject => "[#{$SITE}] Feedback from #{name}")
   end
 
+  def slice(name, email, comment, slice_name, ontologies)
+    @name = name
+    @email = email
+    @comment = comment  
+    @slice_name = slice_name
+    @ontologies = ontologies
+
+    mail(:to => "#{$SUPPORT_EMAIL}, #{email}",
+         :from => "#{$SUPPORT_EMAIL}",
+         :subject => "[#{$SITE}] new slice suggestion from #{name}")
+  end
+
 end
