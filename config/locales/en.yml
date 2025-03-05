@@ -1519,7 +1519,7 @@ en:
   slice_mail:
     name: "Name: %{name}"
     email: "Email: %{email}"
-    slice_name: "Slice Name: %{slice_name}"
+    slice_name: "Slice name: %{slice_name}"
     ontologies: "Requested Ontologies :"
     comment: "Reason for Request / Intended Usage :"
   federation:
