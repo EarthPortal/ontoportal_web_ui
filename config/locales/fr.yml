@@ -403,7 +403,7 @@ fr:
       login_required: "Veuillez vous connecter pour demander une slice"
       login: "Se connecter"
 
-    suggest_slice: Proposer un nouveau groupe/slice
+    suggest_slice: Proposer une nouvelle slice
     slices_description: Les "slices" permettent aux utilisateurs d'interagir (à la fois via l'API ou l'interface utilisateur) uniquement avec un sous-ensemble d'ontologies dans EarthPortal. Si vous parcourez une slice, toutes les fonctionnalités du portail seront limitées au sous-ensemble choisi; cela permet aux utilisateurs de se concentrer sur leurs cas d'utilisation spécifiques.
     ontoportal_description: "L'<a href=%{ontoportal_link}>Alliance Ontoportal</a> est un consortium d'équipes de recherche et d'infrastructure dédiées à promouvoir le développement de portails d'ontologies et de catalogues d'artefacts sémantiques basés sur le logiciel <a href=%{github_link}>OntoPortal</a> ouvert et collaboratif. Ci-dessous se trouvent les portails publics et ouverts actuels construits avec la technologie maintenue par l'Alliance."
     viewing_slice: "Affichage de la slice:"

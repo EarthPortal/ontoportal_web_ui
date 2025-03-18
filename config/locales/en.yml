@@ -424,7 +424,7 @@ en:
       login_required: "Please login to request a slice"
       login: "Login"
 
-    suggest_slice: Suggest a new group/slice
+    suggest_slice: Suggest a new slice
     slices_description: Slices allow users to interact (both via API or UI) only with a subset of ontologies in EarthPortal. If browsing the slice, all the portal features will be restricted to the chosen subset, enabling users to focus on their specific use cases. On EarthPortal, slices and groups are synchronized, so every group has a corresponding slice displaying only the ontologies from that group.
     ontoportal_description: "The <a href=%{ontoportal_link}>OntoPortal Alliance</a> is a consortium of research and infrastructure teams dedicated to promoting the development of ontology repositories and semantic artefact catalogues based on the open, collaboratively developed <a href=%{github_link}>OntoPortal</a> software . Hereafter are the current public and open repositories built with the technology maintained by the Alliance."
     viewing_slice: "Viewing the slice:"
