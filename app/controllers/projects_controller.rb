@@ -86,6 +86,7 @@ class ProjectsController < ApplicationController
   # GET /projects/new
   # GET /projects/new.xml
   def new
+    @step = params[:step].present? ? params[:step].to_i : 1
     if session[:user].nil?
       redirect_to :controller => 'login', :action => 'index'
     else
@@ -197,6 +198,67 @@ class ProjectsController < ApplicationController
       end
     end
 
+  end
+
+
+  def search_external_projects
+    # Get search parameters
+    source = params[:source]
+    search_term = params[:term]
+    search_type = params[:type] || "acronym"
+    dataset = params[:dataset] || "data1"
+    
+    # Initialize response variables
+    success = false
+    results = []
+    message = "No results found"
+    
+    # Exit early if required parameters are missing
+    if source.blank? || search_term.blank?
+      render json: { success: false, results: [], message: "Missing required parameters" }
+      return
+    end
+    
+    
+    begin
+      # Build the API URL
+      endpoint = "/connector/projects"
+      
+      # Make the API call
+      response = api_connection.get(endpoint) do |req|
+        req.params[search_type.to_sym] = search_term
+        req.params[:source] = source
+      end
+      
+      # Simple status code handling
+      case response.status
+      when 200
+        # Success - we have results
+        success = true
+        results = response.body["projects"] || []
+        message = results.any? ? "Found #{results.length} projects" : "No projects found"
+      
+      when 404
+        # Not found - return the API error message
+        message = "No projects found matching search criteria"
+      
+      else
+        # Other errors
+        message = "API Error: HTTP #{response.status}"
+      end
+      
+    rescue Faraday::ConnectionFailed => e
+      message = "Connection to API failed"
+    rescue => e
+      message = "An error occurred"
+    end
+    
+    # Return the response
+    render json: {
+      success: success,
+      results: results,
+      message: message
+    }
   end
 
   private
@@ -405,6 +467,50 @@ class ProjectsController < ApplicationController
     html << '<span style=color:red;>'.html_safe
     html << msg
     html << '</span>'.html_safe
+  end
+
+  # Create a shared connection instance for better performance
+  def api_connection
+    api_host = ENV.fetch('API_HOST', '172.17.0.1')
+    api_port = ENV.fetch('API_PORT', '9393')
+    api_url = "http://#{api_host}:#{api_port}"
+    
+    Rails.logger.info("Connecting to API at: #{api_url}")
+  
+    @api_connection ||= Faraday.new(api_url) do |faraday|
+      faraday.request :url_encoded
+      
+      # Make sure the order of middleware is correct
+      faraday.response :json, content_type: /\bjson$/
+            
+      # Set longer timeouts for development
+      faraday.options[:timeout] = 30
+      faraday.options[:open_timeout] = 10
+      
+      # Use the default adapter
+      faraday.adapter Faraday.default_adapter
+    end
+  end
+  
+
+
+  
+
+  def handle_error_response(response)
+    message = case response.status
+              when 400...500
+                "Invalid request: #{response.body['error'] || 'Bad request'}"
+              when 500...600
+                "Server error: The external service is currently unavailable"
+              else
+                "Unexpected response: #{response.status}"
+              end
+    
+    # Always return JSON for error responses
+    respond_to do |format|
+      format.json { render json: { success: false, results: [], message: message } }
+      format.html { render json: { success: false, results: [], message: message } }
+    end
   end
 
 end
