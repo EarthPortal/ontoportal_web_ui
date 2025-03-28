@@ -786,6 +786,22 @@ en:
       description: "Description:*"
       select_ontologies: Select Ontologies Used
       select_administrators: Select administrators
+      title: "Project Title"
+      acronym: "Acronym"
+      description: "Description"
+      start_date: "Start Date"
+      end_date: "End Date"
+      institution: "Institution"
+      coordinator: "Coordinator"
+      homepage: "Project Website"
+      keywords: "Keywords"
+      organization: "Organization"
+      contact: "Contact"
+      ontologies: "Ontologies"
+      funding_details: "Funding Details"
+      funding_program: "Funding Program"
+      grant_number: "Grant Number"
+      funder: "Funder"
     
     edit:
       title: Editing Project %{name}
@@ -797,6 +813,38 @@ en:
       title: Add your project
       new_project: New project
       create_project: Create Project
+    project_type_selection:
+      title: "Project Type"
+      description: "Select the type of project you want to create."
+      select_type: "Select project type"
+      funded: "Funded project"
+      not_funded: "Non-funded project"
+    funding_search:
+      title: "Funding Source"
+      description: "Search for your project's funding source."
+      source: "Funding source"
+      datasets: "Dataset"
+      search_button: "Search"
+    project_search:
+      anr_title: "ANR Project Search"
+      cordis_title: "CORDIS Project Search"
+      search_by_id: "Search by ID"
+      search_by_term: "Search by Keywords"
+      project_id: "Project ID"
+      id_placeholder: "Enter project ID"
+      search_by_term: "Search term"
+      term_placeholder: "Enter keywords"
+      results: "Search Results"
+      api_error: "Error connecting to the search service"
+      no_results: "No results found"
+      enter_valid_id: "Please enter a valid project ID"
+      enter_valid_term: "Please enter at least 3 characters"
+    create:
+      success: "Project created successfully"
+      error: "There was a problem creating the project"
+    edit: "Edit"
+    call_annotator: "Annotate"
+    details: "Project Details"
   recommender:
     title: Recommender
     intro: Get recommendations for the most relevant ontologies from an excerpt of text or a list of keywords

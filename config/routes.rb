@@ -23,7 +23,9 @@ Rails.application.routes.draw do
 
 
 
+  get 'projects/search_external', to: 'projects#search_external_projects'
   resources :projects, constraints: { id: /[^\/]+/ }
+
 
   resources :users, path: :accounts, constraints: { id: /[\d\w\.\-\%\+ ]+/ }
 

@@ -775,6 +775,22 @@ fr:
       description: "Description :*"
       select_ontologies: Sélectionner les ontologies utilisées
       select_administrators: Sélectionner les administrateurs
+      title: "Titre du Projet"
+      acronym: "Acronyme"
+      description: "Description"
+      start_date: "Date de Début"
+      end_date: "Date de Fin"
+      institution: "Institution"
+      coordinator: "Coordinateur"
+      homepage: "Site Web du Projet"
+      keywords: "Mots-clés"
+      organization: "Organisation"
+      contact: "Contact"
+      ontologies: "Ontologies"
+      funding_details: "Détails du Financement"
+      funding_program: "Programme de Financement"
+      grant_number: "Numéro de Subvention"
+      funder: "Financeur"
 
     edit:
       title: Édition du Projet %{name}
@@ -786,6 +802,38 @@ fr:
       title: Ajoutez votre projet
       new_project: Nouveau projet
       create_project: Créer le Projet
+    project_type_selection:
+      title: "Type de Projet"
+      description: "Sélectionnez le type de projet que vous souhaitez créer."
+      select_type: "Sélectionner le type de projet"
+      funded: "Projet financé"
+      not_funded: "Projet non financé"
+    funding_search:
+      title: "Source de Financement"
+      description: "Recherchez la source de financement de votre projet."
+      source: "Source de financement"
+      datasets: "Jeu de données"
+      search_button: "Rechercher"
+    project_search:
+      anr_title: "Recherche de Projet ANR"
+      cordis_title: "Recherche de Projet CORDIS"
+      search_by_id: "Rechercher par ID"
+      search_by_term: "Rechercher par Mots-clés"
+      project_id: "ID du Projet"
+      id_placeholder: "Entrez l'ID du projet"
+      search_by_term: "Terme de recherche"
+      term_placeholder: "Entrez des mots-clés"
+      results: "Résultats de recherche"
+      api_error: "Erreur de connexion au service de recherche"
+      no_results: "Aucun résultat trouvé"
+      enter_valid_id: "Veuillez entrer un ID de projet valide"
+      enter_valid_term: "Veuillez entrer au moins 3 caractères"
+    create:
+      success: "Projet créé avec succès"
+      error: "Un problème est survenu lors de la création du projet"
+    edit: "Éditer"
+    call_annotator: "Annoter"
+    details: "Détails du Projet"
 
   recommender:
     title: Recommandeur

@@ -1,21 +1,63 @@
 import { Controller } from "@hotwired/stimulus"
-import { UseModal } from "../../mixins/useModal"
+import { UseModal } from "../../../javascript/mixins/useModal"
 
 export default class extends Controller {
     static targets = ['pageItem', 'pageContent', 'backBtn', 'nextBtn', 'finishBtn']
+    static values = {
+        checkSkipStep: { type: Boolean, default: true }
+    }
 
     connect() {
         this.pagesItems = this.pageItemTargets
         this.buttons = [this.backBtnTarget, this.nextBtnTarget, this.finishBtnTarget]
         this.currentForm = 1
         this.modal = new UseModal()
+        
+        if (this.checkSkipStepValue) {
+            this.initializeFromURL()
+        }
+    }
+
+    initializeFromURL() {
+        const urlParams = new URLSearchParams(window.location.search)
+        const stepParam = urlParams.get('step')
+        
+        if (stepParam) {
+            const step = parseInt(stepParam)
+            if (step > 0 && step <= this.pagesItems.length) {
+                this.currentForm = step
+                this.showForm()
+            }
+        }
     }
 
     navigateBack() {
+        if (this.currentForm === 3) {
+            const projectType = localStorage.getItem('project_type')
+            if (projectType === 'not_funded') {
+                this.currentForm = 1
+                this.showForm()
+                this.updateURLStep(1)
+                return
+            }
+        }
+        
         this.navigateForm('back')
     }
 
     navigateNext() {
+        if (this.currentForm === 1) {
+            const notFundedRadio = document.querySelector('input[name="project_type"][value="not_funded"]')
+            if (notFundedRadio && notFundedRadio.checked) {
+                this.currentForm = 3
+                this.showForm()
+                this.updateURLStep(3)
+                
+                localStorage.setItem('project_type', 'not_funded')
+                return
+            }
+        }
+        
         this.navigateForm('next')
     }
 
@@ -23,9 +65,11 @@ export default class extends Controller {
         if (direction === "next" && this.currentForm < this.pagesItems.length) {
             this.currentForm += 1
             this.showForm()
+            this.updateURLStep(this.currentForm)
         } else if (direction === "back" && this.currentForm > 1) {
             this.currentForm -= 1
             this.showForm()
+            this.updateURLStep(this.currentForm)
         }
     }
 
@@ -35,11 +79,25 @@ export default class extends Controller {
             const targetFormDOM = this.pageContentTargets[index - 1]
             const isCurrentForm = targetForm === index
             targetFormDOM.classList.toggle("hide", !isCurrentForm)
-
+    
             if (isCurrentForm) {
                 this.updateProgressBar(targetForm)
                 this.updateButtons(targetForm)
+                
+                if (targetForm === 3) {
+                    setTimeout(() => {
+                        this.triggerFormPopulation()
+                    }, 100)
+                }
             }
+        }
+    }
+    
+    triggerFormPopulation() {
+        const projectCreationElement = document.querySelector('[data-controller="project-creation"]')
+        if (projectCreationElement) {
+            const populateEvent = new CustomEvent('populate-project-form')
+            projectCreationElement.dispatchEvent(populateEvent)
         }
     }
 
@@ -73,10 +131,14 @@ export default class extends Controller {
 
     showBtn(btnIds = []) {
         this.buttons.forEach((btn) => {
-            const targetBtnDOM = btn
-            const shouldShowBtn = btnIds.includes(btn)
-            targetBtnDOM.classList.toggle("hide", !shouldShowBtn)
+            btn.classList.toggle("hide", !btnIds.includes(btn))
         })
+    }
+    
+    updateURLStep(stepNumber) {
+        const url = new URL(window.location)
+        url.searchParams.set('step', stepNumber.toString())
+        history.pushState({}, '', url)
     }
 
     showModal() {
