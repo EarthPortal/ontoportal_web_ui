@@ -22,10 +22,15 @@
         padding: 20px;
         border-radius: 5px;
       }
+      .welcome-message {
+        margin-bottom: 25px;
+        line-height: 1.8;
+      }
       .ontology-list {
         background: #f9f9f9;
         padding: 15px 30px;
         border-radius: 5px;
+        margin: 20px 0;
       }
       .comment-section {
         margin-top: 20px;
@@ -36,10 +41,22 @@
         color: #666;
         font-weight: bold;
       }
+      .footer {
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+        font-style: italic;
+        color: #666;
+        text-align: right;
+      }
   %body
     .content
       .header
         %h2{style: "color: #2c3e50;"} Slice Request Details
+      
+      .welcome-message
+        %p
+          Thank you for your request to create a slice. The team will study your request and get back to you once it has been processed. Below are the details given:
       
       %p
         %span.label Name: 
@@ -63,3 +80,9 @@
         %h3{style: "color: #2c3e50; margin-top: 0;"} Slice Purpose
         .comment-content
           = simple_format(@comment)
+      
+      .footer
+        %p
+          Best regards,
+          %br
+          EarthPortal Team
