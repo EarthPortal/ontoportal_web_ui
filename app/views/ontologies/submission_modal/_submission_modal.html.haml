@@ -1,0 +1,18 @@
+= render_in_modal do
+  .modal-content{'data-controller': 'submission-modal', 'data-submission-modal-target-modal-value': '#submissionModal'}
+    .modal-header{ style: "display: flex; flex-direction: column; align-items: center; position: relative;" }
+      %button.close{ style: "position: absolute; top: 10px; right: 10px;", data: { dismiss: 'modal' }, aria: { label: 'Close' } }
+        %span{ aria: { hidden: 'true' } } &times;
+      = image_tag("warning.svg", style: "width: 40px;")
+
+      %h5.modal-title
+        = t('ontologies.confirm_submission_title')
+    .modal-body
+      %p
+        = t('ontologies.confirm_submission_message')
+    .modal-footer
+      .cancel-button{'data-action': "click->submission-modal#cancel"}
+        = render Buttons::RegularButtonComponent.new(id: 'cancel-button', value: t('concepts.cancel'), variant: 'secondary', size: 'slim', state: 'regular')
+      .confirm-button{'data-action': "click->submission-modal#confirm"}
+        = render Buttons::RegularButtonComponent.new(id: 'confirm-button', value: t('concepts.confirm'), variant: 'primary', size: 'slim', state: 'regular')
+        

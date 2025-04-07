@@ -147,6 +147,50 @@ class HomeController < ApplicationController
   end
 
 
+  def slice
+    unless session[:user]
+      redirect_to "/login?redirect=/slice", alert: t('home.slice.login_required')
+      return
+    end
+  
+    # Skip processing if form not submitted
+    return render('home/slice/slice') if params[:sim_submit].nil?
+  
+    @errors = []
+    
+    # Validation
+    @errors << t('home.include_email') if invalid_email?(params[:email])
+    @errors << t('home.include_name') if params[:name].blank?
+    @errors << t('home.include_slice_name') if params[:slice_name].blank?
+    @errors << t('home.include_ontologies') if params[:ontologies].blank?
+    @errors << t('home.include_comment') if params[:comment].blank?
+  
+    # Re-render form if errors exist
+    if @errors.any?
+      return render('home/slice/slice')
+    end
+  
+    begin
+      ontologies_str = params[:ontologies].join(", ")
+
+      # Process slice
+      Notifier.slice(
+        params[:name], 
+        params[:email], 
+        params[:comment], 
+        params[:slice_name], 
+        ontologies_str
+      ).deliver_later
+      flash[:notice] = t('home.notice_slice')
+      redirect_to_home
+    end
+  end
+
+    
+  def invalid_email?(email)
+    email.blank? || !email.match?(/\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i)
+  end
+
   def site_config
     render json: bp_config_json
   end

@@ -1,0 +1,46 @@
+- if session[:user]
+  - unless @errors.nil?
+    %div{style: "color:red;margin-bottom:1em;"}
+      = t("home.slice.error_on_form")
+      %ul
+        - @errors.each do |error|
+          %li= error
+  = form_tag('/slice') do
+    = hidden_field_tag 'sim_submit', 'true'
+    .d-flex.justify-content-center.m-3
+      .feedback-form.p-4{style: "max-width: 600px; width: 100%;"}
+        .feedback-title-container.text-center.mb-4
+          %h2.feedback-title
+            = t("home.slice.suggest_a_slice")
+          %hr#feedback-title-line.mb-4/
+
+        .form-group.mb-3
+          = hidden_field_tag "email", session[:user].email
+          = render Input::TextInputComponent.new(label: label_required(t("home.slice.email")), name: "email", value: session[:user].email, disabled: true)
+
+        .form-group.mb-3
+          = hidden_field_tag "name", session[:user].username
+          = render Input::TextInputComponent.new(label: t("home.slice.name"), name: "name", value: session[:user].username, disabled: true)
+
+        .form-group.mb-3
+          = render Input::TextInputComponent.new(label: label_required(t("home.slice.slice_name")), name: "slice_name")
+
+        .form-group.mb-3{style: "margin: 0 auto;"}
+          %p.feedback-input-title
+            = t("search.advanced_options.ontologies")
+            %font{color: "red"} *
+          .field.w-100{style: "border: none;"}
+            = ontologies_selector(id:'slice_ontologies', 
+                                name: 'ontologies[]', 
+                                selected: params[:ontologies]&.split(','), 
+                                ontologies: onts_for_select(include_views: true))
+
+        .form-group.mb-4
+          = render Input::TextAreaComponent.new(label: label_required(t("home.slice.reason_usage")), name: "comment", value: "", placeholder: "", helper_text: "", rows: 3)
+        .form-group.text-center{style: "max-width: 500px; margin: 0 auto;"}
+          %input.feedback-button.w-100{type: "submit", value: t("home.slice.send")}
+- else
+  .d-flex.justify-content-center.align-items-center{style: "height: 300px;"}
+    .text-center
+      %h3= t("home.slice.login_required")
+      = link_to t("home.slice.login"), login_path(redirect: slice_path), class: "btn btn-primary mt-3"

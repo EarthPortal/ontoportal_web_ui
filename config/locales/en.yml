@@ -315,6 +315,7 @@ en:
       Click 'Submit Changes' to save or 'Cancel' to discard your changes.
     submit_changes: Submit Changes
     cancel: Cancel
+    confirm: Confirm
     request_new_term: Request New Term
     use_jump_to: Use the "Jump To" to find a class and display details, visualization, notes, and mappings
     instances: Instances
@@ -350,8 +351,11 @@ en:
     include_name: Please include your name
     include_email: Please include your email
     include_comment: Please include your comment
+    include_slice_name: Please provide a slice name
+    include_ontologies: Please select at least one ontology
     fill_text: Please fill in the proper text from the supplied image
     notice_feedback: Feedback has been sent
+    notice_slice: Slice has been requested
     account_title: Account Information
     agroportal_figures: "%{site} in figures"
     benefit1: Discover new insights and knowledge by exploring other ontologies or semantic resources in the repository.
@@ -409,7 +413,18 @@ en:
       feedback_complete:
         title: Feedback sent successfully
         message: Thank you for taking the time to share your feedback with us. Our support team will review your message and get back to you as soon as possible with a response. We value your opinion and appreciate your help in improving our services. Thank you for your support!
-    suggest_slice: Suggest a new group/slice
+    slice:
+      suggest_a_slice: "Request a Slice"
+      error_on_form: "Please correct the following errors:"
+      email: "Email Address"
+      name: "Your Name"
+      slice_name: "Slice name"
+      reason_usage: "For which reason / usage do you want to create this slice"
+      send: "Send"
+      login_required: "Please login to request a slice"
+      login: "Login"
+
+    suggest_slice: Suggest a new slice
     slices_description: Slices allow users to interact (both via API or UI) only with a subset of ontologies in EarthPortal. If browsing the slice, all the portal features will be restricted to the chosen subset, enabling users to focus on their specific use cases. On EarthPortal, slices and groups are synchronized, so every group has a corresponding slice displaying only the ontologies from that group.
     ontoportal_description: "The <a href=%{ontoportal_link}>OntoPortal Alliance</a> is a consortium of research and infrastructure teams dedicated to promoting the development of ontology repositories and semantic artefact catalogues based on the open, collaboratively developed <a href=%{github_link}>OntoPortal</a> software . Hereafter are the current public and open repositories built with the technology maintained by the Alliance."
     viewing_slice: "Viewing the slice:"
@@ -1196,6 +1211,8 @@ en:
     edit_natural_languages: Edit natural languages of %{acronym}
     edit_available_languages: Click here to edit available languages
     add_new_submission: Add new submission
+    confirm_submission_title: Confirm Submission
+    confirm_submission_message: By submitting this ontology to EarthPortal, you guarantee the update of the content and metadata. If you are not the owner, make sure to respect its license.
     edit_metadata: Edit metadata
     go_to_api: Go to API
     projects_using_ontology: Projects using %{acronym}
@@ -1244,6 +1261,8 @@ en:
     contact_support_at: "If you have any questions or problems, please email the %{site} support team at:"
     collecting_data_message: We are still collecting data for %{acronym}
     submit_new_ontology: Submit new ontology
+    confirm_submission_title: "Confirm Submission"
+    confirm_submission_message: "By submitting this ontology to EarthPortal, you guarantee the update of the content and metadata. If you are not the owner, make sure to respect its license."
     details: Details
     general_information: General information
     dates_and_contacts: Dates and contacts
@@ -1498,6 +1517,12 @@ en:
     location: "Location: %{location}"
     tags: Tags
     feedback: Feedback
+  slice_mail:
+    name: "Name: %{name}"
+    email: "Email: %{email}"
+    slice_name: "Slice name: %{slice_name}"
+    ontologies: "Requested Ontologies :"
+    comment: "Reason for Request / Intended Usage :"
   federation:
     results_from_external_portals: Results from external portals
     not_responding: is not responding.

@@ -331,8 +331,11 @@ fr:
     include_name: Veuillez inclure votre nom
     include_email: Veuillez inclure votre email
     include_comment: Veuillez inclure votre commentaire
+    include_slice_name: Veuillez fournir un nom pour la slice
+    include_ontologies: Veuillez sélectionner au moins une ontologie
     fill_text: Veuillez remplir le texte approprié à partir de l'image fournie
     notice_feedback: Le retour a été envoyé
+    notice_slice: La slice a été demandée
     account_title: Informations sur le compte
     agroportal_figures: "%{site} en chiffres"
     benefit1: Découvrir de nouvelles perspectives et connaissances en explorant d'autres ontologies ou ressources sémantiques dans le répertoire.
@@ -389,7 +392,18 @@ fr:
       feedback_complete:
         title: Retour envoyé avec succès
         message: Merci d'avoir pris le temps de partager votre retour avec nous. Notre équipe de support examinera votre message et vous répondra dès que possible. Nous apprécions votre opinion et sommes reconnaissants de votre aide pour améliorer nos services. Merci de votre soutien !
-    suggest_slice: Proposer un nouveau groupe/slice
+    slice:
+      suggest_a_slice: Demander une Slice
+      error_on_form: "Veuillez corriger les erreurs suivantes :"
+      email: Adresse Email
+      name: Votre Nom
+      slice_name: Nom de la slice
+      reason_usage: Pour quelle raison / utilisation souhaitez-vous créer cette slice
+      send: Envoyer
+      login_required: "Veuillez vous connecter pour demander une slice"
+      login: "Se connecter"
+
+    suggest_slice: Proposer une nouvelle slice
     slices_description: Les "slices" permettent aux utilisateurs d'interagir (à la fois via l'API ou l'interface utilisateur) uniquement avec un sous-ensemble d'ontologies dans EarthPortal. Si vous parcourez une slice, toutes les fonctionnalités du portail seront limitées au sous-ensemble choisi; cela permet aux utilisateurs de se concentrer sur leurs cas d'utilisation spécifiques.
     ontoportal_description: "L'<a href=%{ontoportal_link}>Alliance Ontoportal</a> est un consortium d'équipes de recherche et d'infrastructure dédiées à promouvoir le développement de portails d'ontologies et de catalogues d'artefacts sémantiques basés sur le logiciel <a href=%{github_link}>OntoPortal</a> ouvert et collaboratif. Ci-dessous se trouvent les portails publics et ouverts actuels construits avec la technologie maintenue par l'Alliance."
     viewing_slice: "Affichage de la slice:"
@@ -1193,6 +1207,8 @@ fr:
     edit_natural_languages: Modifier les langues naturelles de %{acronym}
     edit_available_languages: Cliquez ici pour modifier les langues disponibles
     add_new_submission: Ajouter une nouvelle soumission
+    confirm_submission_title: Confirmer la soumission
+    confirm_submission_message: En soumettant cette ontologie dans l’EarthPortal, vous vous portez garant de la mise à jour du contenu et des métadonnées. Si vous n’en êtes pas propriétaire, assurez-vous d’en respecter la licence.
     edit_metadata: Modifier les métadonnées
     projects_using_ontology: Projets utilisant %{acronym}
     create_new_project: Créer un nouveau projet
@@ -1507,6 +1523,12 @@ fr:
     location: "Emplacement: %{location}"
     tags: Tags
     feedback: Feedback
+  slice_mail:
+    name: "Nom : %{name}"
+    email: "Email : %{email}"
+    slice_name: "Nom de la Slice : %{slice_name}"
+    ontologies: "Ontologies demandées :"
+    comment: "Motif de la demande / Utilisation prévue :"
 
   federation:
     results_from_external_portals: Résultats provenant de portails externes
