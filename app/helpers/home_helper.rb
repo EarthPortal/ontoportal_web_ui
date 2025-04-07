@@ -49,9 +49,9 @@ module HomeHelper
   end
 
   def home_ontoportal_description
-    ontoportal_link = link_to("#{$ONTOPORTAL_WEBSITE_LINK}", $ONTOPORTAL_WEBSITE_LINK, target: '_blank')
-    github_link = link_to("#{$ONTOPORTAL_GITHUB_REPO}", $ONTOPORTAL_GITHUB_REPO, target: '_blank')
-    content_tag(:div, t('home.ontoportal_description', ontoportal_link: ontoportal_link, github_link: github_link).html_safe, style: "margin-bottom: 20px")
+    # ontoportal_link = link_to("#{$ONTOPORTAL_WEBSITE_LINK}", $ONTOPORTAL_WEBSITE_LINK, target: '_blank')
+    # github_link = link_to("#{$ONTOPORTAL_GITHUB_REPO}", $ONTOPORTAL_GITHUB_REPO, target: '_blank')
+    content_tag(:div, t('home.ontoportal_description', ontoportal_link: "#{$ONTOPORTAL_WEBSITE_LINK}", github_link: "#{$ONTOPORTAL_GITHUB_REPO}").html_safe, style: "margin-bottom: 20px")
   end
 
 
