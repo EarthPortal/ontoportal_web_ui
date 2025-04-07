@@ -1520,7 +1520,7 @@ fr:
     privacy_link: "Vie privé"
   taxonomy:
     groups_and_categories: Groupes et Catégories
-    description: "Dans EarthPortal, les ontologies sont organisées en groupes et étiquetées avec des catégories. Typiquement, les groupes associent des ontologies provenant du même projet ou de la même organisation pour une meilleure identification de la provenance. Tandis que les catégories concernent des sujets/thématiques et permettent de classifier les ontologies. En 2016, les catégories d'EarthPortal ont été établies en coopération avec FAO AIMS. En 2024, nous sommes passés au Thésaurus de l'UNESCO (https://vocabularies.unesco.org). Les groupes et les catégories, ainsi que d'autres métadonnées, peuvent être utilisés sur la page “Parcourir” d'EarthPortal pour filtrer la liste des ontologies."
+    description: "Dans EarthPortal, les ontologies sont organisées en groupes et étiquetées avec des catégories. Typiquement, les groupes associent des ontologies provenant du même projet ou de la même organisation pour une meilleure identification de la provenance. Tandis que les catégories concernent des sujets/thématiques et permettent de classifier les ontologies. En 2024, les catégories d'EarthPortal ont été établies en utilisant le Thésaurus de l'UNESCO (https://vocabularies.unesco.org). Les groupes et les catégories, ainsi que d'autres métadonnées, peuvent être utilisés sur la page “Parcourir” d'EarthPortal pour filtrer la liste des ontologies."
     show_sub_categories: Afficher les sous-catégories
     no_taxonomy_created: "Aucun %{type} n'a encore été créé"
 
