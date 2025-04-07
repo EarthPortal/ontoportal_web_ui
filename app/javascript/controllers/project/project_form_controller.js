@@ -25,7 +25,7 @@ export default class extends Controller {
     this.setInputValue(this.descriptionTarget, project.description || "")
     this.setInputValue(this.startDateTarget, this.formatDate(project.start_date))
     this.setInputValue(this.endDateTarget, this.formatDate(project.end_date))
-    this.setInputValue(this.organizationTarget, project.institution || project.organisation || project.organization || "")
+    this.setInputValue(this.organizationTarget, project.organization.name || "")
     this.setInputValue(this.contactTarget, project.coordinator || project.contact || "")
     this.setInputValue(this.homePageTarget, project.homepage || project.homePage || "")
     
