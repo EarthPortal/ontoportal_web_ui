@@ -20,7 +20,6 @@ export default class extends Controller {
     cancel(event) {
         event.preventDefault()
         this.hide()
-        console.log("Cancel button clicked")
     }
 
     confirm(event) {
@@ -31,7 +30,6 @@ export default class extends Controller {
         if (form) {
             form.submit()
         }
-        console.log("Confirm button clicked")
     }
 
     hide() {

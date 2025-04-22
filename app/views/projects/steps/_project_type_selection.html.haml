@@ -1,22 +1,17 @@
-.card.mb-4{"data-controller" => "project-type-selection"}
-  .card-header
-    %h5.mb-0= t("projects.project_type_selection.title")
-  .card-body
-    %p.card-text.mb-4= t("projects.project_type_selection.description")
-    
-    .upload-ontology-input-field-container
-      = render Input::InputFieldComponent.new(label: t("projects.project_type_selection.select_type"), name: '') do
-        .mb-3
-          .form-check.d-flex.align-items-center.mb-3
-            = radio_button_tag :project_type, "funded", false, class: "form-check-input", data: { action: "change->project-type-selection#selectType", project_type_selection_target: "fundedRadio" }
-            = label_tag :project_type_funded, t("projects.project_type_selection.funded"), class: "form-check-label ms-2"
-        .mb-3
-          .form-check.d-flex.align-items-center
-            = radio_button_tag :project_type, "not_funded", false, class: "form-check-input", data: { action: "change->project-type-selection#selectType", project_type_selection_target: "notFundedRadio" }
-            = label_tag :project_type_not_funded, t("projects.project_type_selection.not_funded"), class: "form-check-label ms-2"
+.card.mt-4{"data-controller" => "project-type-selection"}    
+  .upload-ontology-input-field-container.px-4
+    = render Input::InputFieldComponent.new( name: '') do
+      .mb-3
+        .form-check.d-flex.align-items-center
+          = radio_button_tag :project_type, "funded", false, class: "form-check-input", data: { action: "change->project-type-selection#selectType", project_type_selection_target: "fundedRadio" }
+          = label_tag :project_type_funded, t("projects.project_type_selection.funded"), class: "form-check-label ms-2"
+      .mb-3
+        .form-check.d-flex.align-items-center
+          = radio_button_tag :project_type, "not_funded", false, class: "form-check-input", data: { action: "change->project-type-selection#selectType", project_type_selection_target: "notFundedRadio" }
+          = label_tag :project_type_not_funded, t("projects.project_type_selection.not_funded"), class: "form-check-label ms-2"
 
-        -# Add a loading indicator that appears when navigating
-        .loading-indicator.d-none{"data-project-type-selection-target" => "loadingIndicator"}
-          .spinner-border.text-primary.spinner-border-sm.me-2{role: "status"}
-            %span.visually-hidden= t("common.loading")
-          %span= t("common.redirecting")
+      -# Add a loading indicator that appears when navigating
+      .loading-indicator.d-none{"data-project-type-selection-target" => "loadingIndicator"}
+        .spinner-border.text-primary.spinner-border-sm.me-2{role: "status"}
+          %span.visually-hidden= t("common.loading")
+        %span= t("common.redirecting")

@@ -36,7 +36,6 @@ export default class extends Controller {
   
   searchById(event) {
     event.preventDefault()
-    
     const projectId = this.projectIdInputTarget.value.trim()
     
     if (!projectId) {
@@ -49,7 +48,6 @@ export default class extends Controller {
   
   searchByTerm(event) {
     event.preventDefault()
-    
     const searchTerm = this.searchTermInputTarget.value.trim()
     
     if (!searchTerm || searchTerm.length < 2) {
@@ -76,8 +74,8 @@ export default class extends Controller {
     
     let source = this.apiValue
     const dataset = this.getCurrentDataset()
-  
     if(dataset) source = dataset
+    
     const params = new URLSearchParams()
     params.append('source', source)
     params.append('term', term)
@@ -175,10 +173,8 @@ export default class extends Controller {
     
     const acronym = project.acronym || 'N/A'
     const grantNumber = project.grant_number || 'No ID'
-    
-    // Limit name to 45 characters
     const fullName = project.name || 'Untitled Project'
-    const name = fullName.length > 45 ?fullName.substring(0, 45) + '...' : fullName
+    const name = fullName.length > 45 ? fullName.substring(0, 45) + '...' : fullName
     
     const safeHtml = `
       <div class="d-flex justify-content-between align-items-start">
@@ -193,9 +189,6 @@ export default class extends Controller {
             ${project.start_date ? `<span><i class="bi bi-calendar me-1"></i>${this.escapeHtml(this.formatDates(project.start_date, project.end_date))}</span>` : ''}
           </div>
         </div>
-        <button type="button" class="btn btn-sm btn-outline-primary select-btn">
-          Select
-        </button>
       </div>
     `
     
@@ -208,31 +201,30 @@ export default class extends Controller {
         event.target.tagName === 'A' || event.target.closest('a')) {
       event.preventDefault()
     }
-    
+  
     const projectCard = event.target.closest('.project-card')
     if (!projectCard) return
-    
+  
     const projectId = projectCard.dataset.projectId
     if (!projectId) return
-    
+  
     document.querySelectorAll('.project-card').forEach(card => {
       card.classList.remove('selected')
     })
     projectCard.classList.add('selected')
-    
-    // Removed the selected badge code
-    
+  
     const projectData = this.findProjectById(projectId)
     if (!projectData) return
-    
-    localStorage.setItem('selectedProjectData', JSON.stringify(projectData))
-    
-    const customEvent = new CustomEvent('project-selected', {
+  
+    const source = this.apiValue || this.datasetParamValue || ''
+    const projectWithSource = { ...projectData, source }
+  
+    localStorage.setItem('selectedProjectData', JSON.stringify(projectWithSource))
+  
+    document.dispatchEvent(new CustomEvent('project-selected', {
       bubbles: true,
-      detail: { projectData }
-    })
-    
-    document.dispatchEvent(customEvent)
+      detail: { projectData: projectWithSource }
+    }))
   }
 
   findProjectById(id) {
@@ -242,13 +234,11 @@ export default class extends Controller {
       return null
     }
     
-    return results.find(project => {
-      return (
-        (project.id && project.id.toString() === id) ||
-        (project.acronym && project.acronym === id) ||
-        (project.grant_number && project.grant_number === id)
-      )
-    })
+    return results.find(project => (
+      (project.id && project.id.toString() === id) ||
+      (project.acronym && project.acronym === id) ||
+      (project.grant_number && project.grant_number === id)
+    ))
   }
   
   filterResults(event) {
@@ -325,11 +315,6 @@ export default class extends Controller {
     this.noResultsTarget.classList.remove("d-none")
     this.errorContainerTarget.classList.add("d-none")
     this.resultsCountTarget.textContent = '(0)'
-  }
-  
-  truncate(text, length) {
-    if (!text) return ''
-    return text.length > length ? text.substring(0, length) + '...' : text
   }
   
   formatDates(start, end) {

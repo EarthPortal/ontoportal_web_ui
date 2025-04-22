@@ -793,7 +793,6 @@ fr:
       home_page: "Page d'accueil :"
       ontologies_used: Ontologies utilisées
       no_ontologies_associated: Aucune ontologie n'est actuellement associée à ce projet
-
     form:
       errors_on_form: Erreurs sur le formulaire
       name: "Nom : *"
@@ -820,13 +819,15 @@ fr:
       funding_program: "Programme de Financement"
       grant_number: "Numéro de Subvention"
       funder: "Financeur"
-
+      logo_url: "URL du logo"
+      summary_confirmation: "Veuillez vérifier les détails de votre projet avant de soumettre."
+      summary_title: "Résumé du Projet"
+      organization_tooltip: "C'est l'organisation coordinatrice du projet."
     edit:
       title: Édition du Projet %{name}
       editing_project: Édition du projet
       cancel: Annuler
       update_project: Mettre à jour le Projet
-
     new:
       title: Ajoutez votre projet
       new_project: Nouveau projet
@@ -850,8 +851,7 @@ fr:
       search_by_term: "Rechercher par Mots-clés"
       project_id: "ID du Projet"
       id_placeholder: "Entrez l'ID du projet"
-      search_by_term: "Terme de recherche"
-      term_placeholder: "Entrez des mots-clés"
+      term_placeholder: "Entrez l'acronyme"
       results: "Résultats de recherche"
       api_error: "Erreur de connexion au service de recherche"
       no_results: "Aucun résultat trouvé"

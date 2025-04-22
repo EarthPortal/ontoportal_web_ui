@@ -2,28 +2,32 @@
 - current_step = params[:step].present? ? params[:step].to_i : 1
 
 %div{:style => "margin:10px;"}
-  = form_for :project, url: {action: "create"}, html: {id: "projectForm", multipart: true, novalidate: true} do
-    .project-creation-container
-      %div{:style => "display: flex; justify-content: center;"}
-        = error_message_alert
-        .upload-ontology-card{:style => "width:650px;"}
-          .upload-ontology-center
-            .d-flex.justify-content-between
-              %a{:href => "javascript:history.go(-1)"}
-                = image_tag("arrow-back.svg", class: "lost-password-arrowback")
-              .register-title-container
-                %h2.register-title= t("projects.new.new_project")
-                %hr#register-title-line/
-              %div
-            .upload-ontology-progress
-              = render Layout::ProgressPagesComponent.new(pages_title: [t("projects.project_type_selection.title"), t("projects.funding_search.title"), t("projects.details")]) do |c|
-                - c.page do
-                  .project-step-content= render partial: 'projects/steps/project_type_selection'
-                - c.page do
-                  .project-step-content= render partial: 'projects/steps/funding_search'
-                - c.page do
-                  .project-step-content= render partial: 'projects/steps/project_form'
-    
-    = hidden_field_tag :project_type, session[:project_type] || ""
-    = hidden_field_tag :funding_source, session[:funding_source] || ""
-    = hidden_field_tag :project_data, session[:project_data].to_json || "{}"
+  .project-creation-container
+    %div{:style => "display: flex; justify-content: center;"}
+      = error_message_alert
+      .upload-ontology-card{:style => "width:650px;"}
+        .upload-ontology-center
+          .d-flex.justify-content-between
+            %a{:href => "javascript:history.go(-1)"}
+              = image_tag("arrow-back.svg", class: "lost-password-arrowback")
+            .register-title-container
+              %h2.register-title= t("projects.new.new_project")
+              %hr#register-title-line/
+            %div
+          .upload-ontology-progress
+            = render Layout::ProgressPagesComponent.new(pages_title: [t("projects.project_type_selection.title"), t("projects.funding_search.title"), t("projects.details")]) do |c|
+              - c.page do
+                .project-step-content= render partial: 'projects/steps/project_type_selection'
+              - c.page do
+                .project-step-content= render partial: 'projects/steps/funding_search'
+              - c.page do
+                .project-step-content= render partial: 'projects/steps/project_form'
+  
+  = hidden_field_tag :project_type, session[:project_type] || ""
+  = hidden_field_tag :funding_source, session[:funding_source] || ""
+  = hidden_field_tag :project_data, session[:project_data].to_json || "{}"
+
+#submissionModal.modal.fade{'data-controller': 'submission-modal', 'data-submission-modal-target': 'modal'}
+  .modal-dialog
+    .modal-content
+      = render partial: 'projects/project_summary_modal'

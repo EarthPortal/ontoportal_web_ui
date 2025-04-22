@@ -118,8 +118,29 @@ class ProjectsController < ApplicationController
       redirect_to projects_path
       return
     end
-
-    @project = LinkedData::Client::Models::Project.new(values: project_params)
+    create_params = project_params.to_h
+    
+    create_params[:creator] = [session[:user].id]
+    
+    create_params[:type] ||= "FundedProject"
+    
+    organization_id = nil
+    if params[:project][:organizations_attributes].present?
+      orgs = params[:project][:organizations_attributes].values
+      organization_id = orgs.first["id"] if orgs.first && orgs.first["id"].present?
+      create_params[:organization] = organization_id
+    end
+  
+    contact_id = nil
+    if params[:project][:contacts_attributes].present?
+      contacts = params[:project][:contacts_attributes].values
+      contact_id = contacts.first["id"] if contacts.first && contacts.first["id"].present?
+      create_params[:contact] = contact_id
+    end
+  
+    create_params[:ontologyUsed] ||= []
+  
+    @project = LinkedData::Client::Models::Project.new(values: create_params)
     @project_saved = @project.save
 
     # Project successfully created.
@@ -128,7 +149,7 @@ class ProjectsController < ApplicationController
       redirect_to project_path(@project.acronym)
       return
     end
-
+  
     # Errors creating project.
     if @project_saved.status == 409
       error = OpenStruct.new existence: t('projects.error_unique_acronym', acronym: params[:project][:acronym])
@@ -136,8 +157,6 @@ class ProjectsController < ApplicationController
     else
       @errors = response_errors(@project_saved)
     end
-
-    @project = LinkedData::Client::Models::Project.new(values: project_params)
     @user_select_list = LinkedData::Client::Models::User.all.map {|u| [u.username, u.id]}
     @user_select_list.sort! {|a,b| a[1].downcase <=> b[1].downcase}
     render action: "new"
@@ -202,64 +221,44 @@ class ProjectsController < ApplicationController
 
 
   def search_external_projects
-    # Get search parameters
     source = params[:source]
     search_term = params[:term]
     search_type = params[:type] || "acronym"
-    dataset = params[:dataset] || "data1"
     
-    # Initialize response variables
-    success = false
-    results = []
-    message = "No results found"
-    
-    # Exit early if required parameters are missing
     if source.blank? || search_term.blank?
       render json: { success: false, results: [], message: "Missing required parameters" }
       return
     end
     
-    
     begin
-      # Build the API URL
       endpoint = "/connector/projects"
       
-      # Make the API call
       response = api_connection.get(endpoint) do |req|
         req.params[search_type.to_sym] = search_term
         req.params[:source] = source
       end
       
-      # Simple status code handling
       case response.status
       when 200
-        # Success - we have results
-        success = true
         results = response.body["projects"] || []
-        message = results.any? ? "Found #{results.length} projects" : "No projects found"
-      
+        render json: {
+          success: true,
+          results: results,
+          message: results.any? ? "Found #{results.length} projects" : "No projects found"
+        }
       when 404
-        # Not found - return the API error message
-        message = "No projects found matching search criteria"
-      
+        render json: { success: false, results: [], message: "No projects found matching search criteria" }
       else
-        # Other errors
-        message = "API Error: HTTP #{response.status}"
+        handle_error_response(response)
       end
       
-    rescue Faraday::ConnectionFailed => e
-      message = "Connection to API failed"
+    rescue Faraday::ConnectionFailed
+      render json: { success: false, results: [], message: "Connection to API failed" }
     rescue => e
-      message = "An error occurred"
+      render json: { success: false, results: [], message: "An error occurred", error: e.message }
     end
-    
-    # Return the response
-    render json: {
-      success: success,
-      results: results,
-      message: message
-    }
   end
+
 
   private
 
@@ -454,13 +453,12 @@ class ProjectsController < ApplicationController
   end
 
   def project_params
-    p = params.require(:project).permit(:name, :acronym, :institution, :contacts, { creator:[] }, :homePage,
-                                        :description, { ontologyUsed:[] })
-                                        
-    p[:creator]&.reject!(&:blank?)
-    p[:ontologyUsed] ||= []
-    p = p.to_h
-  end
+  params.require(:project).permit(
+    :acronym, { creator: [] }, :type, :name, :homePage, :description, 
+    { ontologyUsed: [] }, :source, :keywords, :contact, :organization, 
+    :logo, :grant_number, :start_date, :end_date, :funder
+  )
+end
 
   def flash_error(msg)
     html = ''.html_safe
@@ -469,32 +467,18 @@ class ProjectsController < ApplicationController
     html << '</span>'.html_safe
   end
 
-  # Create a shared connection instance for better performance
   def api_connection
-    api_host = ENV.fetch('API_HOST', '172.17.0.1')
-    api_port = ENV.fetch('API_PORT', '9393')
-    api_url = "http://#{api_host}:#{api_port}"
+    apikey = session[:user].try(:apikey)
     
-    Rails.logger.info("Connecting to API at: #{api_url}")
-  
-    @api_connection ||= Faraday.new(api_url) do |faraday|
+    @api_connection ||= Faraday.new(ENV['API_URL']) do |faraday|
+      faraday.params['apikey'] = apikey
       faraday.request :url_encoded
-      
-      # Make sure the order of middleware is correct
       faraday.response :json, content_type: /\bjson$/
-            
-      # Set longer timeouts for development
       faraday.options[:timeout] = 30
       faraday.options[:open_timeout] = 10
-      
-      # Use the default adapter
       faraday.adapter Faraday.default_adapter
     end
   end
-  
-
-
-  
 
   def handle_error_response(response)
     message = case response.status
@@ -506,7 +490,6 @@ class ProjectsController < ApplicationController
                 "Unexpected response: #{response.status}"
               end
     
-    # Always return JSON for error responses
     respond_to do |format|
       format.json { render json: { success: false, results: [], message: message } }
       format.html { render json: { success: false, results: [], message: message } }
