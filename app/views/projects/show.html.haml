@@ -1,30 +1,62 @@
 - @title = t('projects.show.title', name: @project.name)
-
 %div.container
-
   %div{:style => "padding: 1em;"}
     %h1{:style => "font-size: xx-large;"}= @project.name
-    - if session[:user] && (@project.creator.include?(session[:user].id) || session[:user].admin?)
+    - if session[:user] && (Array(@project.creator).include?(session[:user].id) || session[:user].admin?)
       = link_to t('projects.show.edit_project'), edit_project_path(@project.acronym)
     %br/
     %br/
-    %p{:style => "margin-bottom: 5px;"}
-      %strong= t('projects.show.description')
-      = @project.description
-    %p{:style => "margin-bottom: 5px;"}
-      %strong= t('projects.show.institution')
-      = @project.institution
-    %p{:style => "margin-bottom: 5px;"}
-      %strong= t('projects.show.contacts')
-      = @project.contacts
     %p
-      %strong= t('projects.show.home_page')
+      %strong Acronym:
+      = @project.acronym
+    %p
+      %strong Description:
+      = @project.description
+    %p
+      %strong Home Page:
       - if @project.homePage
         = link_to @project.homePage, @project.homePage, rel: "nofollow"
-    %h2{:style => "padding-top: 1em;"}= t('projects.show.ontologies_used')
-    - if @ontologies_used.empty?
-      = t('projects.show.no_ontologies_associated')
-    %table.zebra{:cellpadding => "0", :cellspacing => "0", :width => "70%"}
-      %ul
-        - for ontology in @ontologies_used
-          %li= link_to(ontology["name"], ontology_path(ontology["acronym"]))
+    %p
+      %strong Grant Number:
+      = @project.grant_number
+    %p
+      %strong Start Date:
+      = @project.start_date&.to_date&.strftime("%Y-%m-%d") rescue @project.start_date
+    %p
+      %strong End Date:
+      = @project.end_date&.to_date&.strftime("%Y-%m-%d") rescue @project.end_date
+    %p
+      %strong Logo:
+      - if @project.logo.present?
+        %img{src: @project.logo, style: "max-width: 200px; max-height: 100px;"}
+      - else
+        (none)
+    %p
+      %strong Keywords:
+      = @project.keywords&.join(", ")
+    %p
+      %strong Contact:
+      - if @project.contact.present?
+        = agent_chip_component(@project.contact)
+      - else
+        (none)
+    %p
+      %strong Organization:
+      - if @project.organization.present?
+        = agent_chip_component(@project.organization)
+      - else
+        (none)
+    %p
+      %strong Ontologies Used:
+      - if @ontologies_used.present?
+        %ul
+          - @ontologies_used.each do |ont|
+            %li= link_to(ont["name"], ontology_path(ont["acronym"]))
+      - else
+        (none)
+    %p
+      %strong Created:
+      = @project.created&.to_date&.strftime("%Y-%m-%d") rescue @project.created
+    %p
+      %strong Updated:
+      = @project.updated&.to_date&.strftime("%Y-%m-%d") rescue @project.updated

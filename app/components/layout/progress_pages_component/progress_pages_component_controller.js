@@ -92,6 +92,14 @@ export default class extends Controller {
             }
         }
     }
+
+    showSummary() {
+        const modal = document.getElementById("submissionModal")
+        if (modal) {
+          const bsModal = new bootstrap.Modal(modal)
+          bsModal.show()
+        }
+      }
     
     triggerFormPopulation() {
         const projectCreationElement = document.querySelector('[data-controller="project-creation"]')

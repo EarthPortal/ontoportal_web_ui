@@ -786,22 +786,24 @@ en:
       description: "Description:*"
       select_ontologies: Select Ontologies Used
       select_administrators: Select administrators
-      title: "Project Title"
+      title: "Title"
       acronym: "Acronym"
       description: "Description"
       start_date: "Start Date"
       end_date: "End Date"
-      institution: "Institution"
-      coordinator: "Coordinator"
-      homepage: "Project Website"
+      homepage: "Homepage"
       keywords: "Keywords"
       organization: "Organization"
       contact: "Contact"
       ontologies: "Ontologies"
-      funding_details: "Funding Details"
-      funding_program: "Funding Program"
       grant_number: "Grant Number"
       funder: "Funder"
+      logo_url: "Logo URL"
+      summary_confirmation: "Please review your project details before submitting."
+      summary_title: "Project Summary"
+      organization_tooltip: "This is the project’s organization coordinator."
+
+
     
     edit:
       title: Editing Project %{name}

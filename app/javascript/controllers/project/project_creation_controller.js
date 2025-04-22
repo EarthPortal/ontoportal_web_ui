@@ -6,13 +6,14 @@ export default class extends Controller {
     "startDate", "endDate", "organization", "contact", 
     "homePage", "keywords", "grantNumber", "funder",
     "fundedRadio", "notFundedRadio", "fundingSourceRadio", 
-    "isFunded", "fundingSource", "steps", "progressBar", "progressItem"
+    "isFunded", "fundingSource", "steps", "progressBar", "progressItem",
+    "logoInput", "logoPreview", "logoPlaceholder", "summaryModal"
   ]
   
   static values = {
     currentStep: Number
   }
-  
+   
   connect() {
     if (this.hasIsFundedTarget) {
       this.isFundedTarget.value = "false"
@@ -26,15 +27,18 @@ export default class extends Controller {
       this.projectDataTarget.value = JSON.stringify({})
     }
     
+    this.setupLogoPreview();
+    
     const urlParams = new URLSearchParams(window.location.search)
     this.currentStepValue = parseInt(urlParams.get('step') || 1)
     
     document.addEventListener("project-selected", this.handleProjectSelection.bind(this))
     document.addEventListener("skip-to-step", this.handleSkipToStep.bind(this))
-    document.addEventListener('project-selected', this.handleProjectSelected.bind(this))
+    document.addEventListener("project-selected", this.handleProjectSelected.bind(this))
     
     if (this.element) {
-      this.element.addEventListener('populate-project-form', this.populateProjectForm.bind(this))
+      this.element.addEventListener("populate-project-form", this.populateProjectForm.bind(this))
+      this.element.addEventListener("show-summary-modal", this.showSubmissionSummary.bind(this))
     }
     
     this.updateStepsVisibility()
@@ -46,10 +50,60 @@ export default class extends Controller {
   disconnect() {
     document.removeEventListener("project-selected", this.handleProjectSelection.bind(this))
     document.removeEventListener("skip-to-step", this.handleSkipToStep.bind(this))
-    document.removeEventListener('project-selected', this.handleProjectSelected.bind(this))
+    document.removeEventListener("project-selected", this.handleProjectSelected.bind(this))
     
+    const logoInput = this.element.querySelector('input[name="project[logo]"]');
+    if (logoInput) {
+      logoInput.removeEventListener('input', this.updateLogoPreview.bind(this));
+    }
+
     if (this.element) {
-      this.element.removeEventListener('populate-project-form', this.populateProjectForm.bind(this))
+      this.element.removeEventListener("populate-project-form", this.populateProjectForm.bind(this))
+      this.element.removeEventListener("show-summary-modal", this.showSubmissionSummary.bind(this))
+    }
+    
+  }
+
+  setupLogoPreview() {
+    const logoUrlContainer = this.element.querySelector('.logo-url-container');
+    if (!logoUrlContainer) return;
+    
+    const logoInput = logoUrlContainer.querySelector('input[name="project[logo]"]');
+    if (!logoInput) return;
+    
+    logoInput.setAttribute('data-project-creation-target', 'logoInput');
+    logoInput.addEventListener('input', this.updateLogoPreview.bind(this));
+    
+    if (logoInput.value) {
+      setTimeout(() => this.updateLogoPreview(), 100);
+    }
+  }
+  
+  
+  showSummaryModal() {
+    const modal = document.getElementById("submissionModal")
+    if (modal) {
+      const bsModal = new bootstrap.Modal(modal)
+      bsModal.show()
+    }
+  }
+  
+  submitProjectForm() {
+    const form = this.element.closest('form')
+    if (form) {
+      const modal = bootstrap.Modal.getInstance(document.getElementById('submissionModal'))
+      if (modal) {
+        modal.hide()
+      }
+      form.requestSubmit()
+    }
+  }
+  
+  showSubmissionSummary() {
+    const modal = document.getElementById("submissionModal")
+    if (modal) {
+      const bsModal = new bootstrap.Modal(modal)
+      bsModal.show()
     }
   }
   
@@ -81,7 +135,7 @@ export default class extends Controller {
   }
   
   handleProjectSelection(event) {
-    if (!event.detail || !event.detail.projectData) return
+    if (!event.detail?.projectData) return
     
     const projectData = event.detail.projectData
     
@@ -93,7 +147,7 @@ export default class extends Controller {
   }
   
   handleProjectSelected(event) {
-    if (!event.detail || !event.detail.projectData) return
+    if (!event.detail?.projectData) return
     
     if (this.hasProjectDataTarget) {
       this.projectDataTarget.value = JSON.stringify(event.detail.projectData)
@@ -115,60 +169,71 @@ export default class extends Controller {
     try {
       const storedData = localStorage.getItem('selectedProjectData')
       if (!storedData) return
-      
+  
       const projectData = JSON.parse(storedData)
-      
-      if (this.hasNameTarget) {
-        this.fillField(this.nameTarget, projectData.name || projectData.title)
-      }
-      
-      if (this.hasAcronymTarget) {
-        this.fillField(this.acronymTarget, projectData.acronym)
-      }
-      
-      if (this.hasDescriptionTarget) {
-        this.fillField(this.descriptionTarget, projectData.description)
-      }
-      
-      if (this.hasStartDateTarget && projectData.start_date) {
-        this.fillDateField(this.startDateTarget, projectData.start_date)
-      }
-      
-      if (this.hasEndDateTarget && projectData.end_date) {
-        this.fillDateField(this.endDateTarget, projectData.end_date)
-      }
-      
-      if (this.hasOrganizationTarget) {
-        this.fillField(this.organizationTarget, 
-          projectData.organization || projectData.organisation || projectData.institution)
-      }
-      
-      if (this.hasContactTarget) {
-        this.fillField(this.contactTarget, projectData.contact || projectData.coordinator)
-      }
-      
-      if (this.hasHomePageTarget) {
-        this.fillField(this.homePageTarget, projectData.homePage || projectData.homepage)
-      }
-      
-      if (this.hasKeywordsTarget && projectData.keywords) {
-        this.fillField(this.keywordsTarget, projectData.keywords)
-      }
-      
-      if (this.hasGrantNumberTarget) {
-        this.fillField(this.grantNumberTarget, projectData.grant_number || "")
-      }
-      
+  
+      // Populate simple fields
+      if (this.hasNameTarget) this.fillField(this.nameTarget, projectData.name || projectData.title)
+      if (this.hasAcronymTarget) this.fillField(this.acronymTarget, projectData.acronym)
+      if (this.hasDescriptionTarget) this.fillField(this.descriptionTarget, projectData.description)
+      if (this.hasStartDateTarget && projectData.start_date) this.fillDateField(this.startDateTarget, projectData.start_date)
+      if (this.hasEndDateTarget && projectData.end_date) this.fillDateField(this.endDateTarget, projectData.end_date)
+      if (this.hasContactTarget) this.fillField(this.contactTarget, projectData.contact || projectData.coordinator)
+      if (this.hasHomePageTarget) this.fillField(this.homePageTarget, projectData.homePage || projectData.homepage)
+      if (this.hasGrantNumberTarget) this.fillField(this.grantNumberTarget, projectData.grant_number || "")
       if (this.hasFunderTarget) {
         let funderValue = projectData.funder || ""
-        if (typeof funderValue === 'object' && funderValue.name) {
-          funderValue = funderValue.name
-        }
+        if (typeof funderValue === 'object' && funderValue.name) funderValue = funderValue.name
         this.fillField(this.funderTarget, funderValue)
       }
-      
+  
+      // Populate organization
+      if (projectData.organization) {
+        const organizationField = this.element.querySelector('.organization-project-input-field')
+        const searchInput = organizationField?.querySelector('input[type="text"]')
+        if (searchInput) {
+          searchInput.value = projectData.organization.name
+          searchInput.dispatchEvent(new Event('change', { bubbles: true }))
+          searchInput.dispatchEvent(new Event('input', { bubbles: true }))
+        }
+      }
+  
+      // Populate keywords (TomSelect)
+      if (this.hasKeywordsTarget) {
+        const select = this.keywordsTarget.querySelector('select')
+        if (select) {
+          select.innerHTML = ''
+          const allKeywords = projectData.all_keywords || projectData.keywords || []
+          const selectedKeywords = projectData.keywords || []
+          allKeywords.forEach(keyword => {
+            const option = document.createElement('option')
+            option.value = keyword
+            option.text = keyword
+            if (selectedKeywords.includes(keyword)) option.selected = true
+            select.appendChild(option)
+          })
+          if (select.tomselect) {
+            select.tomselect.clear()
+            allKeywords.forEach(keyword => {
+              if (!select.tomselect.options[keyword]) {
+                select.tomselect.addOption({ value: keyword, text: keyword })
+              }
+            })
+            select.tomselect.setValue(selectedKeywords)
+          } else {
+            select.dispatchEvent(new Event('change', { bubbles: true }))
+          }
+        }
+      }
+  
+      // Populate source hidden field if present
+      const sourceField = document.getElementById('project_source')
+      if (sourceField && projectData.source) {
+        sourceField.value = projectData.source
+      }
+  
+      // Set fields as readonly if funded
       const isFunded = localStorage.getItem('project_type') === 'funded'
-      
       if (isFunded) {
         setTimeout(() => {
           if (this.hasAcronymTarget) this.makeFieldReadOnly(this.acronymTarget)
@@ -176,7 +241,7 @@ export default class extends Controller {
           if (this.hasFunderTarget) this.makeFieldReadOnly(this.funderTarget)
         }, 100)
       }
-      
+  
       localStorage.removeItem('selectedProjectData')
     } catch (error) {
       this.showErrorMessage("Error populating form: " + error.message)
@@ -246,11 +311,7 @@ export default class extends Controller {
     if (!dateValue) return
     
     try {
-      let formattedDate = dateValue
-      
-      if (dateValue.includes('T')) {
-        formattedDate = dateValue.split('T')[0]
-      }
+      const formattedDate = dateValue.includes('T') ? dateValue.split('T')[0] : dateValue
       
       const input = targetElement.querySelector('input[type="date"]')
       if (input) {
@@ -259,9 +320,37 @@ export default class extends Controller {
       }
     } catch (error) {}
   }
+
+  updateLogoPreview() {
+    const logoInput = this.element.querySelector('[data-project-creation-target="logoInput"]');
+    if (!logoInput) return;
+    
+    const url = logoInput.value.trim();
+    const previewImg = this.element.querySelector('[data-project-creation-target="logoPreview"]');
+    const placeholder = this.element.querySelector('[data-project-creation-target="logoPlaceholder"]');
+    
+    if (!previewImg || !placeholder) return;
+    
+    if (url) {
+      previewImg.src = url;
+      
+      previewImg.onload = () => {
+        previewImg.classList.remove('d-none');
+        placeholder.classList.add('d-none');
+      };
+      
+      previewImg.onerror = () => {
+        previewImg.classList.add('d-none');
+        placeholder.classList.remove('d-none');
+      };
+    } else {
+      previewImg.classList.add('d-none');
+      placeholder.classList.remove('d-none');
+    }
+  }
   
   handleSkipToStep(event) {
-    if (!event.detail || !event.detail.step) return
+    if (!event.detail?.step) return
     this.skipToStep(event.detail.step)
   }
   
@@ -280,8 +369,7 @@ export default class extends Controller {
   updateStepsVisibility() {
     if (this.hasStepsTarget) {
       this.stepsTargets.forEach((step, index) => {
-        const stepNumber = index + 1
-        step.classList.toggle('d-none', stepNumber !== this.currentStepValue)
+        step.classList.toggle('d-none', index + 1 !== this.currentStepValue)
       })
     }
   }
@@ -296,7 +384,7 @@ export default class extends Controller {
     }
     
     if (this.hasProgressBarTarget) {
-      const totalSteps = this.progressItemTargets ? this.progressItemTargets.length : 4
+      const totalSteps = this.progressItemTargets?.length || 4
       const percentComplete = ((this.currentStepValue - 1) / (totalSteps - 1)) * 100
       this.progressBarTarget.style.width = `${percentComplete}%`
     }
