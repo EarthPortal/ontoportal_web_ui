@@ -196,12 +196,16 @@ class ProjectsController < ApplicationController
       
       case response.status
       when 200
-        results = response.body["projects"] || []
-        render json: {
-          success: true,
-          results: results,
-          message: results.any? ? "Found #{results.length} projects" : "No projects found"
-        }
+        if response.body && response.body.is_a?(Hash) && response.body.key?("projects")
+          results = response.body["projects"] || []
+          render json: {
+            success: true,
+            results: results,
+            message: results.any? ? "Found #{results.length} projects" : "No projects found"
+          }
+        else
+          render json: { success: false, results: [], message: "Invalid response format from API" }
+        end
       when 404
         render json: { success: false, results: [], message: "No projects found matching search criteria" }
       else
