@@ -5,6 +5,7 @@
     border-radius: 10px;
     margin-bottom: 20px;
   }
+  
   .funding-sources-options {
     .funding-source-option {
       padding: 10px 14px;
@@ -14,6 +15,7 @@
     }
     .dataset-container { margin: 8px 0; }
   }
+  
   .project-search-container {
     .nav-tabs {
       margin-bottom: 15px;
@@ -42,6 +44,7 @@
       border-radius: 6px;
     }
   }
+  
   .logo-preview {
     img.img-thumbnail {
       object-fit: contain;
@@ -88,16 +91,43 @@
   cursor: pointer;
 }
 
-#submissionModal {
+.organization-project-input-field, .contact-project-input-field {
+  .search-container.search-container-scroll {
+    z-index: 10 !important;
+  }
+}
+
+.invalid-feedback {
+  display: block;
+  color: var(--bs-danger);
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  
+  &.d-none {
+    display: none !important;
+  }
+}
+
+#submissionModal[data-controller="project-summary"] {
+  .modal-dialog {
+    max-width: 1400px;
+    width: 70vw;
+    margin: 1.75rem auto;
+  }
+
   .modal-content {
     border-radius: 10px;
     border: 1px solid #e9ecef;
     box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+    height: auto;
+    min-height: 60vh;
   }
+  
   .modal-header {
     border-bottom: 1px solid #e9ecef;
     padding-bottom: 0.5rem;
     padding-top: 1rem;
+    
     .modal-title {
       font-size: 1.25rem;
       font-weight: 600;
@@ -106,21 +136,27 @@
       align-items: center;
       gap: 0.5rem;
     }
+    
     .btn-close { margin-top: -0.5rem; }
   }
+  
   .modal-body {
     padding-top: 1.5rem;
     padding-bottom: 1.5rem;
+    
     .row { margin-bottom: 0.5rem; }
+    
     .fw-bold {
       font-weight: 600 !important;
       color: #333;
     }
+    
     [id^="summary-"] {
       color: #555;
       font-weight: 400;
       word-break: break-word;
     }
+    
     #summary-logo-img {
       border-radius: 6px;
       background: #fff;
@@ -132,6 +168,7 @@
       display: block;
       margin: 0 auto;
     }
+    
     ul#summary-ontologies {
       margin-bottom: 0;
       padding-left: 1.2rem;
@@ -141,10 +178,12 @@
         margin-bottom: 2px;
       }
     }
+    
     hr {
       margin: 1.2rem 0;
       border-color: #ececec;
     }
+    
     .alert-info {
       background: #f8f9fa;
       color: #0d6efd;
@@ -156,19 +195,28 @@
       i { font-size: 1.2em; }
     }
   }
+  
   .modal-footer {
     background: #f8f9fa;
     border-top: 1px solid #e9ecef;
+    
     .btn {
       min-width: 100px;
       font-weight: 500;
     }
+    
     .me-auto { margin-right: auto !important; }
   }
-}
-
-.organization-project-input-field, .contact-project-input-field {
-  .search-container.search-container-scroll {
-    z-index: 10 !important;
+  
+  .invalid-feedback {
+    display: none;
+    
+    &:not(.d-none) {
+      display: block;
+    }
+  }
+  
+  .text-danger {
+    color: var(--bs-danger) !important;
   }
 }

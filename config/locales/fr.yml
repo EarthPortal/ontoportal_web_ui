@@ -823,6 +823,10 @@ fr:
       summary_confirmation: "Veuillez vérifier les détails de votre projet avant de soumettre."
       summary_title: "Résumé du Projet"
       organization_tooltip: "C'est l'organisation coordinatrice du projet."
+      error-submission-message: "Veuillez remplir tous les champs obligatoires avant de soumettre"
+      field_required: "%{field} est requis"
+      selection_required: "Au moins un %{field} doit être sélectionné"
+      error-submission-message: "Veuillez remplir tous les champs obligatoires avant de soumettre"
     edit:
       title: Édition du Projet %{name}
       editing_project: Édition du projet
