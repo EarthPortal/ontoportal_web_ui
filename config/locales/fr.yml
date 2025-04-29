@@ -740,12 +740,14 @@ fr:
     create_new_project: Créer un nouveau projet
     created: Créé
     creator: Utilisateur
+    dates: Dates
     delete_admin_only: Supprimer (admin seulement)
     delete_confirm: Êtes-vous sûr ?
     description: Description
     description_text: Texte de la description
     edit_text: Éditer
     home_page: Page d'accueil
+    search_projects: Rechercher des projets
     index:
       intro: Parcourez une sélection de projets utilisant les ontologies de %{site}
     institutions: Institutions
@@ -790,6 +792,7 @@ fr:
       grant_number: "Numéro de Subvention"
       funder: "Financeur"
       logo_url: "URL du logo"
+      logo: "Logo"
       summary_confirmation: "Veuillez vérifier les détails de votre projet avant de soumettre."
       summary_title: "Résumé du Projet"
       organization_tooltip: "C'est l'organisation coordinatrice du projet."

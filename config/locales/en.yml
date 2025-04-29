@@ -751,12 +751,14 @@ en:
     create_new_project: Create new project
     created: Created
     creator: User
+    dates: Dates
     delete_admin_only: Delete (admin only)
     delete_confirm: Are you sure?
     description: Description
     description_text: Description text
     edit_text: Edit
     home_page: Home page
+    search_projects: Search projects
     index:
       intro: Browse a selection of projects that use %{site} ontologies
     institutions: Institutions
@@ -799,6 +801,7 @@ en:
       grant_number: "Grant number"
       funder: "Funder"
       logo_url: "Logo URL"
+      logo: Logo
       summary_confirmation: "Please review your project details before submitting."
       summary_title: "Project summary"
       organization_tooltip: "This is the project’s organization coordinator."

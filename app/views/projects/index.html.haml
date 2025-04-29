@@ -1,114 +1,257 @@
 - @title = t("projects.title")
-%div.container
-  #DescriptionDialog{:style => "display: none", :title => t("projects.project_description")}
-    %p= t("projects.description_text")
-  %h1.tab_header= t("projects.self")
-  %p.tab_description
-    = t("projects.index.intro", site: "#{$SITE}")
-    = link_to(help_path(anchor: "Projects_Tab"), id: "projects-help", aria: {label: t("projects.view_projects_help")}) do
-      %i.fas.fa-question-circle.fa-lg{aria: {hidden: "true"}, style: "margin-left: .25em"}
-
-  %div{:style => "padding:10px;"}
-    %span
+%div.container.w-80
+  .row.mb-4
+    .col
+      %h1.display-5.fw-bold.text-primary.mb-3= t("projects.self")
+      %p.lead.text-secondary
+        = t("projects.index.intro", site: "#{$SITE}")
+        = link_to(help_path(anchor: "Projects_Tab"), id: "projects-help", class: "ms-2 text-decoration-none", aria: {label: t("projects.view_projects_help")}) do
+          %i.fas.fa-question-circle.text-primary
+  
+  .card.shadow-sm.mb-5.border-0.rounded-3.overflow-hidden
+    .card-header.bg-white.py-3.px-4.d-flex.justify-content-between.align-items-center.border-0
+      %h5.fw-bold.mb-0
+        %i.fas.fa-project-diagram.text-primary.me-2
+        = "All Projects"
       - if session[:user].nil?
-        = button_to t("projects.create_new_project"), "/login", :method => :get
+        = link_to t("projects.create_new_project"), "/login", class: "btn btn-primary d-flex align-items-center gap-2"
       - else
-        = button_to t("projects.create_new_project"), new_project_path, :method => :get
-    %br/
-    %br/
-    %table#projects.zebra{:cellpadding => "0", :cellspacing => "0"}
-      %thead
-        %tr
-          %th= t("projects.self")
-          %th= t("projects.description")
-          %th= t("projects.contacts")
-          %th= t("projects.institutions")
-          %th= t("projects.ontologies")
-          %th= t("projects.index.additional_info")
-          - if current_user_admin?
-            %th= t("projects.creator")
-            %th= t("projects.created")
-      %tbody
-        - for project in @projects
-          %tr
-            / Project name, home page, and controls for editors
-            %td{:style => "vertical-align:top;"}
-              %strong= link_to(project.name, project_path(project.acronym))
-              %br/
-              %span{:style => "font-size:75%; vertical-align:bottom;"}
-                = link_to(t('projects.home_page'), project.homePage, target: "_blank", rel: "nofollow")
-                %span.ui-icon.ui-icon-extlink{:style => "display: inline-block; vertical-align: text-bottom;"}
-                \&nbsp;&nbsp;
-                - if session[:user] && (project.creator == session[:user].id || session[:user].admin?)
-                  = link_to(t("projects.edit_text"), edit_project_path(project.acronym))
-                  / TODO_REV: Enable delete project for admins
-                - if current_user_admin?
-                  &nbsp;&nbsp;
-                  = link_to(t("projects.delete_admin_only"), project_path(project.acronym), :method => :delete, :confirm => t("projects.delete_confirm"))
-            / Project description (may be truncated with a dialog)
-            %td{:style => "vertical-align:top;"}
-              - if ! project.description.nil?
-                - descLength = 250
-                - if project.description.length < descLength
-                  = project.description
-                - else
-                  - descShort = smart_truncate(project.description, :words => 20)
-                  %span{:style => "cursor:help;", :title => project.description}
-                    = descShort
-            / Contacts (show names)
-            %td{:style => "vertical-align:top;"}
-              - if project.contact.present?
-                = agent_chip_component(project.contact)
-              - else
-                -
+        = link_to new_project_path, class: "btn btn-primary d-flex align-items-center gap-2" do
+          %i.fas.fa-plus-circle.me-1
+          = t("projects.create_new_project")
+    
+    .card-body.p-0
+      .p-4.pb-0
+        .input-group.mb-3.w-50
+          %span.input-group-text.bg-light.border-end-0
+            %i.fas.fa-search.text-muted
+          %input#projects-search.form-control.ps-0.border-start-0.bg-light{type: "text", placeholder: "#{t('projects.search_projects')}...", "aria-label": "#{t('projects.search_projects')}"}
+    
+      :css
+        .grant-number-column {
+          min-width: 140px !important;
+          width: 140px !important;
+          max-width: 140px !important;
+        }
 
-            // For organization column
-            %td{:style => "vertical-align:top;"}
-              - if project.organization.present?
-                = agent_chip_component(project.organization)
-              - else
-                -
-            / Ontologies
-            %td{:style => "vertical-align:top;"}
-              - ontologyCount = 0
-              - ontologyLabels = ""
-              - for ontology in project.ontologyUsed
-                - ontologyLabels += @ontologies_hash[ontology].name + "\n" rescue next
-                - ontologyCount += 1
-              - if ontologyCount > 0
-                %span{:style => "cursor:help;text-decoration: none; border-bottom:1px dotted;", :title => ontologyLabels}= ontologyCount
-              - else
-                = ontologyCount
-            / Additional attributes
-            %td{:style => "vertical-align:top;"}
-              %strong Acronym: 
-              = project.acronym
-              %br/
-              %strong Grant Number: 
-              = project.grant_number
-              %br/
-              %strong Start Date: 
-              = project.start_date&.to_date&.strftime("%Y-%m-%d") rescue project.start_date
-              %br/
-              %strong End Date: 
-              = project.end_date&.to_date&.strftime("%Y-%m-%d") rescue project.end_date
-              %br/
-              %strong Logo: 
-              - if project.logo.present?
-                %img{src: project.logo, style: "max-width: 100px; max-height: 40px;"}
-              - else
-                (none)
-              %br/
-              %strong Keywords: 
-              = project.keywords&.join(", ")
-              %br/
-              %strong Created: 
-              = project.created&.to_date&.strftime("%Y-%m-%d") rescue project.created
-              %br/
-              %strong Updated: 
-              = project.updated&.to_date&.strftime("%Y-%m-%d") rescue project.updated
-            - if current_user_admin?
-              %td
-                = Array(project.creator).map { |c| c.split("/").last }.join(", ")
-              %td
-                = project.created&.to_date&.strftime("%Y-%m-%d") rescue project.created
+      .table-responsive
+        %table#projects-table.table.table-hover.align-middle.mb-0
+          %thead.bg-light
+            %tr
+              %th.fw-bold.text-dark.border-0.ps-4= t("projects.self")
+              %th.fw-bold.text-dark.border-0.text-center= t("projects.form.logo")
+              %th.fw-bold.text-dark.border-0= t("projects.form.description") 
+              %th.fw-bold.text-dark.border-0= t("projects.form.contact")
+              %th.fw-bold.text-dark.border-0= t("projects.form.organization")
+              %th.fw-bold.text-dark.border-0= t("projects.form.funder")
+              %th.fw-bold.text-dark.border-0.text-center= t("projects.form.ontologies")
+              %th.fw-bold.text-dark.border-0.grant-number-column= t("projects.form.grant_number")
+              %th.fw-bold.text-dark.border-0= t("projects.dates")
+              - if current_user_admin?
+                %th.fw-bold.text-dark.border-0= t("projects.creator")
+                %th.fw-bold.text-dark.border-0= t("projects.created")
+              %th.fw-bold.text-dark.border-0.no-sort.text-end.pe-4= t("projects.actions")
+          %tbody
+            - @projects.each do |project|
+              %tr
+                %td.ps-4
+                  = link_to(project_path(project.acronym), class: "text-decoration-none") do
+                    .fw-bold.text-primary.mb-1= project.name
+                    .small.text-secondary= project.acronym
+                  - if project.homePage.present?
+                    = link_to project.homePage, class: "badge bg-light text-secondary mt-1 text-decoration-none d-inline-flex align-items-center", target: "_blank", rel: "nofollow" do
+                      %i.fas.fa-external-link-alt.me-1
+                      = t('projects.home_page')
+
+                %td.text-center{style: "width: 130px;"}
+                  - if project.logo.present?
+                    .img-container.bg-white.rounded.shadow-sm.p-2.d-flex.align-items-center.justify-content-center.mx-auto{style: "height: 70px; width: 100px;"}
+                      %img.img-fluid.view-logo{src: project.logo, alt: "#{project.name} logo", 
+                          style: "max-height: 60px; max-width: 90px; object-fit: contain; cursor: pointer;",
+                          "data-toggle": "tooltip", title: t("projects.view_logo"), "data-logo-url": project.logo}
+                  - else
+                    %span.text-muted —
+
+                %td{style: "max-width: 250px;"}
+                  - if project.description.present?
+                    .description-text.text-truncate{"data-toggle": "tooltip", title: project.description}
+                      = smart_truncate(project.description, words: 15)
+                  - else
+                    %span.text-muted.fst-italic= t("projects.no_description")
+
+                %td
+                  - if project.contact.present?
+                    = agent_chip_component(project.contact)
+                  - else
+                    %span.text-muted —
+
+                %td
+                  - if project.organization.present?
+                    = agent_chip_component(project.organization)
+                  - else
+                    %span.text-muted —
+
+                %td
+                  - if project.funder.present?
+                    = agent_chip_component(project.funder)
+                  - else
+                    %span.text-muted —
+
+                %td.text-center
+                  - ontology_count = 0
+                  - ontology_labels = ""
+                  - project.ontologyUsed.each do |ontology|
+                    - begin
+                      - ontology_labels += @ontologies_hash[ontology].name + "\n"
+                      - ontology_count += 1
+                    - rescue
+                      - next
+                  - if ontology_count > 0
+                    %span.badge.bg-info.rounded-pill.px-2.py-1{"data-toggle": "tooltip", title: ontology_labels}= ontology_count
+                  - else
+                    %span.text-muted 0
+                    
+                %td.grant-number-column
+                  - if project.grant_number.present?
+                    %code.text-dark.small.bg-light.px-2.py-1.rounded= project.grant_number
+                  - else
+                    %span.text-muted —
+                
+                %td
+                  - start_date = project.start_date&.to_date&.strftime("%Y-%m-%d") rescue nil
+                  - end_date = project.end_date&.to_date&.strftime("%Y-%m-%d") rescue nil
+                  - if start_date || end_date
+                    .small
+                      - if start_date
+                        %div.mb-1
+                          %i.fas.fa-calendar-day.text-secondary.me-1
+                          %span.text-secondary From:
+                          = start_date
+                      - if end_date
+                        %div
+                          %i.fas.fa-calendar-check.text-secondary.me-1
+                          %span.text-secondary To:
+                          = end_date
+                  - else
+                    %span.text-muted —
+
+                - if current_user_admin?
+                  %td
+                    %span.small= Array(project.creator).map { |c| c.split("/").last }.join(", ")
+                  %td
+                    %span.small.text-secondary= project.created&.to_date&.strftime("%Y-%m-%d") rescue project.created
+                
+                %td.text-end.pe-4
+                  .d-flex.flex-nowrap.justify-content-end.gap-2
+                    - if session[:user] && (project.creator == session[:user].id || session[:user].admin?)
+                      = link_to edit_project_path(project.acronym), class: "btn btn-sm btn-outline-primary", "data-toggle": "tooltip", title: t("projects.edit_text") do
+                        %i.fas.fa-edit
+                    
+                    - if current_user_admin?
+                      = link_to project_path(project.acronym), method: :delete, data: { confirm: t("projects.delete_confirm") }, class: "btn btn-sm btn-outline-danger", "data-toggle": "tooltip", title: t("projects.delete_admin_only") do
+                        %i.fas.fa-trash-alt
+
+#logoModal.modal.fade{"aria-hidden": "true", "aria-labelledby": "logoModalLabel", tabindex: "-1"}
+  .modal-dialog.modal-dialog-centered
+    .modal-content.border-0.shadow
+      .modal-header.border-0.bg-light
+        %h5#logoModalLabel.modal-title.fw-bold
+          %i.fas.fa-image.me-2.text-primary
+          = t("projects.form.logo")
+        %button.btn-close{"aria-label": "Close", "data-dismiss": "modal", type: "button"}
+      .modal-body.text-center.p-4.bg-white
+        %img#modalLogoImage.img-fluid.shadow-sm.rounded.p-3.bg-light{alt: t("projects.form.logo"), style: "max-height: 300px;"}
+
+:javascript
+  $(document).ready(function() {
+    // Custom search input
+    $('#projects-search').on('keyup', function() {
+      projectsTable.search($(this).val()).draw();
+    });
+    
+    // Initialize DataTable with enhanced styling
+    const projectsTable = $('#projects-table').DataTable({
+      responsive: true,
+      pageLength: 10,
+      lengthMenu: [10, 25, 50, 100],
+      order: [[0, 'asc']],
+      dom: '<"row mb-3"<"col-md-6"l><"col-md-6"f>>rt<"row"<"col-md-6"i><"col-md-6"p>>',
+      language: {
+        search: "_INPUT_",
+        searchPlaceholder: "Search projects...",
+        lengthMenu: "<span class='text-secondary'>Show</span> _MENU_ <span class='text-secondary'>projects</span>",
+        info: "<span class='text-secondary'>Showing</span> _START_ <span class='text-secondary'>to</span> _END_ <span class='text-secondary'>of</span> _TOTAL_ <span class='text-secondary'>projects</span>",
+        infoEmpty: "<span class='text-secondary'>No projects found</span>",
+        infoFiltered: "<span class='text-secondary'>(filtered from</span> _MAX_ <span class='text-secondary'>total projects)</span>",
+        zeroRecords: "<div class='text-center py-4'><i class='fas fa-search fa-2x text-muted mb-3'></i><p>No matching projects found</p></div>",
+        paginate: {
+          first: '<i class="fas fa-angle-double-left"></i>',
+          last: '<i class="fas fa-angle-double-right"></i>',
+          previous: '<i class="fas fa-angle-left"></i>',
+          next: '<i class="fas fa-angle-right"></i>'
+        }
+      },
+      columnDefs: [
+        { targets: 'no-sort', orderable: false },
+        { targets: 1, width: '130px', orderable: false },
+        { targets: 2, width: '20%' },
+        { targets: [3, 4, 5], width: '10%' },
+        { targets: 7, width: '140px', className: 'grant-number-column' },
+        { targets: -1, width: '100px' }
+      ],
+      initComplete: function() {
+        // Hide default search
+        $('.dataTables_filter').hide();
+        
+        // Style length menu
+        $('.dataTables_length select').addClass('form-select form-select-sm');
+        
+        // Initialize tooltips
+        $('[data-toggle="tooltip"]').tooltip({
+          container: 'body',
+          html: true,
+          template: '<div class="tooltip custom-tooltip" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner bg-dark"></div></div>'
+        });
+      },
+      drawCallback: function() {
+        // Reinitialize tooltips after redraw
+        $('[data-toggle="tooltip"]').tooltip({
+          container: 'body',
+          html: true
+        });
+      }
+    });
+    
+    // Logo modal functionality - handles both image and button clicks
+    $('.view-logo').click(function() {
+      const logoUrl = $(this).data('logo-url') || $(this).attr('src');
+      $('#modalLogoImage').attr('src', logoUrl);
+      
+      // Add loading indicator
+      const loadingIndicator = $('<div class="position-absolute top-50 start-50 translate-middle"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>');
+      $('.modal-body').append(loadingIndicator);
+      
+      $('#modalLogoImage').on('load', function() {
+        loadingIndicator.remove();
+      }).on('error', function() {
+        loadingIndicator.remove();
+        $(this).replaceWith('<div class="alert alert-warning"><i class="fas fa-exclamation-triangle me-2"></i>Unable to load image</div>');
+      });
+      
+      $('#logoModal').modal('show');
+    });
+    
+    // Handle modal close
+    $('.modal .btn-close').click(function() {
+      $(this).closest('.modal').modal('hide');
+    });
+    
+    // Add zebra striping manually for better control
+    $('#projects-table tbody tr:odd').addClass('table-light');
+    
+    // Add hover effect
+    $('#projects-table tbody tr').hover(
+      function() { $(this).addClass('table-hover-highlight').css('background-color', '#f8f9ff'); },
+      function() { $(this).removeClass('table-hover-highlight').css('background-color', ''); }
+    );
+  });
