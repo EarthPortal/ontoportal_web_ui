@@ -9,37 +9,58 @@ export default class extends Controller {
     connect() {
         this.modal = new UseModal()
         this.boundHide = this.hide.bind(this)
+        this.boundShowSummaryManually = this.showSummaryManually.bind(this)
+        
         this.modal.onClose(this.element, this.boundHide)
-        document.addEventListener('show-summary-modal', this.showSummaryManually.bind(this))
-        document.addEventListener('shown.bs.modal', (event) => {
-            if (event.target.id === 'submissionModal') this.populateSummary()
-        })
+        document.addEventListener('show-summary-modal', this.boundShowSummaryManually)
+        document.addEventListener('shown.bs.modal', this.handleModalShown.bind(this))
+        
         this.setupModalObserver()
+    }
+
+    handleModalShown(event) {
+        if (event.target.id === 'submissionModal') {
+            this.populateSummary()
+            this.validateRequiredFields()
+        }
     }
 
     setupModalObserver() {
         const modalElement = document.getElementById('submissionModal')
         if (!modalElement) return
+        
         this.modalObserver = new MutationObserver(() => {
-            if (modalElement.classList.contains('show')) setTimeout(() => this.populateSummary(), 50)
+            if (modalElement.classList.contains('show')) {
+                setTimeout(() => {
+                    this.populateSummary()
+                    this.validateRequiredFields()
+                }, 50)
+            }
         })
+        
         this.modalObserver.observe(modalElement, { attributes: true })
     }
 
     disconnect() {
         this.modal.onCloseRemoveEvent(this.element, this.boundHide)
-        document.removeEventListener('show-summary-modal', this.showSummaryManually)
-        if (this.modalObserver) this.modalObserver.disconnect()
+        document.removeEventListener('show-summary-modal', this.boundShowSummaryManually)
+        
+        if (this.modalObserver) {
+            this.modalObserver.disconnect()
+        }
     }
 
     showSummaryManually() {
         const modalElement = document.getElementById('submissionModal')
         if (!modalElement) return
+        
         const bsModal = new bootstrap.Modal(modalElement)
         const onceShown = () => {
             this.populateSummary()
+            this.validateRequiredFields()
             modalElement.removeEventListener('shown.bs.modal', onceShown)
         }
+        
         modalElement.addEventListener('shown.bs.modal', onceShown)
         bsModal.show()
     }
@@ -51,8 +72,11 @@ export default class extends Controller {
 
     confirm(event) {
         event.preventDefault()
-        const form = document.querySelector('form#new_project')
-        if (form) form.requestSubmit()
+        
+        if (this.validateRequiredFields()) {
+            const form = document.querySelector('form#new_project')
+            if (form) form.requestSubmit()
+        }
     }
 
     hide() {
@@ -65,17 +89,27 @@ export default class extends Controller {
             const el = document.querySelector(`[name="${name}"]`)
             return el ? (el.value?.trim() ? el.value : "/") : "/"
         }
-        const truncate = (str, n = 50) => str.length > n ? str.slice(0, n) + "…" : str
-    
+        
         this.updateSummaryField('title', getByName('project[name]'))
         this.updateSummaryField('acronym', getByName('project[acronym]'))
-        this.updateSummaryField('description', truncate(getByName('project[description]')))
+        this.updateSummaryField('description', getByName('project[description]'))
         this.updateSummaryField('start-date', getByName('project[start_date]'))
         this.updateSummaryField('end-date', getByName('project[end_date]'))
         this.updateSummaryField('homepage', getByName('project[homePage]'))
+        this.updateSummaryField('grant-number', getByName('project[grant_number]'))
         
+        this.updateKeywordsField()
+        this.updateContactField()
+        this.updateOrganizationField()
+        this.updateFunderField()
+        this.updateLogoDisplay()
+        this.updateOntologiesList()
+    }
+    
+    updateKeywordsField() {
         const keywordsSelect = document.querySelector('[name="project[keywords][]"]')
         let keywordsValue = "/"
+        
         if (keywordsSelect) {
             if (keywordsSelect.selectedOptions?.length > 0) {
                 keywordsValue = Array.from(keywordsSelect.selectedOptions)
@@ -86,58 +120,153 @@ export default class extends Controller {
                 keywordsValue = keywordsSelect.value
             }
         }
+        
         this.updateSummaryField('keywords', keywordsValue)
+    }
     
-        this.updateSummaryField('grant-number', getByName('project[grant_number]'))
-    
+    updateContactField() {
         const contactChips = document.querySelectorAll('.contact-project-input-field .agent-chip-name')
         let contactValue = "/"
+        
         if (contactChips.length > 0) {
             contactValue = Array.from(contactChips)
                 .map(chip => chip.textContent.trim())
                 .filter(Boolean)
                 .join(', ')
         }
+        
         this.updateSummaryField('contact', contactValue || "/")
+    }
     
+    updateOrganizationField() {
         const orgChip = document.querySelector('.organization-project-input-field .agent-chip-name')
         this.updateSummaryField('organization', orgChip?.textContent.trim() || "/")
-        
-        const funderInput = document.querySelector('[name="project[funder]"], .funder-project-input-field input[type="text"]')
-        this.updateSummaryField('funder', funderInput?.value.trim() || "/")
+    }
     
-        const logoUrl = getByName('project[logo]')
+    updateFunderField() {
+        const funderDisplayInput = document.querySelector('input[name="project_funder_display"]')
+        if (funderDisplayInput?.value.trim()) {
+            this.updateSummaryField('funder', funderDisplayInput.value.trim())
+        }
+    }
+    
+    updateLogoDisplay() {
+        const logoUrl = document.querySelector('[name="project[logo]"]')?.value.trim()
         const logoImg = document.getElementById('summary-logo-img')
+        
         if (logoImg) {
             logoImg.src = (logoUrl && logoUrl !== "/") ? logoUrl : "/"
             logoImg.style.display = (logoUrl && logoUrl !== "/") ? "inline-block" : "none"
         }
+    }
     
+    updateOntologiesList() {
         const ontologySelect = document.querySelector('[name="project[ontologyUsed][]"], #project_ontologies')
         let ontologiesHtml = '<li class="text-muted">/</li>'
+        
         if (ontologySelect?.selectedOptions?.length > 0) {
             ontologiesHtml = Array.from(ontologySelect.selectedOptions)
                 .map(option => `<li>${option.textContent}</li>`)
                 .join('')
         }
+        
         const ontologiesElement = document.querySelector('#summary-ontologies')
         if (ontologiesElement) ontologiesElement.innerHTML = ontologiesHtml
     }
+
+    validateRequiredFields() {
+        const requiredFields = [
+            { name: 'project[name]', display: 'Project Title', summaryId: 'title', errorId: 'title-error' },
+            { name: 'project[acronym]', display: 'Project Acronym', summaryId: 'acronym', errorId: 'acronym-error' },
+            { name: 'project[description]', display: 'Project Description', summaryId: 'description', errorId: 'description-error' }
+        ]
+        
+        const ontologySelect = document.querySelector('[name="project[ontologyUsed][]"], #project_ontologies')
+        const ontologiesSelected = ontologySelect?.selectedOptions?.length > 0
+        
+        this.clearValidationWarnings()
+        
+        const missingFields = []
+        
+        requiredFields.forEach(field => {
+            const el = document.querySelector(`[name="${field.name}"]`)
+            const value = el ? el.value?.trim() : ''
+            
+            if (!value) {
+                missingFields.push(field)
+                this.showFieldError(field.summaryId, field.errorId)
+            }
+        })
+        
+        if (!ontologiesSelected) {
+            missingFields.push({ display: 'Ontologies', errorId: 'ontologies-error' })
+            this.showFieldError('ontologies', 'ontologies-error')
+        }
+        
+        if (missingFields.length > 0) {
+            this.showValidationAlert()
+            
+            const confirmBtn = document.querySelector('#submit-project-btn')
+            if (confirmBtn) {
+                confirmBtn.disabled = true
+            }
+        }
+        
+        return missingFields.length === 0
+    }
+    
+    showFieldError(summaryId, errorId) {
+        const summaryEl = document.querySelector(`#summary-${summaryId}`)
+        if (summaryEl) {
+            summaryEl.classList.add('text-danger')
+        }
+        
+        const errorEl = document.querySelector(`#${errorId}`)
+        if (errorEl) {
+            errorEl.classList.remove('d-none')
+        }
+    }
+    
+    showValidationAlert() {
+        const alertContainer = document.querySelector('#validation-alert-container')
+        if (alertContainer) {
+            alertContainer.classList.remove('d-none')
+        }
+    }
+    
+    clearValidationWarnings() {
+        const alertContainer = document.querySelector('#validation-alert-container')
+        if (alertContainer) {
+            alertContainer.classList.add('d-none')
+        }
+        
+        const errorMessages = document.querySelectorAll('.invalid-feedback')
+        errorMessages.forEach(el => {
+            el.classList.add('d-none')
+        })
+        
+        const highlightedElements = document.querySelectorAll('.text-danger')
+        highlightedElements.forEach(el => {
+            el.classList.remove('text-danger')
+        })
+        
+        const confirmBtn = document.querySelector('#submit-project-btn')
+        if (confirmBtn) {
+            confirmBtn.disabled = false
+        }
+    }    
 
     updateSummaryField(id, value) {
         if (id === 'homepage') {
             const element = document.querySelector(`#summary-homepage`)
             if (element) {
-                let displayValue = value && value !== "/" ? value : "/"
-                if (displayValue.length > 15) {
-                    displayValue = displayValue.slice(0, 15) + "..."
-                }
-                element.textContent = displayValue
+                element.textContent = value
                 element.href = (value && value !== "/" ? value : "#")
                 element.target = "_blank"
             }
             return
         }
+        
         const element = document.querySelector(`#summary-${id}`) ||
                         document.querySelector(`[id="summary-${id}"]`) ||
                         document.querySelector(`[data-summary-id="${id}"]`)

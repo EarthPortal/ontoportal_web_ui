@@ -27,7 +27,6 @@
   = hidden_field_tag :funding_source, session[:funding_source] || ""
   = hidden_field_tag :project_data, session[:project_data].to_json || "{}"
 
-#submissionModal.modal.fade{'data-controller': 'submission-modal', 'data-submission-modal-target': 'modal'}
+#submissionModal.modal.fade{'data-controller': 'project-summary', 'data-project-summary-target-modal-value': '#submissionModal'}
   .modal-dialog
-    .modal-content
-      = render partial: 'projects/project_summary_modal'
+    = render partial: 'projects/project_summary_modal'

@@ -93,6 +93,8 @@ class ProjectsController < ApplicationController
       contact_id = contacts.first["id"] if contacts.first && contacts.first["id"].present?
       create_params[:contact] = contact_id
     end
+
+    create_params[:funder] = params[:project][:funders_attributes]&.values&.first&.dig("id")
   
     create_params[:ontologyUsed] ||= []
   
@@ -196,8 +198,19 @@ class ProjectsController < ApplicationController
       
       case response.status
       when 200
-        if response.body && response.body.is_a?(Hash) && response.body.key?("projects")
-          results = response.body["projects"] || []
+        if response.body && response.body.is_a?(Hash) && response.body.key?("collection")
+          results = response.body["collection"] || []
+
+          results.each do |project|
+            if project["funder"] && project["funder"]["value"]
+              funder_uri = project["funder"]["value"]
+              agent_id = funder_uri.split('/').last
+              response = api_connection.get("/agents/#{agent_id}")
+              project["funder"] = response.body if response.status == 200 && response.body
+            end
+          end
+
+
           render json: {
             success: true,
             results: results,
@@ -223,12 +236,13 @@ class ProjectsController < ApplicationController
   private
 
   def project_params
-  params.require(:project).permit(
-    :acronym, { creator: [] }, :type, :name, :homePage, :description, 
-    { ontologyUsed: [] }, :source, :keywords, :contact, :organization, 
-    :logo, :grant_number, :start_date, :end_date, :funder
-  )
-end
+    params.require(:project).permit(
+      :acronym, { creator: [] }, :type, :name, :homePage, :description, 
+      { ontologyUsed: [] }, :source, :keywords, :contact, :organization, 
+      :logo, :grant_number, :start_date, :end_date, :funder,
+      organizations_attributes: [:id], contacts_attributes: [:id], funders_attributes: [:id]
+    )
+  end
 
   def flash_error(msg)
     html = ''.html_safe

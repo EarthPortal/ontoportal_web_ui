@@ -789,19 +789,25 @@ en:
       title: "Title"
       acronym: "Acronym"
       description: "Description"
-      start_date: "Start Date"
-      end_date: "End Date"
+      start_date: "Start date"
+      end_date: "End date"
       homepage: "Homepage"
       keywords: "Keywords"
       organization: "Organization"
       contact: "Contact"
       ontologies: "Ontologies"
-      grant_number: "Grant Number"
+      grant_number: "Grant number"
       funder: "Funder"
       logo_url: "Logo URL"
       summary_confirmation: "Please review your project details before submitting."
-      summary_title: "Project Summary"
+      summary_title: "Project summary"
       organization_tooltip: "This is the project’s organization coordinator."
+      field_required: "%{field} is required"
+      selection_required: "At least one %{field} must be selected"
+      error-submission-message: "Please fill all required fields before submitting"
+
+
+
 
 
     

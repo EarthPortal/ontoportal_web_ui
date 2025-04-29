@@ -54,9 +54,11 @@
         .col-md-6
           .upload-ontology-input-field-container{"data-project-creation-target" => "grantNumber"}
             = render Input::TextInputComponent.new(label: t("projects.form.grant_number"), name: "project[grant_number]")
+
         .col-md-6
           .upload-ontology-input-field-container{"data-project-creation-target" => "funder"}
-            = render Input::TextInputComponent.new(label: t("projects.form.funder"), name: "project[funder]")
+            = hidden_field_tag "project[funders_attributes][0][id]", "", id: "project_funders_attributes_0_id"
+            = render Input::TextInputComponent.new( label: t("projects.form.funder"),   name: "project_funder_display"    )
       .upload-ontology-input-field-container.mt-3
         %label.text-input-label
           = t("projects.form.ontologies")
