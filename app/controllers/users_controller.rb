@@ -42,7 +42,7 @@ class UsersController < ApplicationController
     @admin_ontologies = @ontologies.select {|o| o.administeredBy.include? @user.id }
 
     projects = LinkedData::Client::Models::Project.all;
-    @user_projects = projects.select {|p| p.creator.include? @user.id }
+    @user_projects = projects.select {|p| p.creator && p.creator.include?(@user.id) }
   end
 
   # GET /users/new
