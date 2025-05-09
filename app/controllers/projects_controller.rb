@@ -205,8 +205,8 @@ class ProjectsController < ApplicationController
             if project["funder"] && project["funder"]["value"]
               funder_uri = project["funder"]["value"]
               agent_id = funder_uri.split('/').last
-              response = api_connection.get("/agents/#{agent_id}")
-              project["funder"] = response.body if response.status == 200 && response.body
+              agent_response = api_connection.get("/agents/#{agent_id}")
+              project["funder"] = agent_response.body if agent_response.status == 200 && agent_response.body
             end
           end
 
@@ -252,14 +252,11 @@ class ProjectsController < ApplicationController
   end
 
   def api_connection
-    apikey = session[:user].try(:apikey)
-    
-    @api_connection ||= Faraday.new(ENV['API_URL']) do |faraday|
-      faraday.params['apikey'] = apikey
+    @api_connection ||= Faraday.new(url: rest_url) do |faraday|
+      faraday.headers['Authorization'] = "apikey token=#{get_apikey}"
+      faraday.headers['Accept'] = "application/json"
       faraday.request :url_encoded
       faraday.response :json, content_type: /\bjson$/
-      faraday.options[:timeout] = 30
-      faraday.options[:open_timeout] = 10
       faraday.adapter Faraday.default_adapter
     end
   end
