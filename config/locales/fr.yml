@@ -765,6 +765,7 @@ fr:
       home_page: "Page d'accueil :"
       ontologies_used: Ontologies utilisées
       no_ontologies_associated: Aucune ontologie n'est actuellement associée à ce projet
+      people_and_organizations: Personnes et organisations
     form:
       errors_on_form: Erreurs sur le formulaire
       name: "Nom : *"

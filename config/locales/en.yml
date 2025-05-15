@@ -777,6 +777,7 @@ en:
       home_page: "Home Page:"
       ontologies_used: Ontologies Used
       no_ontologies_associated: No ontologies are currently associated with this project
+      people_and_organizations: People and Organizations
 
     form:
       errors_on_form: Errors On Form

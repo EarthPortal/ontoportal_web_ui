@@ -1,150 +1,98 @@
 - @title = t('projects.show.title', name: @project.name)
-.container.py-4
-  .card.border-0.shadow-sm.rounded-3.overflow-hidden
-    .card-header.bg-white.py-4.px-4.border-0
-      .d-flex.justify-content-between.align-items-center
-        .d-flex.align-items-center
-          - if @project.logo.present?
-            .me-4
-              %img.rounded.shadow-sm.bg-white.p-2{src: @project.logo, style: "max-width: 150px; max-height: 80px; object-fit: contain;"}
-          .project-info
-            %h1.display-5.fw-bold.mb-1= @project.name
-            .text-secondary.mb-2
-              %span.badge.bg-light.text-secondary.me-2
-                %i.fas.fa-tag.me-1
-                = @project.acronym
-              - if @project.homePage
-                = link_to @project.homePage, class: "badge bg-light text-secondary text-decoration-none", target: "_blank", rel: "nofollow" do
-                  %i.fas.fa-external-link-alt.me-1
-                  = t('projects.home_page')
-        - if session[:user] && (Array(@project.creator).include?(session[:user].id) || session[:user].admin?)
-          = link_to edit_project_path(@project.acronym), class: "btn btn-outline-primary" do
-            %i.fas.fa-edit.me-2
-            = t('projects.show.edit_project')
 
-    .card-body.px-4.py-4
-      .row
-        .col-md-8
-          .card.mb-4.border-0.shadow-sm.rounded-3
-            .card-header.bg-white.py-3.px-4.border-0
-              %h5.fw-bold.mb-0
-                %i.fas.fa-info-circle.text-primary.me-2
-                = t('projects.description')
-            .card-body.p-4
-              = @project.description.presence || content_tag(:span, t('projects.no_description'), class: 'text-muted fst-italic')
-              
-          .card.mb-4.border-0.shadow-sm.rounded-3
-            .card-header.bg-white.py-3.px-4.border-0
-              %h5.fw-bold.mb-0
-                %i.fas.fa-layer-group.text-primary.me-2
-                = t('projects.ontologies')
-            .card-body.p-4
-              - if @ontologies_used.present?
-                .row.row-cols-1.row-cols-md-2.g-4
-                  - @ontologies_used.each do |ont|
-                    .col
-                      = link_to(ontology_path(ont["acronym"]), class: "text-decoration-none") do
-                        .card.h-100.border-0.shadow-sm.hover-shadow
-                          .card-body.p-3
-                            %h6.card-title.mb-1.text-primary= ont["name"]
-                            %p.card-text.small.text-secondary= ont["acronym"]
-              - else
-                %p.text-muted.fst-italic= t('projects.no_ontologies')
+.project-center
+  .container
+    %h3.project-title= @project.name
+    %hr#project-title-line/
+    
+    .project-container
+      .project-main-column
+        .project-card
+          .project-header-bar
+            %h4.project-card-title= t('projects.details')
+            - if session[:user] && (Array(@project.creator).include?(session[:user].id) || session[:user].admin?)
+              %a.project-edit-button{href: edit_project_path(@project.acronym)}
+                = render partial: "shared/svgs/edit_icon"
                 
-        .col-md-4
-          .card.mb-4.border-0.shadow-sm.rounded-3
-            .card-header.bg-white.py-3.px-4.border-0
-              %h5.fw-bold.mb-0
-                %i.fas.fa-calendar-alt.text-primary.me-2
-                = t('projects.dates')
-            .card-body.p-4
-              .row.mb-3
-                .col
-                  .small.text-uppercase.text-muted= t('projects.form.start_date')
-                  .fw-bold
-                    - if @project.start_date
-                      %i.fas.fa-calendar-day.me-1.text-secondary
-                      = @project.start_date&.to_date&.strftime("%Y-%m-%d") rescue @project.start_date
-                    - else
-                      %span.text-muted —
-              .row
-                .col
-                  .small.text-uppercase.text-muted= t('projects.form.end_date')
-                  .fw-bold
-                    - if @project.end_date
-                      %i.fas.fa-calendar-check.me-1.text-secondary
-                      = @project.end_date&.to_date&.strftime("%Y-%m-%d") rescue @project.end_date
-                    - else
-                      %span.text-muted —
+          - if @project.logo.present?
+            .text-center.mb-3
+              %img.rounded.bg-white.p-2{src: @project.logo, style: "max-width: 200px; max-height: 100px; object-fit: contain;"}
+              
+          .project-info-row
+            %p.label= t('projects.form.acronym')
+            %p.value= @project.acronym
+            
+          - if @project.description.present?
+            .mt-3
+              %p.label= t('projects.description')
+              %p.value= @project.description
           
-          .card.mb-4.border-0.shadow-sm.rounded-3
-            .card-header.bg-white.py-3.px-4.border-0
-              %h5.fw-bold.mb-0
-                %i.fas.fa-users.text-primary.me-2
-                = t('projects.contacts')
-            .card-body.p-4
-              - if @project.contact.present?
-                .mb-3
-                  .small.text-uppercase.text-muted= t('projects.form.contact')
-                  = agent_chip_component(@project.contact)
-              - else
-                .mb-3
-                  .small.text-uppercase.text-muted= t('projects.form.contact')
-                  %span.text-muted —
-                  
-              - if @project.organization.present?
-                .mb-3
-                  .small.text-uppercase.text-muted= t('projects.form.organization')
-                  = agent_chip_component(@project.organization)
-              - else
-                .mb-3
-                  .small.text-uppercase.text-muted= t('projects.form.organization')
-                  %span.text-muted —
-                  
-              - if @project.funder.present?
-                .mb-3
-                  .small.text-uppercase.text-muted= t('projects.form.funder')
-                  = agent_chip_component(@project.funder)
-              - else
-                .mb-3
-                  .small.text-uppercase.text-muted= t('projects.form.funder')
-                  %span.text-muted —
-
-          .card.mb-4.border-0.shadow-sm.rounded-3
-            .card-header.bg-white.py-3.px-4.border-0
-              %h5.fw-bold.mb-0
-                %i.fas.fa-tags.text-primary.me-2
-                = t('projects.details')
-            .card-body.p-4
-              - if @project.grant_number.present?
-                .mb-3
-                  .small.text-uppercase.text-muted= t('projects.form.grant_number')
-                  %code.text-dark.bg-light.px-2.py-1.rounded= @project.grant_number
+          - if @project.homePage.present?
+            .project-info-row.mt-3
+              %p.label= t('projects.home_page')
+              %p.value
+                %a{href: @project.homePage, target: "_blank", rel: "nofollow"}= @project.homePage
+          
+          - if @project.grant_number.present?
+            .project-info-row.mt-3
+              %p.label= t('projects.form.grant_number')
+              %p.value= @project.grant_number
               
-              - if @project.keywords.present?
-                .mb-3
-                  .small.text-uppercase.text-muted= t('projects.form.keywords')
-                  .d-flex.flex-wrap.gap-2.mt-1
-                    - @project.keywords.each do |keyword|
-                      %span.badge.bg-light.text-secondary= keyword
+          - if @project.keywords.present?
+            .project-info-row.mt-3
+              %p.label= t('projects.form.keywords')
+              %p.value= @project.keywords.join(", ")
               
-              .row.g-3.mt-2
-                .col-6
-                  .small.text-uppercase.text-muted= t('projects.created')
-                  .small.text-secondary= @project.created&.to_date&.strftime("%Y-%m-%d") rescue @project.created
-                .col-6
-                  .small.text-uppercase.text-muted= t('projects.updated')
-                  .small.text-secondary= @project.updated&.to_date&.strftime("%Y-%m-%d") rescue @project.updated
-
-:javascript
-  // Add hover effect to ontology cards
-  document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('.hover-shadow').forEach(card => {
-      card.addEventListener('mouseenter', () => {
-        card.classList.add('shadow');
-      });
-      card.addEventListener('mouseleave', () => {
-        card.classList.remove('shadow');
-      });
-    });
-  });
+        .project-card
+          %h4.project-card-title= t('projects.dates')
+          
+          .project-info-row
+            %p.label= t('projects.form.start_date')
+            %p.value
+              - if @project.start_date
+                = @project.start_date&.to_date&.strftime("%Y-%m-%d") rescue @project.start_date
+              - else
+                %span.text-muted —
+                
+          .project-info-row
+            %p.label= t('projects.form.end_date')
+            %p.value
+              - if @project.end_date
+                = @project.end_date&.to_date&.strftime("%Y-%m-%d") rescue @project.end_date
+              - else
+                %span.text-muted —
+      
+      .project-side-column
+        .project-card
+          %h4.project-card-title= t('projects.show.people_and_organizations')
+          
+          - if @project.contact.present?
+            .project-info-row
+              %p.label= t('projects.form.contact')
+              %div.value
+                = agent_chip_component(@project.contact)
+                
+          - if @project.organization.present?
+            .project-info-row
+              %p.label= t('projects.form.organization')
+              %div.value
+                = agent_chip_component(@project.organization)
+                
+          - if @project.funder.present?
+            .project-info-row
+              %p.label= t('projects.form.funder')
+              %div.value
+                = agent_chip_component(@project.funder)
+                
+        .project-card
+          %h4.project-card-title= t('projects.ontologies')
+          
+          - if @ontologies_used.empty?
+            .empty-project-section
+              %img{:src => "#{asset_path("empty-box.svg")}"}/
+              %p= t('projects.no_ontologies_associated')
+          - else
+            .ontology-cards-container
+              - @ontologies_used.each do |ontology|
+                .ontology-card{data: {controller: 'tooltip'}, title: ontology["name"]}
+                  %a{href: ontology_path(ontology["acronym"])}= ontology["acronym"]
