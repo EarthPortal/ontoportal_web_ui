@@ -472,7 +472,7 @@ class ProjectsController < ApplicationController
   def project_params
     params.require(:project).permit(
       :acronym, { creator: [] }, :type, :name, :homePage, :description, 
-      { ontologyUsed: [] }, :source, :keywords, :contact, :organization, 
+      { ontologyUsed: [] }, :source, { keywords: [] }, :contact, :organization, 
       :logo, :grant_number, :start_date, :end_date, :funder,
       organizations_attributes: [:id], contacts_attributes: [:id], funders_attributes: [:id]
     )
