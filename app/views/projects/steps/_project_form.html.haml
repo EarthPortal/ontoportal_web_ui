@@ -1,70 +1,16 @@
-= form_with url: projects_path, method: :post, html: { id: "new_project", multipart: true, novalidate: true } do
+- form_options = { url: projects_path, method: :post, html: { id: "new_project", multipart: true, novalidate: true } }
+- form_options = nil if @edit_mode # Skip form creation in edit mode, as it's done by the parent
+
+- if !@edit_mode
+  = form_with(**form_options) do
+    .project-form-card.mb-4{"data-controller" => "project-creation"}
+      .card-body
+        = render partial: 'projects/form_fields'
+- else 
   .project-form-card.mb-4{"data-controller" => "project-creation"}
     .card-body
-      .upload-ontology-input-field-container{"data-project-creation-target" => "source"}
-        = hidden_field_tag "project[source]", "", id: "project_source"
-      .upload-ontology-input-field-container{"data-project-creation-target" => "name"}
-        = render Input::TextInputComponent.new(label: label_required(t("projects.form.title")), name: "project[name]")
-      .upload-ontology-input-field-container{"data-project-creation-target" => "acronym"}
-        = render Input::TextInputComponent.new(label: label_required(t("projects.form.acronym")), name: "project[acronym]", disabled: @project&.type == 'funded')
-      .upload-ontology-input-field-container{"data-project-creation-target" => "description"}
-        = render Input::TextAreaComponent.new(label: label_required(t("projects.form.description")), name: "project[description]", rows: 4)
-      .row
-        .col-md-6
-          .upload-ontology-input-field-container{"data-project-creation-target" => "startDate"}
-            = render Input::DateComponent.new(label: t("projects.form.start_date"), name: "project[start_date]")
-        .col-md-6
-          .upload-ontology-input-field-container{"data-project-creation-target" => "endDate"}
-            = render Input::DateComponent.new(label: t("projects.form.end_date"), name: "project[end_date]")
-      .organization-project-input-field{"data-project-creation-target" => "organizations"}
-        = render NestedFormInputsComponent.new(object_name: t("projects.form.organization"), default_empty_row: true) do |component|
-          - component.with_header do
-            .d-flex.align-items-center
-              %span= t("projects.form.organization")
-              = render Display::InfoTooltipComponent.new(text: t("projects.form.organization_tooltip"))
-          - component.with_template do
-            .d-flex.flex-column{"data-controller" => "turbo-frame-error"}
-              = turbo_frame_tag "project_organization_NEW_RECORD", data: { "turbo-frame-error-target": "frame", action: "turbo:before-fetch-response->turbo-frame-error#showError turbo:before-fetch-request->turbo-frame-error#hideError" } do
-                .hide-if-loading
-                  = hidden_field_tag "project[organizations_attributes][NEW_RECORD]", nil, id: "project_organizations_attributes_NEW_RECORD"
-                  = render AgentSearchInputComponent.new(id: "NEW_RECORD", agent_type: 'organization', name_prefix: "project[organizations_attributes]", parent_id: "project_organization", show_affiliations: true, edit_on_modal: true, deletable: true)
-      .contact-project-input-field{"data-project-creation-target" => "contacts"}
-        = render NestedFormInputsComponent.new(object_name: t("projects.form.contact")) do |component|
-          - component.with_header do
-            %div
-              %span= t("projects.form.contact")
-          - component.with_template do
-            .d-flex.flex-column{"data-controller" => "turbo-frame-error"}
-              = turbo_frame_tag "project_contact_NEW_RECORD", data: { "turbo-frame-error-target": "frame", action: "turbo:before-fetch-response->turbo-frame-error#showError turbo:before-fetch-request->turbo-frame-error#hideError" } do
-                .hide-if-loading
-                  = hidden_field_tag "project[contacts_attributes][NEW_RECORD]", nil, id: "project_contacts_attributes_NEW_RECORD"
-                  = render AgentSearchInputComponent.new(id: "NEW_RECORD", agent_type: 'person', name_prefix: "project[contacts_attributes]", parent_id: "project_contact", show_affiliations: true, edit_on_modal: true, deletable: true)
-      .upload-ontology-input-field-container{"data-project-creation-target" => "homePage"}
-        = render Input::UrlComponent.new(label: t("projects.form.homepage"), name: "project[homePage]")
-      .upload-ontology-input-field-container{"data-project-creation-target" => "keywords"}
-        %label.text-input-label{for: "select_project_keywords"}
-          = t("projects.form.keywords")
-        = render SelectInputComponent.new(id: "project_keywords", name: "project[keywords][]", values: [], multiple: true, open_to_add_values: true)
-      .upload-ontology-input-field-container.logo-url-container
-        = render Input::UrlComponent.new(label: t("projects.form.logo_url"), name: "project[logo]", value: @project&.logo)
-        .logo-preview.mt-2
-          .logo-preview-placeholder{"data-project-creation-target" => "logoPlaceholder"}
-          %img.img-thumbnail.d-none{"data-project-creation-target" => "logoPreview", style: "max-height: 100px; max-width: 200px;"}
-      .row.mt-4
-        .col-md-6
-          .upload-ontology-input-field-container{"data-project-creation-target" => "grantNumber"}
-            = render Input::TextInputComponent.new(label: t("projects.form.grant_number"), name: "project[grant_number]")
+      = render partial: 'projects/form_fields'
 
-        .col-md-6
-          .upload-ontology-input-field-container{"data-project-creation-target" => "funder"}
-            = hidden_field_tag "project[funders_attributes][0][id]", "", id: "project_funders_attributes_0_id"
-            = render Input::TextInputComponent.new( label: t("projects.form.funder"),   name: "project_funder_display"    )
-      .upload-ontology-input-field-container.mt-3
-        %label.text-input-label
-          = t("projects.form.ontologies")
-          %span.text-danger *
-        .field.w-100
-          = ontologies_selector(id: 'project_ontologies', name: 'project[ontologyUsed][]', selected: @project&.ontologyUsed, ontologies: onts_for_select(include_views: true))
 - if @errors && @errors[:exception]
   .alert.alert-danger
     = @errors[:exception]

@@ -864,7 +864,6 @@ fr:
     create:
       success: "Projet créé avec succès"
       error: "Un problème est survenu lors de la création du projet"
-    edit: "Éditer"
     call_annotator: "Annoter"
     details: "Détails du Projet"
 
