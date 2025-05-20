@@ -809,12 +809,6 @@ en:
       field_required: "%{field} is required"
       selection_required: "At least one %{field} must be selected"
       error-submission-message: "Please fill all required fields before submitting"
-
-
-
-
-
-    
     edit:
       title: Editing Project %{name}
       editing_project: Editing project
@@ -853,7 +847,6 @@ en:
     create:
       success: "Project created successfully"
       error: "There was a problem creating the project"
-    edit: "Edit"
     call_annotator: "Annotate"
     details: "Project Details"
   recommender:
