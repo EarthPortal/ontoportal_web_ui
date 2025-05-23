@@ -5,7 +5,11 @@
     border-radius: 10px;
     margin-bottom: 20px;
   }
-  
+
+  .funding-source-selection-container {
+    gap: 8px;
+  }
+
   .funding-sources-options {
     .funding-source-option {
       padding: 10px 14px;
@@ -15,7 +19,7 @@
     }
     .dataset-container { margin: 8px 0; }
   }
-  
+
   .project-search-container {
     .nav-tabs {
       margin-bottom: 15px;
@@ -35,8 +39,6 @@
     .results-scrollable-container {
       max-height: 300px;
       overflow-y: auto;
-      border: 1px solid #eee;
-      border-radius: 6px;
     }
     .no-results {
       padding: 15px;
@@ -45,7 +47,7 @@
       border-radius: 6px;
     }
   }
-  
+
   .logo-preview {
     img.img-thumbnail {
       object-fit: contain;
@@ -55,8 +57,16 @@
   }
 }
 
-// Project selection card (used in forms)
-.project-card {
+#submit-project-btn:disabled,
+button:disabled,
+.btn[disabled] {
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+  pointer-events: auto !important;
+  box-shadow: none !important;
+}
+
+.single-project-card {
   border-radius: 6px;
   border: 1px solid #e9ecef;
   padding: 10px;
@@ -77,14 +87,11 @@
   }
 }
 
-// Form input field styles
 .organization-project-input-field {
   .btn.btn-sm.btn-light svg {
     width: 16px;
     height: 16px;
   }
-  
-  // Make the button itself smaller and center content
   .btn.btn-sm.btn-light {
     padding: 0.2rem 0.4rem;
     line-height: 1;
@@ -92,7 +99,6 @@
     align-items: center;
     justify-content: center;
   }
-
   .add-another-object,
   .d-flex.justify-content-end {
     display: none !important;
@@ -107,8 +113,6 @@
     width: 16px;
     height: 16px;
   }
-  
-  // Make the button itself smaller and center content
   .btn.btn-sm.btn-light {
     padding: 0.2rem 0.4rem;
     line-height: 1;
@@ -136,20 +140,17 @@
   color: var(--bs-danger);
   font-size: 0.875rem;
   margin-top: 0.25rem;
-  
   &.d-none {
     display: none !important;
   }
 }
 
-// Modal styles
 #submissionModal[data-controller="project-summary"] {
   .modal-dialog {
     max-width: 1400px;
     width: 70vw;
     margin: 1.75rem auto;
   }
-
   .modal-content {
     border-radius: 10px;
     border: 1px solid #e9ecef;
@@ -157,12 +158,10 @@
     height: auto;
     min-height: 60vh;
   }
-  
   .modal-header {
     border-bottom: 1px solid #e9ecef;
     padding-bottom: 0.5rem;
     padding-top: 1rem;
-    
     .modal-title {
       font-size: 1.25rem;
       font-weight: 600;
@@ -171,27 +170,21 @@
       align-items: center;
       gap: 0.5rem;
     }
-    
     .btn-close { margin-top: -0.5rem; }
   }
-  
   .modal-body {
     padding-top: 1.5rem;
     padding-bottom: 1.5rem;
-    
     .row { margin-bottom: 0.5rem; }
-    
     .fw-bold {
       font-weight: 600 !important;
       color: #333;
     }
-    
     [id^="summary-"] {
       color: #555;
       font-weight: 400;
       word-break: break-word;
     }
-    
     #summary-logo-img {
       border-radius: 6px;
       background: #fff;
@@ -203,7 +196,6 @@
       display: block;
       margin: 0 auto;
     }
-    
     ul#summary-ontologies {
       margin-bottom: 0;
       padding-left: 1.2rem;
@@ -213,12 +205,10 @@
         margin-bottom: 2px;
       }
     }
-    
     hr {
       margin: 1.2rem 0;
       border-color: #ececec;
     }
-    
     .alert-info {
       background: #f8f9fa;
       color: #0d6efd;
@@ -230,38 +220,30 @@
       i { font-size: 1.2em; }
     }
   }
-  
   .modal-footer {
     background: #f8f9fa;
     border-top: 1px solid #e9ecef;
-    
     .btn {
       min-width: 100px;
       font-weight: 500;
     }
-    
     .me-auto { margin-right: auto !important; }
   }
-  
   .invalid-feedback {
     display: none;
-    
     &:not(.d-none) {
       display: block;
     }
   }
-  
   .text-danger {
     color: var(--bs-danger) !important;
   }
 }
 
-// Project show page styles
 .project-center {
   display: flex;
   justify-content: center;
   margin: 30px 0;
-  
   svg path {
     fill: var(--primary-color)
   }
@@ -272,14 +254,12 @@
   font-weight: 700;
 }
 
-// Container for project details - updated with more width
 .project-container {
   display: flex;
   max-width: 1300px;
   margin: 0 auto;
 }
 
-// Increased column widths
 .project-main-column {
   width: 690px;
   margin-right: 30px;
@@ -297,18 +277,11 @@
   margin-bottom: 0px !important;
 }
 
-// Project card styles with fixed hover and cursor
 .project-card {
   border: 1px solid #DFDFDF;
   border-radius: 5px;
   padding: 25px;
   margin-top: 25px;
-  cursor: default;
-  
-  // Explicitly prevent hover background changes for view mode
-  &:hover {
-    background-color: transparent !important;
-  }
 }
 
 .project-card-title {
@@ -322,7 +295,6 @@
   justify-content: space-between;
 }
 
-// Edit button styles
 .project-edit-button {
   display: flex;
   justify-content: center;
@@ -332,24 +304,20 @@
   border-radius: 50px;
   width: 40px;
   height: 40px;
-  
   &:hover {
     background-color: transparent;
   }
 }
 
-// Project info row styles with improved spacing
 .project-info-row {
   display: flex;
   margin-bottom: 12px;
-  
   .label {
     margin-right: 12px;
     font-size: 15px;
     color: #666666;
     min-width: 95px;
   }
-  
   .value {
     font-size: 15px;
     font-weight: 600;
@@ -366,14 +334,12 @@
   line-height: 1.5;
 }
 
-// Empty state styling
 .empty-project-section {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
   padding: 40px;
-  
   p {
     color: #bbbbbb;
     font-size: 16px;
@@ -381,7 +347,6 @@
   }
 }
 
-// Ontology cards container and cards
 .ontology-cards-container {
   display: flex;
   flex-wrap: wrap;
@@ -394,33 +359,27 @@
   margin-right: 12px;
   margin-top: 12px;
   cursor: default;
-  
-  // Explicitly prevent hover background changes
   &:hover {
     background-color: #F6F6F6 !important;
   }
-  
   a {
     color: #777777 !important;
     font-weight: 500;
     font-size: 15px;
-    cursor: pointer; // Only keep pointer cursor on the actual links
-    
+    cursor: pointer;
     &:hover {
       text-decoration: none;
     }
   }
 }
 
-// Responsive breakpoints - updated for wider content
 @media only screen and (max-width: 1300px) {
   .project-main-column {
-    width: 52vw;  // Increased from 48vw
+    width: 52vw;
     margin-right: 25px;
   }
-
   .project-side-column {
-    width: 44vw;  // Decreased from 48vw
+    width: 44vw;
   }
 }
 
@@ -430,19 +389,15 @@
     width: 80vw;
     margin-right: 20px;
   }
-  
   .project-container {
     display: block;
   }
-  
   .project-info-row {
     flex-direction: column;
   }
-  
   .project-info-row .label {
     margin-bottom: 5px;
   }
-  
   .project-card {
     padding: 20px;
   }

@@ -15,9 +15,7 @@
               %hr#register-title-line/
             %div
           .upload-ontology-progress
-            = render Layout::ProgressPagesComponent.new(pages_title: [t("projects.project_type_selection.title"), t("projects.funding_search.title"), t("projects.details")]) do |c|
-              - c.page do
-                .project-step-content= render partial: 'projects/steps/project_type_selection'
+            = render Layout::ProgressPagesComponent.new(pages_title: [t("projects.funding_search.title"), t("projects.details")]) do |c|
               - c.page do
                 .project-step-content= render partial: 'projects/steps/funding_search'
               - c.page do

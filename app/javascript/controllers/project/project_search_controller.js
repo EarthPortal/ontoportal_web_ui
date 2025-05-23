@@ -1,7 +1,10 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["loading", "errorContainer", "results", "resultsList", "resultsCount", "noResults", "projectIdInput", "searchTermInput"]
+  static targets = [
+    "loading", "errorContainer", "results", "resultsList", "resultsCount",
+    "noResults", "projectIdInput", "searchTermInput"
+  ]
   static values = {
     api: String,
     datasetParam: String
@@ -37,32 +40,25 @@ export default class extends Controller {
   searchById(event) {
     event.preventDefault()
     const projectId = this.projectIdInputTarget.value.trim()
-    
     if (!projectId) {
       this.showError("Please enter a valid project ID")
       return
     }
-    
     this.performSearch(projectId, 'id')
   }
   
   searchByTerm(event) {
     event.preventDefault()
     const searchTerm = this.searchTermInputTarget.value.trim()
-    
     if (!searchTerm || searchTerm.length < 2) {
       this.showError("Please enter a valid search term with at least 2 characters")
       return
     }
-    
     this.performSearch(searchTerm, 'acronym')
   }
 
   getCurrentDataset() {
-    if (this.datasetParamValue) {
-      return this.datasetParamValue
-    }
-    
+    if (this.datasetParamValue) return this.datasetParamValue
     const source = this.apiValue
     const datasetInput = document.querySelector(`input[name="${source}_dataset"]:checked`)
     return datasetInput ? datasetInput.value : ''
@@ -71,18 +67,14 @@ export default class extends Controller {
   async performSearch(term, type) {
     this.resetSearch()
     this.showLoading()
-    
     let source = this.apiValue
     const dataset = this.getCurrentDataset()
-    if(dataset) source = dataset
-    
+    if (dataset) source = dataset
     const params = new URLSearchParams()
     params.append('source', source)
     params.append('term', term)
     params.append('type', type)
-    
     const url = `/projects/search_external?${params.toString()}`
-    
     try {
       const response = await fetch(url, {
         headers: {
@@ -90,17 +82,11 @@ export default class extends Controller {
           'X-Requested-With': 'XMLHttpRequest'
         }
       })
-      
-      if (!response.ok) {
-        throw new Error(`Server responded with status: ${response.status}`)
-      }
-      
+      if (!response.ok) throw new Error(`Server responded with status: ${response.status}`)
       const data = await response.json()
       this.errorContainerTarget.classList.add("d-none")
-      
       if (data.success) {
         const projects = data.results || []
-        
         if (projects.length > 0) {
           this.displayResults(projects)
         } else {
@@ -118,17 +104,12 @@ export default class extends Controller {
     
   showError(message) {
     if (!message) return
-    
     this.errorContainerTarget.classList.remove("d-none")
-    
     const alertElement = this.errorContainerTarget.querySelector('.alert-container')
     if (alertElement) {
       const messageElement = alertElement.querySelector('.alert-message')
-      if (messageElement) {
-        messageElement.innerHTML = message
-      }
+      if (messageElement) messageElement.innerHTML = message
     }
-    
     this.resultsTarget.classList.add("d-none")
     this.noResultsTarget.classList.add("d-none")
   }
@@ -138,23 +119,18 @@ export default class extends Controller {
       this.showNoResults()
       return
     }
-    
     this.currentResults = projects
-    
     this.resultsTarget.classList.remove('d-none')
     this.errorContainerTarget.classList.add('d-none')
     this.noResultsTarget.classList.add('d-none')
-    
     this.resultsCountTarget.textContent = `(${projects.length})`
     this.resultsListTarget.innerHTML = ''
-    
     projects.forEach(project => {
       try {
         const card = this.createProjectCard(project)
         this.resultsListTarget.appendChild(card)
       } catch (error) {}
     })
-    
     this.resultsListTarget.style.opacity = '0'
     setTimeout(() => {
       this.resultsListTarget.style.transition = 'opacity 0.3s ease'
@@ -164,19 +140,15 @@ export default class extends Controller {
   
   createProjectCard(project) {
     const card = document.createElement("div")
-    card.className = "project-card p-3 border rounded"
-    
+    card.className = "single-project-card p-3 border rounded"
     const projectId = project.id || project.acronym || project.grant_number || `project-${Math.random().toString(36).substring(2, 10)}`
     card.dataset.projectId = projectId
-    
     card.addEventListener('click', this.selectProject.bind(this))
-    
     const acronym = project.acronym || 'N/A'
     const grantNumber = project.grant_number || 'No ID'
     const fullName = project.name || 'Untitled Project'
     const name = fullName.length > 45 ? fullName.substring(0, 45) + '...' : fullName
-    
-    const safeHtml = `
+    card.innerHTML = `
       <div class="d-flex justify-content-between align-items-start">
         <div class="flex-grow-1">
           <div class="d-flex align-items-center mb-1">
@@ -191,8 +163,6 @@ export default class extends Controller {
         </div>
       </div>
     `
-    
-    card.innerHTML = safeHtml
     return card
   }
   
@@ -201,26 +171,20 @@ export default class extends Controller {
         event.target.tagName === 'A' || event.target.closest('a')) {
       event.preventDefault()
     }
-  
-    const projectCard = event.target.closest('.project-card')
+    const projectCard = event.target.closest('.single-project-card')
     if (!projectCard) return
-  
     const projectId = projectCard.dataset.projectId
     if (!projectId) return
-  
-    document.querySelectorAll('.project-card').forEach(card => {
+    document.querySelectorAll('.single-project-card').forEach(card => {
       card.classList.remove('selected')
     })
     projectCard.classList.add('selected')
-  
     const projectData = this.findProjectById(projectId)
     if (!projectData) return
-  
     const source = this.apiValue || this.datasetParamValue || ''
     const projectWithSource = { ...projectData, source }
-  
+    localStorage.setItem('project_type', 'funded')
     localStorage.setItem('selectedProjectData', JSON.stringify(projectWithSource))
-  
     document.dispatchEvent(new CustomEvent('project-selected', {
       bubbles: true,
       detail: { projectData: projectWithSource }
@@ -229,11 +193,7 @@ export default class extends Controller {
 
   findProjectById(id) {
     const results = this.currentResults || []
-    
-    if (!results || !Array.isArray(results)) {
-      return null
-    }
-    
+    if (!results || !Array.isArray(results)) return null
     return results.find(project => (
       (project.id && project.id.toString() === id) ||
       (project.acronym && project.acronym === id) ||
@@ -243,15 +203,12 @@ export default class extends Controller {
   
   filterResults(event) {
     const filterText = event.target.value.toLowerCase()
-    const cards = this.resultsListTarget.querySelectorAll('.project-card')
-    
+    const cards = this.resultsListTarget.querySelectorAll('.single-project-card')
     let visibleCount = 0
-    
     cards.forEach(card => {
       const title = card.querySelector('.project-title')?.textContent.toLowerCase() || ''
       const desc = card.querySelector('.project-description')?.textContent.toLowerCase() || ''
       const id = card.querySelector('.project-id')?.textContent.toLowerCase() || ''
-      
       if (title.includes(filterText) || desc.includes(filterText) || id.includes(filterText)) {
         card.style.display = ''
         visibleCount++
@@ -259,9 +216,7 @@ export default class extends Controller {
         card.style.display = 'none'
       }
     })
-    
     this.resultsCountTarget.textContent = `(${visibleCount})`
-    
     if (visibleCount === 0) {
       this.noResultsTarget.classList.remove('d-none')
     } else {
@@ -272,10 +227,8 @@ export default class extends Controller {
   clearFilter(event) {
     const filterInput = event.target.closest('.input-group').querySelector('input')
     filterInput.value = ''
-    
-    const cards = this.resultsListTarget.querySelectorAll('.project-card')
+    const cards = this.resultsListTarget.querySelectorAll('.single-project-card')
     cards.forEach(card => card.style.display = '')
-    
     this.resultsCountTarget.textContent = `(${cards.length})`
     this.noResultsTarget.classList.add('d-none')
   }
@@ -291,19 +244,14 @@ export default class extends Controller {
   resetSearch() {
     this.resultsTarget.classList.add("d-none")
     this.noResultsTarget.classList.add("d-none")
-    
     if (this.hasErrorContainerTarget) {
       this.errorContainerTarget.classList.add("d-none")
-      
       const alertElement = this.errorContainerTarget.querySelector('.alert')
       if (alertElement) {
         const messageElement = alertElement.querySelector('.alert-message')
-        if (messageElement) {
-          messageElement.textContent = ""
-        }
+        if (messageElement) messageElement.textContent = ""
       }
     }
-    
     this.resultsListTarget.innerHTML = ''
     this.resultsCountTarget.textContent = ''
     this.selectedProject = null
@@ -319,16 +267,13 @@ export default class extends Controller {
   
   formatDates(start, end) {
     if (!start) return ''
-    
     try {
       const startDate = new Date(start)
       let result = startDate.toLocaleDateString()
-      
       if (end) {
         const endDate = new Date(end)
         result += ` - ${endDate.toLocaleDateString()}`
       }
-      
       return result
     } catch (e) {
       return start + (end ? ` - ${end}` : '')

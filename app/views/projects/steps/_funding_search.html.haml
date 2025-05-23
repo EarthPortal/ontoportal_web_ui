@@ -1,90 +1,78 @@
-.card.mb-4{"data-controller" => "funding-source-selection", "data-funding-source-selection-target" => "content"}
-  .card-body
-    -# Funding sources
-    .funding-sources-options
-      -# Get funding sources from configuration or use default
-      - funding_sources = Rails.configuration.respond_to?(:funding_sources) ? Rails.configuration.funding_sources : [{ id: "cordis", name: "European Union", badge: "CORDIS", datasets: [] },{ id: "anr", name: "France", badge: "ANR", datasets: [{ id: "ANR_FRANCE2030", name: "France 2030" }, { id: "ANR_AAPG", name: "AAPG Projects" }] }]
-      
-      - funding_sources.each_with_index do |source, index|
-        - is_selected = index == 0
-        .funding-source-option.mb-2.pointer-cursor{"data-funding-selected" => is_selected ? "true" : nil, "data-source-id" => source[:id], "data-action" => "click->funding-source-selection#selectSourceFromBlock"}
-          .form-check.d-flex.align-items-center
-            %input.form-check-input{type: "radio", name: "funding_source", value: source[:id], id: "source_#{source[:id]}", checked: is_selected, "data-action" => "change->funding-source-selection#toggleSource", "data-funding-source-selection-target" => "sourceRadio", "data-project-creation-target" => "fundingSourceRadio"}
-            %label.form-check-label.ms-2.d-flex.align-items-center{for: "source_#{source[:id]}"} 
-              %span= source[:name]
-              %span.badge.bg-light.text-dark.ms-2= "(#{source[:badge]})"
-          
-          - if source[:datasets].present?
-            .dataset-container.ps-3.mt-1.mb-2{"data-funding-source-selection-target" => "datasetContainer", "data-source-id" => source[:id], class: is_selected ? "" : "d-none"}
-              .dataset-options.d-flex.flex-wrap
-                - source[:datasets].each_with_index do |dataset, ds_index|
-                  .dataset-choice.me-2.mb-1
-                    = render Input::RadioChipComponent.new(label: dataset[:name], name: "#{source[:id]}_dataset", value: dataset[:id], checked: ds_index == 0)
-                    :javascript
-                      document.addEventListener('DOMContentLoaded', function() {
-                        document.querySelectorAll('input[name="#{source[:id]}_dataset"]').forEach(function(input) {
-                          input.addEventListener('change', function() {
-                            const event = new CustomEvent('dataset-changed', { 
-                              detail: { sourceId: '#{source[:id]}', datasetId: input.value } 
-                            });
-                            document.querySelector('[data-controller="funding-source-selection"]').dispatchEvent(event);
-                          });
-                        });
-                      });
-          - else
-            .dataset-container.ps-3{"data-funding-source-selection-target" => "datasetContainer", "data-source-id" => source[:id], class: "d-none"}
+.funding-source-selection-container.d-flex.flex-column{"data-controller" => "funding-source-selection", "data-funding-source-selection-target" => "content"}
+  .not-funded-button.my-4{'data-action': "click->funding-source-selection#selectNotFundedProject"}
+    = render Buttons::RegularButtonComponent.new(id: '', value: t("projects.project_type_selection.not_funded"), variant: 'secondary', state: 'regular', size: 'slim')
 
-  -# Common search component
+  .funding-sources-options
+    - funding_sources = Rails.configuration.respond_to?(:funding_sources) ? Rails.configuration.funding_sources : [
+        { id: "cordis", name: "European Union" },
+        { id: "ANR_FRANCE2030", name: "ANR (France 2030)" },
+        { id: "ANR_AAPG", name: "ANR (AAPG)" }
+      ]
+    - select_options = funding_sources.map { |src| [src[:name], src[:id]] }
+    .funding-source-select.my-4
+      = render Input::SelectComponent.new(
+        id: "funding_source_select",
+        name: "funding_source",
+        value: select_options,
+        selected: select_options.first[1],
+        data: {
+          action: "change->funding-source-selection#handleSourceSelect",
+          "funding-source-selection-target": "sourceSelect",
+          "project-creation-target": "fundingSourceSelect"
+        }
+      )
+
   .project-search-container.mt-3{
-    "data-controller" => "project-search", 
+    "data-controller" => "project-search",
     "data-project-search-api-value" => funding_sources.first[:id],
-    "data-project-search-dataset-param-value" => funding_sources.first[:datasets].present? ? funding_sources.first[:datasets].first[:id] : '',
     "data-funding-source-selection-target" => "searchComponent"
   }
-    .card
-      .card-body
-        = render TabsContainerComponent.new do |c|
-          - c.item(title: t("projects.project_search.search_by_id"), path: "#search-by-id", selected: true, page_name: "search-by-id")
-          - c.item_content do
-            .search-input-container.d-flex.mb-2
-              .flex-grow-1.me-2
-                = render Input::TextInputComponent.new(placeholder: t("projects.project_search.id_placeholder"), name: "project_id", data: { "project-search-target" => "projectIdInput", "action" => "keypress->project-search#handleIdKeypress" })
-              .d-flex.align-items-end{'data-action': "click->project-search#searchById"}
-                = render Buttons::RegularButtonComponent.new(id: 'search-by-id-button', value: t('projects.funding_search.search_button'), size: 'slim', state: 'regular') do |btn|
-                  - btn.icon_right do
-                    = inline_svg "icons/search.svg"
-                    
-          - c.item(title: t("projects.project_search.search_by_term"), path: "#search-by-acronym", selected: false, page_name: "search-by-acronym")
-          - c.item_content do
-            .search-input-container.d-flex.mb-2
-              .flex-grow-1.me-2
-                = render Input::TextInputComponent.new(placeholder: t("projects.project_search.term_placeholder"), name: "search_term", data: { "project-search-target" => "searchTermInput", "action" => "keypress->project-search#handleTermKeypress" })
-              .d-flex.align-items-end{'data-action': "click->project-search#searchByTerm"}
-                = render Buttons::RegularButtonComponent.new(id: 'search-by-term-button', value: t('projects.funding_search.search_button'), size: 'slim', state: 'regular') do |btn|
-                  - btn.icon_right do
-                    = inline_svg "icons/search.svg"
+    = render TabsContainerComponent.new do |c|
+      - c.item(title: t("projects.project_search.search_by_id"), path: "#search-by-id", selected: true, page_name: "search-by-id")
+      - c.item_content do
+        .search-input-container.d-flex.my-4
+          .flex-grow-1.mr-2
+            = render Input::TextInputComponent.new(
+              placeholder: t("projects.project_search.id_placeholder"),
+              name: "project_id",
+              data: { "project-search-target" => "projectIdInput", "action" => "keypress->project-search#handleIdKeypress" }
+            )
+          .d-flex.align-items-end{'data-action': "click->project-search#searchById"}
+            = render Buttons::RegularButtonComponent.new(id: 'search-by-id-button', value: t('projects.funding_search.search_button'), size: 'slim', state: 'regular') do |btn|
+              - btn.icon_right do
+                = inline_svg "icons/search.svg"
 
-        -# Loading indicator (initially hidden)
-        .text-center.py-3.d-none{"data-project-search-target" => "loading"}
-          .spinner-border.text-primary.spinner-border-sm{role: "status"}
-            %span.visually-hidden= t("common.loading")
+      - c.item(title: t("projects.project_search.search_by_term"), path: "#search-by-acronym", selected: false, page_name: "search-by-acronym")
+      - c.item_content do
+        .search-input-container.d-flex.my-4
+          .flex-grow-1.mr-2
+            = render Input::TextInputComponent.new(
+              placeholder: t("projects.project_search.term_placeholder"),
+              name: "search_term",
+              data: { "project-search-target" => "searchTermInput", "action" => "keypress->project-search#handleTermKeypress" }
+            )
+          .d-flex.align-items-end{'data-action': "click->project-search#searchByTerm"}
+            = render Buttons::RegularButtonComponent.new(id: 'search-by-term-button', value: t('projects.funding_search.search_button'), size: 'slim', state: 'regular') do |btn|
+              - btn.icon_right do
+                = inline_svg "icons/search.svg"
 
-        -# Error message (initially hidden)
-        .error-container.d-none{"data-project-search-target" => "errorContainer"}
-          = render Display::AlertComponent.new(message: "", type: "danger", closable: true)
+    .text-center.py-3.d-none{"data-project-search-target" => "loading"}
+      .spinner-border.text-primary.spinner-border-sm{role: "status"}
+        %span.visually-hidden= t("common.loading")
 
-        -# Results area (initially hidden)
-        .search-results.mt-2.d-none{"data-project-search-target" => "results", "data-funding-source-selection-target" => "resultsContainer"}
-          .results-header.d-flex.justify-content-between.align-items-center.mb-2
-            %small.text-muted
-              = t("projects.project_search.results")
-              %span.ms-1{"data-project-search-target" => "resultsCount"} 
-          
-          .results-scrollable-container{style: "max-height: 300px; overflow-y: auto; border-radius: 0.25rem;"}
-            .list-group.project-results{"data-project-search-target" => "resultsList"}
-              -# Results will be inserted here dynamically
-          
-          .no-results.text-center.py-3.d-none{"data-project-search-target" => "noResults"}
-            .text-muted.small
-              %i.bi.bi-search.d-block.mb-1
-              = t("projects.project_search.no_results")
+    .error-container.d-none{"data-project-search-target" => "errorContainer"}
+      = render Display::AlertComponent.new(message: "", type: "info", closable: true)
+
+    .search-results.mt-2.d-none{"data-project-search-target" => "results", "data-funding-source-selection-target" => "resultsContainer"}
+      .results-header.d-flex.justify-content-between.align-items-center.mb-2
+        %small.text-muted
+          = t("projects.project_search.results")
+          %span.ms-1{"data-project-search-target" => "resultsCount"}
+
+      .results-scrollable-container{style: "max-height: 300px; overflow-y: auto; border-radius: 0.25rem;"}
+        .list-group.project-results{"data-project-search-target" => "resultsList"}
+
+      .no-results.text-center.py-3.d-none{"data-project-search-target" => "noResults"}
+        .text-muted.small
+          %i.bi.bi-search.d-block.mb-1
+          = t("projects.project_search.no_results")

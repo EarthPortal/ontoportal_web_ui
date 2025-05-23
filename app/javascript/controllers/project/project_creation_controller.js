@@ -18,33 +18,25 @@ export default class extends Controller {
     if (this.hasIsFundedTarget) this.isFundedTarget.value = "false"
     if (this.hasFundingSourceTarget) this.fundingSourceTarget.value = ""
     if (this.hasProjectDataTarget) this.projectDataTarget.value = "{}"
-    
     this.setupLogoPreview()
-    
     const urlParams = new URLSearchParams(window.location.search)
     this.currentStepValue = parseInt(urlParams.get('step') || 1)
-    
     document.addEventListener("project-selected", this.handleProjectSelection.bind(this))
     document.addEventListener("skip-to-step", this.handleSkipToStep.bind(this))
-    
     if (this.element) {
       this.element.addEventListener("populate-project-form", this.populateProjectForm.bind(this))
       this.element.addEventListener("show-summary-modal", this.showSubmissionSummary.bind(this))
     }
-    
     this.updateStepsVisibility()
     this.updateProgressUI()
-    
     setTimeout(() => this.populateProjectForm(), 300)
   }
   
   disconnect() {
     document.removeEventListener("project-selected", this.handleProjectSelection.bind(this))
     document.removeEventListener("skip-to-step", this.handleSkipToStep.bind(this))
-    
     const logoInput = this.element.querySelector('input[name="project[logo]"]')
     if (logoInput) logoInput.removeEventListener('input', this.updateLogoPreview.bind(this))
-
     if (this.element) {
       this.element.removeEventListener("populate-project-form", this.populateProjectForm.bind(this))
       this.element.removeEventListener("show-summary-modal", this.showSubmissionSummary.bind(this))
@@ -54,13 +46,10 @@ export default class extends Controller {
   setupLogoPreview() {
     const logoUrlContainer = this.element.querySelector('.logo-url-container')
     if (!logoUrlContainer) return
-    
     const logoInput = logoUrlContainer.querySelector('input[name="project[logo]"]')
     if (!logoInput) return
-    
     logoInput.setAttribute('data-project-creation-target', 'logoInput')
     logoInput.addEventListener('input', this.updateLogoPreview.bind(this))
-    
     if (logoInput.value) setTimeout(() => this.updateLogoPreview(), 100)
   }
   
@@ -80,11 +69,8 @@ export default class extends Controller {
   
   handleFundedSelection(event) {
     const isFunded = event.currentTarget.value === "funded"
-    
     if (this.hasIsFundedTarget) this.isFundedTarget.value = isFunded.toString()
-    
     localStorage.setItem('project_type', isFunded ? 'funded' : 'not_funded')
-    
     if (isFunded) {
       if (this.hasAcronymTarget) this.makeFieldReadOnly(this.acronymTarget)
       if (this.hasGrantNumberTarget) this.makeFieldReadOnly(this.grantNumberTarget)
@@ -103,124 +89,111 @@ export default class extends Controller {
   
   handleProjectSelection(event) {
     if (!event.detail?.projectData) return
-    
     const projectData = event.detail.projectData
-    
+    localStorage.setItem('project_type', 'funded')
     if (this.hasProjectDataTarget) this.projectDataTarget.value = JSON.stringify(projectData)
-    
     this.storeSelectedProject(projectData)
   }
   
   storeSelectedProject(projectData) {
     if (!projectData) return
-    
     const projectDataField = document.querySelector('input[name="project_data"]')
     if (projectDataField) projectDataField.value = JSON.stringify(projectData)
-    
     localStorage.setItem('selectedProject', JSON.stringify(projectData))
   }
   
   populateProjectForm() {
     try {
+      if (!this.element.dataset.mode) return
+      const projectType = localStorage.getItem('project_type')
       const storedData = localStorage.getItem('selectedProjectData')
-      if (!storedData) return
-  
-      const projectData = JSON.parse(storedData)
-  
-      if (this.hasNameTarget) this.fillField(this.nameTarget, projectData.name || "")
-      if (this.hasAcronymTarget) this.fillField(this.acronymTarget, projectData.acronym || "")
-      if (this.hasDescriptionTarget) this.fillField(this.descriptionTarget, projectData.description || "")
-      if (this.hasStartDateTarget) this.fillDateField(this.startDateTarget, projectData.start_date || "")
-      if (this.hasEndDateTarget) this.fillDateField(this.endDateTarget, projectData.end_date || "")
-      if (this.hasContactTarget) this.fillField(this.contactTarget, projectData.contact || "")
-      if (this.hasHomePageTarget) this.fillField(this.homePageTarget, projectData.homePage || "")
-      if (this.hasGrantNumberTarget) this.fillField(this.grantNumberTarget, projectData.grant_number || "")
-      
-      if (projectData.funder) {
-        const funderInput = this.funderTarget.querySelector('input[name="project_funder_display"]')
-        const funderIdField = document.getElementById("project_funders_attributes_0_id")
-        
-        funderIdField.value = projectData.funder.id 
-        funderInput.value = projectData.funder.name
-        funderInput.readOnly = true
-      }
-      
-      const organizationField = this.element.querySelector('.organization-project-input-field')
-      const searchInput = organizationField?.querySelector('input[type="text"]')
-
-      if (searchInput) {
-        searchInput.value = ""
-        searchInput.dispatchEvent(new Event('change', { bubbles: true }))
-        searchInput.dispatchEvent(new Event('input', { bubbles: true }))
-        
-        if (projectData.organization?.name) {
-          searchInput.value = projectData.organization.name
-          searchInput.dispatchEvent(new Event('change', { bubbles: true }))
-          searchInput.dispatchEvent(new Event('input', { bubbles: true }))
-        }
-      }  
-
-      if (this.hasKeywordsTarget) {
-        const select = this.keywordsTarget.querySelector('select')
-        if (select) {
-          select.innerHTML = ''
-          const allKeywords = projectData.all_keywords || projectData.keywords || []
-          const selectedKeywords = projectData.keywords || []
-          
-          allKeywords.forEach(keyword => {
-            const option = document.createElement('option')
-            option.value = keyword
-            option.text = keyword
-            if (selectedKeywords.includes(keyword)) option.selected = true
-            select.appendChild(option)
-          })
-          
-          if (select.tomselect) {
-            select.tomselect.clear()
-            allKeywords.forEach(keyword => {
-              if (!select.tomselect.options[keyword]) {
-                select.tomselect.addOption({ value: keyword, text: keyword })
-              }
-            })
-            select.tomselect.setValue(selectedKeywords)
-          } else {
-            select.dispatchEvent(new Event('change', { bubbles: true }))
+      if (this.element.dataset.mode !== "edit") {
+        if (this.hasNameTarget) this.fillField(this.nameTarget, "")
+        if (this.hasAcronymTarget) this.fillField(this.acronymTarget, "")
+        if (this.hasDescriptionTarget) this.fillField(this.descriptionTarget, "")
+        if (this.hasStartDateTarget) this.fillDateField(this.startDateTarget, "")
+        if (this.hasEndDateTarget) this.fillDateField(this.endDateTarget, "")
+        if (this.hasContactTarget) this.fillField(this.contactTarget, "")
+        if (this.hasHomePageTarget) this.fillField(this.homePageTarget, "")
+        if (this.hasGrantNumberTarget) this.fillField(this.grantNumberTarget, "")
+        if (this.hasAcronymTarget) this.makeFieldEditable(this.acronymTarget)
+        if (this.hasGrantNumberTarget) this.makeFieldEditable(this.grantNumberTarget)
+        if (this.hasFunderTarget) this.makeFieldEditable(this.funderTarget)
+        if (projectType === 'funded' && storedData) {
+          const projectData = JSON.parse(storedData)
+          if (this.hasNameTarget) this.fillField(this.nameTarget, projectData.name || "")
+          if (this.hasAcronymTarget) this.fillField(this.acronymTarget, projectData.acronym || "")
+          if (this.hasDescriptionTarget) this.fillField(this.descriptionTarget, projectData.description || "")
+          if (this.hasStartDateTarget) this.fillDateField(this.startDateTarget, projectData.start_date || "")
+          if (this.hasEndDateTarget) this.fillDateField(this.endDateTarget, projectData.end_date || "")
+          if (this.hasContactTarget) this.fillField(this.contactTarget, projectData.contact || "")
+          if (this.hasHomePageTarget) this.fillField(this.homePageTarget, projectData.homePage || "")
+          if (this.hasGrantNumberTarget) this.fillField(this.grantNumberTarget, projectData.grant_number || "")
+          if (projectData.funder) {
+            const funderInput = this.funderTarget.querySelector('input[name="project_funder_display"]')
+            const funderIdField = document.getElementById("project_funders_attributes_0_id")
+            funderIdField.value = projectData.funder.id 
+            funderInput.value = projectData.funder.name
+            funderInput.readOnly = true
           }
-        }
-      }
-  
-      const sourceField = document.getElementById('project_source')
-      if (sourceField && projectData.source) sourceField.value = projectData.source
-  
-      const isFunded = localStorage.getItem('project_type') === 'funded'
-      if (isFunded) {
-        setTimeout(() => {
+          const organizationField = this.element.querySelector('.organization-project-input-field')
+          const searchInput = organizationField?.querySelector('input[type="text"]')
+          if (searchInput) {
+            searchInput.value = ""
+            searchInput.dispatchEvent(new Event('change', { bubbles: true }))
+            searchInput.dispatchEvent(new Event('input', { bubbles: true }))
+            if (projectData.organization?.name) {
+              searchInput.value = projectData.organization.name
+              searchInput.dispatchEvent(new Event('change', { bubbles: true }))
+              searchInput.dispatchEvent(new Event('input', { bubbles: true }))
+            }
+          }
+          if (this.hasKeywordsTarget) {
+            const select = this.keywordsTarget.querySelector('select')
+            if (select) {
+              select.innerHTML = ''
+              const allKeywords = projectData.all_keywords || projectData.keywords || []
+              const selectedKeywords = projectData.keywords || []
+              allKeywords.forEach(keyword => {
+                const option = document.createElement('option')
+                option.value = keyword
+                option.text = keyword
+                if (selectedKeywords.includes(keyword)) option.selected = true
+                select.appendChild(option)
+              })
+              if (select.tomselect) {
+                select.tomselect.clear()
+                allKeywords.forEach(keyword => {
+                  if (!select.tomselect.options[keyword]) {
+                    select.tomselect.addOption({ value: keyword, text: keyword })
+                  }
+                })
+                select.tomselect.setValue(selectedKeywords)
+              } else {
+                select.dispatchEvent(new Event('change', { bubbles: true }))
+              }
+            }
+          }
+          const sourceField = document.getElementById('project_source')
+          if (sourceField && projectData.source) sourceField.value = projectData.source
           if (this.hasAcronymTarget) this.makeFieldReadOnly(this.acronymTarget)
           if (this.hasGrantNumberTarget) this.makeFieldReadOnly(this.grantNumberTarget)
           if (this.hasFunderTarget) this.makeFieldReadOnly(this.funderTarget)
-        }, 100)
+        }
       }
-  
-      localStorage.removeItem('selectedProjectData')
-    } catch (error) {
-      this.showErrorMessage("Error populating form: " + error.message)
-    }
+    } catch (error) {}
   }
   
   makeFieldReadOnly(targetElement) {
     if (!targetElement) return
-    
     const input = targetElement.querySelector('input, textarea')
     if (!input) return
-    
     input.setAttribute('readonly', 'readonly')
     input.readOnly = true
     input.classList.add('bg-light')
-    
     const container = targetElement.closest('.upload-ontology-input-field-container')
     if (container) {
       container.classList.add('readonly-field')
-      
       const label = container.querySelector('label')
       if (label && !label.querySelector('.badge')) {
         const badge = document.createElement('span')
@@ -233,18 +206,14 @@ export default class extends Controller {
   
   makeFieldEditable(targetElement) {
     if (!targetElement) return
-    
     const input = targetElement.querySelector('input, textarea')
     if (!input) return
-    
     input.removeAttribute('readonly')
     input.readOnly = false
     input.classList.remove('bg-light')
-    
     const container = targetElement.closest('.upload-ontology-input-field-container')
     if (container) {
       container.classList.remove('readonly-field')
-      
       const label = container.querySelector('label')
       if (label) {
         const badge = label.querySelector('.badge')
@@ -254,8 +223,6 @@ export default class extends Controller {
   }
   
   fillField(targetElement, value) {
-    if (!value) return
-    
     try {
       const input = targetElement.querySelector('input, textarea, select')
       if (input) {
@@ -269,7 +236,6 @@ export default class extends Controller {
   fillDateField(targetElement, dateValue) {    
     try {
       const formattedDate = dateValue.includes('T') ? dateValue.split('T')[0] : dateValue
-      
       const input = targetElement.querySelector('input[type="date"]')
       if (input) {
         input.value = formattedDate
@@ -281,21 +247,16 @@ export default class extends Controller {
   updateLogoPreview() {
     const logoInput = this.element.querySelector('[data-project-creation-target="logoInput"]')
     if (!logoInput) return
-    
     const url = logoInput.value.trim()
     const previewImg = this.element.querySelector('[data-project-creation-target="logoPreview"]')
     const placeholder = this.element.querySelector('[data-project-creation-target="logoPlaceholder"]')
-    
     if (!previewImg || !placeholder) return
-    
     if (url) {
       previewImg.src = url
-      
       previewImg.onload = () => {
         previewImg.classList.remove('d-none')
         placeholder.classList.add('d-none')
       }
-      
       previewImg.onerror = () => {
         previewImg.classList.add('d-none')
         placeholder.classList.remove('d-none')
@@ -316,7 +277,6 @@ export default class extends Controller {
     this.updateStepsVisibility()
     this.updateProgressUI()
     this.updateURL()
-    
     window.scrollTo({
       top: this.element.offsetTop - 20,
       behavior: 'smooth'
@@ -339,7 +299,6 @@ export default class extends Controller {
         item.classList.toggle('completed', itemStep < this.currentStepValue)
       })
     }
-    
     if (this.hasProgressBarTarget) {
       const totalSteps = this.progressItemTargets?.length || 4
       const percentComplete = ((this.currentStepValue - 1) / (totalSteps - 1)) * 100
@@ -375,7 +334,6 @@ export default class extends Controller {
       </div>
       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     `
-    
     const container = this.element.querySelector('.card-body')
     if (container) {
       container.insertBefore(alertElement, container.firstChild)
