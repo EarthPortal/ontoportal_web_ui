@@ -7,6 +7,9 @@
       %button.close{ style: "position: absolute; top: 10px; right: 10px;", data: { dismiss: 'modal' }, aria: { label: 'Close' } }
         %span{ aria: { hidden: 'true' } } &times;    
     .modal-body
+      .w-100.mb-2.d-none#validation-alert-container
+        = render Display::AlertComponent.new(message: t("projects.form.error-submission-message"), closable: false, type: "danger")
+
       .row.mb-4
         .col-auto
           %div.bg-white.rounded.shadow-sm.p-2.d-flex.align-items-center.justify-content-center{style: "height: 80px; width: 120px;"}
@@ -58,8 +61,6 @@
           %ul#summary-ontologies.mb-0.ps-3
             %li.text-muted /
           .invalid-feedback.d-none#ontologies-error= t("projects.form.selection_required", field: t("projects.form.ontologies"))
-      .w-100.mb-2.d-none#validation-alert-container
-        = render Display::AlertComponent.new(message: t("projects.form.error-submission-message"), closable: false, type: "danger")
 
     .modal-footer.bg-light
       .cancel-button{'data-action': "click->project-summary#cancel"}
