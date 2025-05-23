@@ -2,91 +2,68 @@
 
 .project-center
   .container
-    %h3.project-title= @project.name
-    %hr#project-title-line/
     
+    .project-details-path
+      = link_to t('projects.self'), projects_path
+      = inline_svg_tag 'arrow-right-outlined.svg'
+      %div= @project.acronym
+
+    .project-details-header-sub-container
+      .project-details-header-left-container{style:'width: 70%'}
+        .project-details-name-bar
+          %div
+            = @project.name
+            %span{title: @project.acronym, style: "font-size: 1.1rem; font-weight: 400; margin-left: 0.5rem;"}= "(#{@project.acronym})"
+      .project-details-header-right-container{style: 'display: flex; align-items: center; justify-content: flex-end; width: 30%;'}
+        - if session[:user] && (Array(@project.creator).include?(session[:user].id) || session[:user].admin?)
+          %a.project-edit-button{href: edit_project_path(@project.acronym)}
+            = render partial: "shared/svgs/edit_icon"
+
     .project-container
       .project-main-column
         .project-card
-          .project-header-bar
-            %h4.project-card-title= t('projects.details')
-            - if session[:user] && (Array(@project.creator).include?(session[:user].id) || session[:user].admin?)
-              %a.project-edit-button{href: edit_project_path(@project.acronym)}
-                = render partial: "shared/svgs/edit_icon"
-                
           - if @project.logo.present?
             .text-center.mb-3
               %img.rounded.bg-white.p-2{src: @project.logo, style: "max-width: 200px; max-height: 100px; object-fit: contain;"}
-              
-          .project-info-row
-            %p.label= t('projects.form.acronym')
-            %p.value= @project.acronym
-            
           - if @project.description.present?
             .mt-3
-              %p.label= t('projects.description')
               %p.value= @project.description
-          
           - if @project.homePage.present?
             .project-info-row.mt-3
               %p.label= t('projects.home_page')
               %p.value
                 %a{href: @project.homePage, target: "_blank", rel: "nofollow"}= @project.homePage
-          
           - if @project.grant_number.present?
             .project-info-row.mt-3
               %p.label= t('projects.form.grant_number')
               %p.value= @project.grant_number
-              
           - if @project.keywords.present?
             .project-info-row.mt-3
               %p.label= t('projects.form.keywords')
               %p.value= @project.keywords.join(", ")
-              
-        .project-card
-          %h4.project-card-title= t('projects.dates')
-          
-          .project-info-row
-            %p.label= t('projects.form.start_date')
-            %p.value
-              - if @project.start_date
-                = @project.start_date&.to_date&.strftime("%Y-%m-%d") rescue @project.start_date
-              - else
-                %span.text-muted —
-                
-          .project-info-row
-            %p.label= t('projects.form.end_date')
-            %p.value
-              - if @project.end_date
-                = @project.end_date&.to_date&.strftime("%Y-%m-%d") rescue @project.end_date
-              - else
-                %span.text-muted —
-      
+
       .project-side-column
+
         .project-card
           %h4.project-card-title= t('projects.show.people_and_organizations')
-          
           - if @project.contact.present?
             .project-info-row
               %p.label= t('projects.form.contact')
               %div.value
                 = agent_chip_component(@project.contact)
-                
           - if @project.organization.present?
             .project-info-row
               %p.label= t('projects.form.organization')
               %div.value
                 = agent_chip_component(@project.organization)
-                
           - if @project.funder.present?
             .project-info-row
               %p.label= t('projects.form.funder')
               %div.value
                 = agent_chip_component(@project.funder)
-                
+
         .project-card
           %h4.project-card-title= t('projects.ontologies')
-          
           - if @ontologies_used.empty?
             .empty-project-section
               %img{:src => "#{asset_path("empty-box.svg")}"}/
@@ -96,3 +73,13 @@
               - @ontologies_used.each do |ontology|
                 .ontology-card{data: {controller: 'tooltip'}, title: ontology["name"]}
                   %a{href: ontology_path(ontology["acronym"])}= ontology["acronym"]
+
+        = properties_dropdown('dates', t('projects.dates'), '', @dates_properties) do |values|
+          - if values.is_a?(Hash)
+            - values.each do |key, v|
+              %div
+                %b= t("projects.form.#{key}")
+                = render DateTimeFieldComponent.new(value: v)
+          - else
+            %div
+              = render DateTimeFieldComponent.new(value: values)

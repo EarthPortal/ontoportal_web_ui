@@ -373,6 +373,68 @@ button:disabled,
   }
 }
 
+.project-details-header-container {
+  padding: 0 50px;
+  margin: 20px 0;
+  width: 1248px;
+}
+
+.project-details-path {
+  display: flex;
+  align-items: center;
+  color: #888888;
+  margin-bottom: 20px;
+}
+.project-details-path svg {
+  margin: 0 12px;
+}
+.project-details-path a {
+  text-decoration: underline !important;
+  color: #888888 !important;
+}
+
+.project-details-header-sub-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+}
+
+.project-details-name-bar {
+  display: flex;
+  align-items: center;
+}
+.project-details-name-bar > div {
+  font-size: 25px;
+  font-weight: 700;
+  margin-right: 10px;
+}
+.project-details-name-bar > div > span {
+  font-size: 17px;
+  font-weight: 500;
+}
+
+.project-edit-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid var(--primary-color, #007bff);
+  border-radius: 22.5px;
+  padding: 10px;
+  height: 45px;
+  width: 45px;
+  cursor: pointer;
+  transition: background-color ease 0.3s;
+  margin-left: 10px;
+}
+.project-edit-button:hover {
+  background-color: var(--primary-color, #007bff);
+  color: white !important;
+}
+.project-edit-button:hover svg path {
+  fill: white;
+}
+
 @media only screen and (max-width: 1300px) {
   .project-main-column {
     width: 52vw;
