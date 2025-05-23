@@ -127,57 +127,48 @@ class ProjectsController < ApplicationController
       redirect_to projects_path
       return
     end
-    
+
     projects = LinkedData::Client::Models::Project.find_by_acronym(params[:id])
     if projects.nil? || projects.empty?
       flash[:notice] = flash_error(t('projects.project_not_found', id: params[:id]))
       redirect_to projects_path
       return
     end
-    
+
     @project = projects.first
-    
-    filtered_params = {}
-    filtered_params[:name] = project_params[:name] if project_params[:name].present?
-    filtered_params[:description] = project_params[:description] if project_params[:description].present?
-    filtered_params[:homePage] = project_params[:homePage] if project_params[:homePage].present?
-    filtered_params[:logo] = project_params[:logo] if project_params[:logo].present?
-    
-    if project_params[:keywords].present?
-      filtered_params[:keywords] = project_params[:keywords].is_a?(Array) ? 
-                                project_params[:keywords].reject(&:blank?) : 
-                                [project_params[:keywords]].reject(&:blank?)
-    end
-    
-    if project_params[:ontologyUsed].present?
-      filtered_params[:ontologyUsed] = project_params[:ontologyUsed].reject(&:blank?)
-    end
-    
-    filtered_params[:start_date] = project_params[:start_date] if project_params[:start_date].present?
-    filtered_params[:end_date] = project_params[:end_date] if project_params[:end_date].present?
-    
-    @project.update_from_params(filtered_params)
-    
+    @project.update_from_params(project_params)
+
+    # Clean up fields AFTER update_from_params
+    @project.start_date = nil if @project.start_date.blank?
+    @project.end_date = nil if @project.end_date.blank?
+    @project.organization = @project.organization&.id if @project.organization.respond_to?(:id)
+    @project.funder = @project.funder&.id if @project.funder.respond_to?(:id)
+    @project.contact = @project.contact&.id if @project.contact.respond_to?(:id)
+    @project.type = "FundedProject" unless %w[FundedProject NonFundedProject].include?(@project.type)
+    @project.creator ||= [session[:user].id] if session[:user]
+    @project.type ||= "FundedProject"
+
     @user_select_list = LinkedData::Client::Models::User.all.map {|u| [u.username, u.id]}
     @user_select_list.sort! {|a,b| a[1].downcase <=> b[1].downcase}
-    @usedOntologies = @project.ontologyUsed&.map{|o| o.split('/').last} || []
+    @usedOntologies = @project.ontologyUsed || []
     @ontologies = LinkedData::Client::Models::Ontology.all
-    
+
+    Rails.logger.debug "Project update payload: #{@project.to_hash.inspect}"
+
     begin
-      update_url = "/projects/#{@project.acronym}"
-      response = LinkedData::Client::HTTP.patch(update_url, filtered_params)
-      
-      if LinkedData::Client.respond_to?(:clear_cache)
-        LinkedData::Client.clear_cache
-      elsif LinkedData::Client::HTTP.respond_to?(:clear_cache)
-        LinkedData::Client::HTTP.clear_cache
-      end
-      
+      error_response = @project.update
+    rescue => e
+      Rails.logger.error "Project update failed: #{e.message}"
+      @errors = { error: { general: OpenStruct.new(existence: "Error updating project: #{e.message}") } }
+      render :edit and return
+    end
+
+    if response_error?(error_response)
+      @errors = response_errors(error_response)
+      render :edit
+    else
       flash[:notice] = t('projects.project_successfully_updated')
       redirect_to project_path(@project.acronym)
-    rescue => e
-      @errors = {error: {general: OpenStruct.new(existence: "Error updating project: #{e.message}")}}
-      render :edit
     end
   end
 
