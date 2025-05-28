@@ -757,7 +757,7 @@ en:
     description: Description
     description_text: Description text
     edit_text: Edit
-    home_page: Home page
+    home_page: Homepage
     search_projects: Search projects
     index:
       intro: Browse a selection of projects that use %{site} ontologies

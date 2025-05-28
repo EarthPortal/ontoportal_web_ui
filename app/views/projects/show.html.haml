@@ -2,7 +2,6 @@
 
 .project-center
   .container
-    
     .project-details-path
       = link_to t('projects.self'), projects_path
       = inline_svg_tag 'arrow-right-outlined.svg'
@@ -14,72 +13,97 @@
           %div
             = @project.name
             %span{title: @project.acronym, style: "font-size: 1.1rem; font-weight: 400; margin-left: 0.5rem;"}= "(#{@project.acronym})"
-      .project-details-header-right-container{style: 'display: flex; align-items: center; justify-content: flex-end; width: 30%;'}
+      .project-details-header-right-container{style: 'display: flex; align-items: center; justify-content: flex-end; width: 30%; gap: 1rem;'}
+        = render RoundedButtonComponent.new(link: "/#{@project.id}?apikey=#{@apikey}", target: '_blank', size: 'medium', title: t('ontologies.go_to_api'))
         - if session[:user] && (Array(@project.creator).include?(session[:user].id) || session[:user].admin?)
-          %a.project-edit-button{href: edit_project_path(@project.acronym)}
-            = render partial: "shared/svgs/edit_icon"
+          = link_to edit_project_path(@project.acronym), class: 'pill-button d-flex align-items-center ml-1' do
+            = inline_svg_tag('edit.svg', style: 'vertical-align: middle; margin-right: 6px;')
+            %span.text-primary= t('projects.show.edit_project')
 
     .project-container
       .project-main-column
-        .project-card
-          - if @project.logo.present?
-            .text-center.mb-3
-              %img.rounded.bg-white.p-2{src: @project.logo, style: "max-width: 200px; max-height: 100px; object-fit: contain;"}
-          - if @project.description.present?
-            .mt-3
-              %p.value= @project.description
-          - if @project.homePage.present?
-            .project-info-row.mt-3
-              %p.label= t('projects.home_page')
-              %p.value
-                %a{href: @project.homePage, target: "_blank", rel: "nofollow"}= @project.homePage
-          - if @project.grant_number.present?
-            .project-info-row.mt-3
-              %p.label= t('projects.form.grant_number')
-              %p.value= @project.grant_number
-          - if @project.keywords.present?
-            .project-info-row.mt-3
-              %p.label= t('projects.form.keywords')
-              %p.value= @project.keywords.join(", ")
+        = dropdown_component(id: 'description', title: t('projects.form.description'), is_open: true) do
+          .p-3
+            - if @project.description.present?
+              .browse-desc-container{data:{controller:"text-truncate", 'text-truncate-more-text-value': t('components.see_more'), 'text-truncate-less-text-value': t('components.see_less'), 'text-truncate-expanded-value': 'true'}, style: '--read-more-line-clamp: 6; position: relative;'}
+                - if @project.logo.present?
+                  .project-logo-container.text-center.mb-3
+                    = image_tag @project.logo, class: 'description_img', style: 'width: 140px; object-fit: contain; display: inline-block;'
+                %span.browse-desc-text{'data-text-truncate-target': 'content'}
+                  = @project.description
+                %span.browse-show-more-button{data:{'text-truncate-target': 'button', 'action':"click->text-truncate#toggle"}}
+                  = t('components.see_less')
+            - else
+              .project-info-row
+                %em.text-muted= t('projects.no_description')
+
+        = dropdown_component(id: 'ontologies', title: t('projects.ontologies'), is_open: true) do
+          .p-3
+            - if @ontologies_used.empty?
+              .empty-project-section
+                %img{:src => "#{asset_path("empty-box.svg")}"}/
+                %p= t('projects.no_ontologies_associated')
+            - else
+              .ontology-cards-container
+                - @ontologies_used.each do |ontology|
+                  .ontology-card{data: {controller: 'tooltip'}, title: ontology["name"]}
+                    %a{href: ontology_path(ontology["acronym"])}= ontology["acronym"]
 
       .project-side-column
-
-        .project-card
-          %h4.project-card-title= t('projects.show.people_and_organizations')
-          - if @project.contact.present?
-            .project-info-row
-              %p.label= t('projects.form.contact')
-              %div.value
-                = agent_chip_component(@project.contact)
-          - if @project.organization.present?
-            .project-info-row
-              %p.label= t('projects.form.organization')
-              %div.value
-                = agent_chip_component(@project.organization)
-          - if @project.funder.present?
-            .project-info-row
-              %p.label= t('projects.form.funder')
-              %div.value
-                = agent_chip_component(@project.funder)
-
-        .project-card
-          %h4.project-card-title= t('projects.ontologies')
-          - if @ontologies_used.empty?
-            .empty-project-section
-              %img{:src => "#{asset_path("empty-box.svg")}"}/
-              %p= t('projects.no_ontologies_associated')
+        = dropdown_component(id: 'project_details', title: t('projects.details'), is_open: true) do
+          - if @project.homePage.present? || @project.grant_number.present? || @project.keywords.present?
+            .p-3
+              - if @project.homePage.present?
+                .project-info-row
+                  .label= t('projects.home_page')
+                  .value
+                    = render LinkFieldComponent.new(value: @project.homePage)
+              - if @project.grant_number.present?
+                .project-info-row
+                  .label= t('projects.form.grant_number')
+                  .value
+                    %code.text-dark.small.bg-light.px-2.py-1.rounded= @project.grant_number
+              - if @project.keywords.present?
+                .project-info-row
+                  .label= t('projects.form.keywords')
+                  .value
+                    = horizontal_list_container(@project.keywords) do |keyword|
+                      = render ChipButtonComponent.new(text: keyword.strip, type: "static", style: "background-color: var(--light-color); color: var(--primary-color);")
           - else
-            .ontology-cards-container
-              - @ontologies_used.each do |ontology|
-                .ontology-card{data: {controller: 'tooltip'}, title: ontology["name"]}
-                  %a{href: ontology_path(ontology["acronym"])}= ontology["acronym"]
+            .p-3
+              .project-info-row
+                %em.text-muted= t('projects.no_details')
 
-        = properties_dropdown('dates', t('projects.dates'), '', @dates_properties) do |values|
-          - if values.is_a?(Hash)
-            - values.each do |key, v|
-              %div
-                %b= t("projects.form.#{key}")
-                = render DateTimeFieldComponent.new(value: v)
-          - else
-            %div
-              = render DateTimeFieldComponent.new(value: values)
+        = dropdown_component(id: 'people_and_organizations', title: t('projects.show.people_and_organizations'), is_open: true) do
+          .p-3
+            - if @project.contact.present?
+              .project-info-row
+                %p.label= t('projects.form.contact')
+                %div.value
+                  = agent_chip_component(@project.contact)
+            - if @project.organization.present?
+              .project-info-row
+                %p.label= t('projects.form.organization')
+                %div.value
+                  = agent_chip_component(@project.organization)
+            - if @project.funder.present?
+              .project-info-row
+                %p.label= t('projects.form.funder')
+                %div.value
+                  = agent_chip_component(@project.funder)
+            - unless @project.contact.present? || @project.organization.present? || @project.funder.present?
+              .project-info-row
+                %em.text-muted= t('projects.no_people_organizations')
+
+        = dropdown_component(id: 'dates', title: t('projects.dates'), is_open: true) do
+          .p-3
+            - if @dates_properties.is_a?(Hash)
+              - @dates_properties.each do |key, v|
+                .project-info-row
+                  %p.label= t("projects.form.#{key}")
+                  %p.value
+                    = render DateTimeFieldComponent.new(value: v)
+            - else
+              .project-info-row
+                %p.value
+                  = render DateTimeFieldComponent.new(value: @dates_properties)

@@ -20,6 +20,11 @@
     .dataset-container { margin: 8px 0; }
   }
 
+  .browse-desc-text{
+    text-align: justify;
+    text-justify: inter-word;
+  }
+
   .project-search-container {
     .nav-tabs {
       margin-bottom: 15px;
@@ -240,6 +245,24 @@ button:disabled,
   }
 }
 
+
+.project-info-row {
+  display: flex;
+  margin-bottom: 12px;
+  .label {
+    margin-right: 12px;
+    font-size: 15px;
+    color: #666666;
+    min-width: 95px;
+  }
+  .value {
+    font-size: 15px;
+    font-weight: 600;
+    word-break: break-word;
+    width: 100%;
+    line-height: 1.5;
+  }
+}
 .project-center {
   display: flex;
   justify-content: center;
@@ -261,12 +284,13 @@ button:disabled,
 }
 
 .project-main-column {
-  width: 690px;
+  width: 950px;
   margin-right: 30px;
+
 }
 
 .project-side-column {
-  width: 540px;
+  width: 450px;
 }
 
 #project-title-line {
@@ -332,6 +356,8 @@ button:disabled,
   color: #666666;
   margin: 8px 0;
   line-height: 1.5;
+  text-align: justify;
+  text-justify: auto;
 }
 
 .empty-project-section {
@@ -354,10 +380,8 @@ button:disabled,
 
 .ontology-card {
   background-color: #F6F6F6;
-  padding: 12px 15px;
+  padding: 10px 13px;
   border-radius: 5px;
-  margin-right: 12px;
-  margin-top: 12px;
   cursor: default;
   &:hover {
     background-color: #F6F6F6 !important;
@@ -371,6 +395,11 @@ button:disabled,
       text-decoration: none;
     }
   }
+}
+
+
+.pill-button:hover .text-primary {
+  color: #fff !important;
 }
 
 .project-details-header-container {
@@ -437,11 +466,11 @@ button:disabled,
 
 @media only screen and (max-width: 1300px) {
   .project-main-column {
-    width: 52vw;
+    width: 80vw;
     margin-right: 25px;
   }
   .project-side-column {
-    width: 44vw;
+    width: 30vw;
   }
 }
 
