@@ -1,0 +1,192 @@
+
+.browse-projects {
+  margin-top: 90px;
+}
+
+.browse-results-count {
+  font-size: 16px;
+  color: #666666;
+  font-weight: 400;
+  margin-bottom: 20px;
+}
+
+.browse-empty-state {
+  .browse-empty-illustration {
+    margin-top: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    
+    img {
+      margin-bottom: 20px;
+      max-width: 200px;
+    }
+    
+    p {
+      font-size: 16px;
+      color: #B8B8B8;
+      font-weight: 500;
+      margin-top: 10px;
+      text-align: center;
+    }
+  }
+}
+
+// Use existing ontology container styles for projects
+// Override specific project metadata styling to fix spacing
+.browse-ontology-container {
+  .browse-uploaded {
+    max-width: 540px; // Match project description width
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 8px;
+    
+    .browse-uploaded-date {
+      margin-right: 8px;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      
+      // Fix spacing for agent chips
+      .agent-chip {
+        margin-right: 0;
+        margin-bottom: 0;
+      }
+      
+      // Ensure proper spacing between individual items
+      &:not(:last-child) {
+        margin-right: 8px;
+      }
+    }
+    
+    // Additional spacing for complex components like agent chips
+    .chip,
+    .badge,
+    [class*="chip"],
+    [class*="badge"] {
+      margin-right: 0 !important;
+      margin-bottom: 0 !important;
+    }
+  }
+}
+
+// Projects-specific responsive adjustments
+@media only screen and (max-width: 1250px) {
+  .browse-ontology-container {
+    .browse-ontology-description {
+      width: 60vw;
+    }
+    
+    .browse-uploaded {
+      max-width: 60vw;
+    }
+  }
+}
+
+@media only screen and (max-width: 1005px) {
+  .browse-ontology-container {
+    .browse-ontology-description {
+      width: 70vw;
+    }
+    
+    .browse-uploaded {
+      max-width: 70vw;
+    }
+  }
+}
+
+@media only screen and (max-width: 893px) {
+  .browse-ontology-container {
+    display: block;
+    
+    .browse-ontology-description {
+      width: 100%;
+      margin-bottom: 15px;
+    }
+    
+    .browse-ontology-cards {
+      direction: ltr;
+      justify-content: flex-start;
+      gap: 10px;
+    }
+    
+    .browse-uploaded {
+      max-width: 100%;
+      
+      .browse-uploaded-date {
+        margin-right: 6px;
+        margin-bottom: 6px;
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 576px) {
+  .browse-ontology-container {
+    padding: 12px 15px;
+    
+    .browse-ontology-title-bar {
+      flex-direction: column;
+      align-items: flex-start;
+      
+      .d-flex.align-items-center {
+        margin-bottom: 8px;
+      }
+    }
+    
+    .browse-ontology-cards {
+      .disabled-icon {
+        opacity: 0.3;
+        cursor: not-allowed !important;
+        pointer-events: none;
+        
+        svg {
+          opacity: 0.3;
+          fill: #ccc;
+        }
+      }
+    }
+    
+    .browse-uploaded {
+      padding: 8px 12px;
+      flex-direction: column;
+      align-items: flex-start;
+      height: auto;
+      min-height: 37px;
+      gap: 4px;
+      
+      .browse-uploaded-date {
+        margin-bottom: 4px;
+        margin-right: 0;
+        
+        &:not(:last-child) {
+          margin-bottom: 6px;
+        }
+      }
+    }
+  }
+}
+
+.custom-sort-select {
+  width: 300px !important;
+  margin-left: 532px !important;
+}
+
+
+
+.projects-page-title {
+  margin-bottom: 20px;
+  
+  .text {
+    font-size: 25px;
+    font-weight: 700;
+  }
+
+  .line {
+    height: 2px;
+    width: 57px;
+    background-color: var(--primary-color);
+    border-radius: 10px;
+    margin-top: 5px;
+  }
+}

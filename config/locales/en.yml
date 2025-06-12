@@ -758,6 +758,7 @@ en:
     description_text: Description text
     edit_text: Edit
     home_page: Home page
+    search_projects: Search by name, acronym or organization
     index:
       intro: Browse a selection of projects that use %{site} ontologies
     institutions: Institutions
@@ -766,6 +767,24 @@ en:
     self: Projects
     title: Projects List
     view_projects_help: View projects help
+    
+    filters: "Filters"
+    filter:
+      show_funded_only: "Show funded projects only"
+      show_active_only: "Show active projects only"
+      all_funders: "All funders"
+      not_funded: "Not funded"
+      funder: "Funder"
+    sort:
+      name: "Sort by name"
+      acronym: "Sort by acronym" 
+      start_date: "Sort by start date"
+      end_date: "Sort by end date"
+      ontologies: "Sort by number of ontologies"
+    showing_projects_count:
+      zero: "No projects found"
+      one: "Showing 1 project"
+      other: "Showing %{count} projects"
 
     show:
       title: Project %{name}

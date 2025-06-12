@@ -1,0 +1,59 @@
+-# app/components/project_browse_card_component/project_browse_card_component.html.haml
+- if project
+  .browse-ontology-container
+    .d-flex
+      .browse-ontology-description
+        .browse-ontology-title-bar
+          = link_to project_link, class: 'browse-ontology-title text-decoration-none', data: {'turbo': 'false'} do
+            .d-flex.align-items-center
+              - if project.logo.present?
+                = image_tag project.logo, class: 'mr-2', style: 'width: 60px; object-fit: contain; border-radius: 4px; border: 1px solid #e9ecef;'
+              .d-flex.flex-column
+                %span= project.acronym
+                %span.browse-desc-text{style: 'font-size: 0.9rem; font-weight: 400; color: #666; line-height: 1.2; margin-top: 2px;'}= project.name
+
+      .browse-ontology-cards
+        = render SquareBadgeComponent.new(label: t('projects.ontologies'),
+                                          count: ontology_count,
+                                          link: "#{project_link}#ontologies_section")
+        - if project.homePage.present?
+          = link_to project.homePage, target: "_blank", rel: "nofollow", class: "text-decoration-none", style: "display: flex; align-items: center; justify-content: center;", data: {controller: "tooltip"}, title: "#{t('projects.home_page')}<br>#{link_to(project.homePage, target: '_blank')}".html_safe do
+            = inline_svg("summary/homepage.svg", width: "25", height: '25')
+        - else
+          %span.disabled-icon{style: "display: flex; align-items: center; justify-content: center; cursor: not-allowed;", data: {controller: "tooltip"}, title: t('projects.home_page')}
+            = inline_svg("summary/homepage.svg", width: "25", height: '25')
+
+    .d-flex.w-100.mt-3.flex-wrap.align-items-center{style: 'gap: 12px;'}
+      - if project.start_date.present? || project.end_date.present?
+        .chip-button-component-container{data: {controller: "tooltip"}}
+          %span.chip_button_container_clickable
+            - start_date = Date.parse(project.start_date.to_s) rescue nil if project.start_date.present?
+            - end_date = Date.parse(project.end_date.to_s) rescue nil if project.end_date.present?
+            - if start_date && end_date
+              = "#{start_date.strftime('%m/%Y')} - #{end_date.strftime('%m/%Y')}"
+            - elsif start_date
+              %span.mr-1= t('projects.start_date')
+              %span.browse-uploaded-date= start_date.strftime('%m/%Y')
+            - elsif end_date
+              %span.mr-1= t('projects.end_date')
+              %span.browse-uploaded-date= end_date.strftime('%m/%Y')
+
+      - if project.grant_number.present?
+        .chip-button-component-container{data: {controller: "tooltip"}}
+          %span.chip_button_container_clickable
+            %span.identifier-label= t('projects.grant_id') + ':'
+            %span.identifier-value.font-monospace.mr-2= project.grant_number
+            %span{style: 'display: inline-flex; align-items: center;'}
+              = render ClipboardComponent.new(title: t('projects.copy_grant_number'), message: project.grant_number, show_content: false)
+
+      - if project.contact.present?
+        .metadata-item
+          = helpers.agent_chip_component(project.contact)
+
+      - if project.organization.present?
+        .metadata-item
+          = helpers.agent_chip_component(project.organization)
+
+      - if project.funder.present?
+        .metadata-item
+          = helpers.funder_chip_component(project.funder)

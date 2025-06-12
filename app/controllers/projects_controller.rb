@@ -5,16 +5,54 @@ class ProjectsController < ApplicationController
   layout :determine_layout
 
   def index
-    @projects = LinkedData::Client::Models::Project.all
+    @projects = LinkedData::Client::Models::Project.all || []
     @projects.reject! { |p| p.name.nil? }
-    @projects.sort! { |a,b| a.name.downcase <=> b.name.downcase }
-    @ontologies = LinkedData::Client::Models::Ontology.all(include_views: true)
+    
+    @ontologies = LinkedData::Client::Models::Ontology.all(include_views: true) || []
     @ontologies_hash = Hash[@ontologies.map {|ont| [ont.id, ont]}]
-    if request.xhr?
-      render action: "index", layout: false
-    else
-      render action: "index"
-    end
+    
+    setup_funder_options
+    setup_categories_options
+    
+    @projects = filter_projects(@projects) if params[:search].present?
+    @projects = filter_by_status(@projects) if params[:funded_only].present? || params[:active_only].present?
+    @projects = filter_by_funder(@projects) if params[:funder].present? && params[:funder] != ''
+    @projects = filter_by_categories(@projects) if params[:categories].present?
+    
+    @search = params[:search] || ""
+    @sort_by = params[:sort_by] || "name"
+    @sorts_options = [
+      [t('projects.sort.name'), 'name'],
+      [t('projects.sort.acronym'), 'acronym'], 
+      [t('projects.sort.start_date'), 'start_date'],
+      [t('projects.sort.end_date'), 'end_date'],
+      [t('projects.sort.ontologies'), 'ontologies']
+    ]
+    
+    @projects = sort_projects_by(@projects, @sort_by)
+  end
+
+  def projects_filter
+    all_projects = LinkedData::Client::Models::Project.all || []
+    all_projects.reject! { |p| p.name.nil? }
+    
+    @ontologies = LinkedData::Client::Models::Ontology.all(include_views: true) || []
+    @ontologies_hash = Hash[@ontologies.map {|ont| [ont.id, ont]}]
+    
+    setup_funder_options_from_projects(all_projects)
+    setup_categories_options_from_projects(all_projects)
+    
+    @projects = all_projects
+    
+    @projects = filter_projects(@projects) if params[:search].present?
+    @projects = filter_by_status(@projects) if params[:funded_only].present? || params[:active_only].present?
+    @projects = filter_by_funder(@projects) if params[:funder].present? && params[:funder] != ''
+    @projects = filter_by_categories(@projects) if params[:categories].present?
+    
+    sort_param = params[:sort_by] || 'name'
+    @projects = sort_projects_by(@projects, sort_param)
+    
+    render partial: 'projects_list', locals: { projects: @projects }
   end
 
   # GET /projects/1
@@ -156,6 +194,196 @@ class ProjectsController < ApplicationController
   end
 
   private
+
+    def setup_categories_options
+    setup_categories_options_from_projects(@projects)
+  end
+
+  def setup_categories_options_from_projects(projects)
+    unless @ontologies_hash
+      @ontologies = LinkedData::Client::Models::Ontology.all(include_views: true) || []
+      @ontologies_hash = Hash[@ontologies.map {|ont| [ont.id, ont]}]
+    end
+    
+    categories = LinkedData::Client::Models::Category.all(display_links: false, display_context: false)
+    all_projects = LinkedData::Client::Models::Project.all || []
+    all_projects.reject! { |p| p.name.nil? }
+    
+    category_counts = count_projects_by_categories(all_projects)
+    
+    category_objects = categories.map do |category|
+      {
+        'id' => category.id,
+        'name' => category.name,
+        'acronym' => category.acronym || category.name,
+        'value' => category.acronym || category.name,
+        'displayName' => category.name
+      }
+    end
+    
+    selected_categories = Array(params[:categories])
+    count = selected_categories.length
+    
+    @categories_filters = [category_objects, selected_categories, count]
+    @count_objects ||= {}
+    @count_objects[:categories] = category_counts
+  end
+
+  def filter_by_categories(projects)
+    return projects unless params[:categories].present?
+    
+    selected_categories = if params[:categories].is_a?(String)
+                            params[:categories].split(',').map(&:strip)
+                          else
+                            Array(params[:categories])
+                          end
+    
+    categories = LinkedData::Client::Models::Category.all(display_links: false, display_context: false)
+    category_mapping = categories.map { |cat| [cat.acronym || cat.name, cat.id] }.to_h
+    selected_category_ids = selected_categories.map { |acronym| category_mapping[acronym] }.compact
+    
+    projects.select do |project|
+      project_ontologies = Array(project.ontologyUsed)
+      
+      project_ontologies.any? do |ontology_id|
+        ontology = @ontologies_hash[ontology_id]
+        next false unless ontology
+        
+        ontology_categories = Array(ontology.hasDomain)
+        selected_category_ids.any? { |selected_cat| ontology_categories.include?(selected_cat) }
+      end
+    end
+  end
+
+  def count_categories
+    category_acronym = params[:acronym]
+    all_projects = LinkedData::Client::Models::Project.all || []
+    all_projects.reject! { |p| p.name.nil? }
+    
+    @ontologies = LinkedData::Client::Models::Ontology.all(include_views: true) || []
+    @ontologies_hash = Hash[@ontologies.map {|ont| [ont.id, ont]}]
+    
+    category_counts = count_projects_by_categories(all_projects)
+    categories = LinkedData::Client::Models::Category.all(display_links: false, display_context: false)
+    category = categories.find { |cat| (cat.acronym || cat.name) == category_acronym }
+    
+    count = category ? (category_counts[category.id] || 0) : 0
+    render plain: count.to_s
+  end
+
+  def count_projects_by_categories(projects)
+    category_counts = {}
+    
+    unless @ontologies_hash
+      ontologies = LinkedData::Client::Models::Ontology.all(include_views: true) || []
+      @ontologies_hash = Hash[ontologies.map {|ont| [ont.id, ont]}]
+    end
+    
+    projects.each do |project|
+      project_ontologies = Array(project.ontologyUsed)
+      project_categories = Set.new
+      
+      project_ontologies.each do |ontology_id|
+        ontology = @ontologies_hash[ontology_id]
+        next unless ontology
+        
+        ontology_categories = Array(ontology.hasDomain)
+        ontology_categories.each { |category_id| project_categories.add(category_id) }
+      end
+      
+      project_categories.each do |category_id|
+        category_counts[category_id] ||= 0
+        category_counts[category_id] += 1
+      end
+    end
+    
+    category_counts
+  end
+
+  def setup_funder_options
+    setup_funder_options_from_projects(@projects)
+  end
+
+  def setup_funder_options_from_projects(projects)
+    unique_funders = projects.map(&:funder).compact.uniq.sort_by(&:name).uniq(&:name)
+    @funder_options = [[t('projects.filter.not_funded'), 'not_funded']]
+    
+    unique_funders.each do |funder|
+      acronym = funder.acronym.present? ? funder.acronym : funder.name
+      value = funder.name.downcase.gsub(/\s+/, '_')
+      @funder_options << [acronym, value]
+    end
+  end
+
+  def filter_by_funder(projects)
+    return projects unless params[:funder].present?
+    
+    selected_funder = params[:funder]
+    
+    projects.select do |project|
+      case selected_funder
+      when 'not_funded'
+        project.funder.nil? || project.funder.name.blank?
+      when ''
+        true
+      else
+        project.funder && project.funder.name.downcase.gsub(/\s+/, '_') == selected_funder
+      end
+    end
+  end
+
+  def sort_projects_by(projects, sort_by)
+    case sort_by
+    when 'name'
+      projects.sort_by { |p| (p.name || "").downcase }
+    when 'acronym'
+      projects.sort_by { |p| (p.acronym || "").downcase }
+    when 'start_date'
+      projects.sort_by do |p|
+        if p.start_date.present?
+          Date.parse(p.start_date.to_s) rescue Date.new(1900, 1, 1)
+        else
+          Date.new(1900, 1, 1)
+        end
+      end.reverse
+    when 'end_date'
+      projects.sort_by do |p|
+        if p.end_date.present?
+          Date.parse(p.end_date.to_s) rescue Date.new(1900, 1, 1)
+        else
+          Date.new(2100, 1, 1)
+        end
+      end.reverse
+    when 'ontologies'
+      projects.sort_by { |p| -(p.ontologyUsed&.length || 0) }
+    else
+      projects.sort_by { |p| (p.name || "").downcase }
+    end
+  end
+
+  def filter_projects(projects)
+    return projects unless params[:search].present?
+    
+    query = params[:search].downcase
+    projects.select do |project|
+      project.name&.downcase&.include?(query) ||
+      project.description&.downcase&.include?(query) ||
+      project.acronym&.downcase&.include?(query) ||
+      project.organization&.name&.downcase&.include?(query) ||
+      project.organization&.acronym&.downcase&.include?(query)
+    end
+  end
+
+  def filter_by_status(projects)
+    projects = projects.select { |p| p.type == "FundedProject" } if params[:funded_only] == "true"
+    projects = projects.select { |p| project_active?(p) } if params[:active_only] == "true"
+    projects
+  end
+
+  def project_active?(project)
+    return true unless project.end_date.present?
+    Date.parse(project.end_date) >= Date.current rescue true
+  end
 
   def project_params
     p = params.require(:project).permit(:name, :acronym, :institution, :contacts, { creator:[] }, :homePage,
