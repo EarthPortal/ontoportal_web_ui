@@ -23,7 +23,11 @@ Rails.application.routes.draw do
 
 
 
-  resources :projects, constraints: { id: /[^\/]+/ }
+  resources :projects, constraints: { id: /[^\/]+/ } do
+    collection do
+      get :projects_filter
+    end
+  end
 
   resources :users, path: :accounts, constraints: { id: /[\d\w\.\@\-\%\+ ]+/ }
 

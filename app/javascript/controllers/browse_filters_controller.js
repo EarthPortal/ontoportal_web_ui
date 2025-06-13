@@ -46,6 +46,24 @@ export default class extends Controller {
                 checks = event.target.checked ?  ['true'] : []
                 filter = "private_only"
                 break;
+                                   // Project-specific filters
+            case "funded_only":
+                checks = event.target.checked ?  ['true'] : []
+                filter = "funded_only"
+                break;
+            case "active_only":
+                checks = event.target.checked ?  ['true'] : []
+                filter = "active_only"
+                break;
+            case "funder":  // Handle funder dropdown
+                checks = event.target.value === '' ? [] : [event.target.value]
+                filter = "funder"
+                break;
+            case "categories":
+                const selectedInputs = this.#getSelectedChecks(event)
+                checks = selectedInputs.map(x => x.value)
+                filter = "categories"
+                break;
             default:
                 checks = this.#getSelectedChecks(event).map(x => x.value)
                 filter = event.target.name

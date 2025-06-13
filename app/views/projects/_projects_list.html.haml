@@ -1,0 +1,12 @@
+= turbo_frame_tag "projects_list_view-page-1" do
+  .browse-results-count
+    = t('projects.showing_projects_count', count: projects.count)
+  
+  - if projects.empty?
+    .browse-empty-state
+      .browse-empty-illustration
+        %img{src: asset_path("empty-box.svg"), alt: "No projects found"}
+        %p= t('projects.showing_projects_count.zero')
+  - else
+    - projects.each do |project|
+      = render ProjectBrowseCardComponent.new(project: project, ontologies_hash: @ontologies_hash)
