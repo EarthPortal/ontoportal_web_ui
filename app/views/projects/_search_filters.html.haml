@@ -1,0 +1,15 @@
+-# app/views/projects/_search_filters.html.haml
+.search-filters-container
+  .filter-section
+    %label= t('projects.filter_by_status')
+    = select_tag 'status_filter', options_for_select([
+      [t('projects.all_statuses'), ''],
+      [t('projects.active'), 'active'],
+      [t('projects.completed'), 'completed']
+    ]), class: 'form-select'
+
+  .filter-section
+    %label= t('projects.filter_by_organization')
+    = select_tag 'org_filter', options_for_select([
+      [t('projects.all_organizations'), '']
+    ] + organization_options), class: 'form-select'

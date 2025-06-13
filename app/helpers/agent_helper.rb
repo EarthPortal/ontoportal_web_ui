@@ -249,6 +249,34 @@ module AgentHelper
     end
   end
 
+
+  def funder_chip_component(funder)
+    funder_icon = inline_svg_tag 'icons/funder.svg', class: 'agent-type-icon'
+    
+    if funder.is_a?(String)
+      name = funder
+      title = nil
+    else
+      name = funder.respond_to?(:name) ? funder.acronym : funder.to_s
+      title = funder_tooltip(funder) if funder.respond_to?(:agentType)
+    end
+    
+    render_chip_component(title, funder_icon, name)
+  end
+
+  def funder_tooltip(funder)
+    return nil unless funder.respond_to?(:name)
+    
+    name = funder.name
+    type = funder.respond_to?(:agentType) ? funder.agentType : 'funder'
+    identifiers = funder.respond_to?(:identifiers) ? display_identifiers(funder.identifiers, link: false) : nil
+    
+    funder_icon = inline_svg_tag 'icons/funder.svg', class: 'agent-type-icon'
+    
+    generate_agent_tooltip(funder_icon, name, nil, identifiers, nil, nil)
+  end
+
+
   def orcid_number(orcid)
     return orcid.split("/").last
   end

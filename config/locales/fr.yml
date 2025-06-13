@@ -747,6 +747,7 @@ fr:
     description_text: Texte de la description
     edit_text: Éditer
     home_page: Page d'accueil
+    search_projects: Rechercher par nom, acronyme ou organisation
     index:
       intro: Parcourez une sélection de projets utilisant les ontologies de %{site}
     institutions: Institutions
@@ -755,6 +756,24 @@ fr:
     self: Projets
     title: Liste des Projets
     view_projects_help: Voir l'aide des projets
+
+    filters: "Filtres"
+    filter:
+      show_funded_only: "Afficher uniquement les projets financés"
+      show_active_only: "Afficher uniquement les projets actifs"
+      all_funders: "Tous les financeurs"
+      not_funded: "Non financés"
+      funder: "Financeur"
+    sort:
+      name: "Trier par nom"
+      acronym: "Trier par acronyme" 
+      start_date: "Trier par date de début"
+      end_date: "Trier par date de fin"
+      ontologies: "Trier par nombre d'ontologies"
+    showing_projects_count:
+      zero: "Aucun projet trouvé"
+      one: "Affichage d'un projet"
+      other: "Affichage de %{count} projets"
 
     show:
       title: Projet %{name}
