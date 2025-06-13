@@ -1,4 +1,3 @@
-# app/components/project_browse_card_component.rb
 class ProjectBrowseCardComponent < ViewComponent::Base
   def initialize(project:, ontologies_hash: {})
     @project = project
