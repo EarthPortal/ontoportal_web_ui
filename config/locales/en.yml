@@ -757,7 +757,7 @@ en:
     description: Description
     description_text: Description text
     edit_text: Edit
-    home_page: Home page
+    home_page: Homepage
     search_projects: Search by name, acronym or organization
     index:
       intro: Browse a selection of projects that use %{site} ontologies
@@ -801,7 +801,7 @@ en:
       description: "Description:"
       institution: "Institution:"
       contacts: "Contacts:"
-      home_page: "Home Page:"
+      home_page: "Homepage:"
       ontologies_used: Ontologies Used
       no_ontologies_associated: No ontologies are currently associated with this project
 
