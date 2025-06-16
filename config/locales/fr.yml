@@ -756,6 +756,15 @@ fr:
     self: Projets
     title: Liste des Projets
     view_projects_help: Voir l'aide des projets
+    details: Détails
+    dates: Dates
+    start_date: Date de début
+    end_date: Date de fin
+    persons_and_organizations: Personnes et organisations
+    grant_number: Grant number
+    keywords: Mots-clés
+    organization: Organisation
+    funder: Financeur
 
     filters: "Filtres"
     filter:

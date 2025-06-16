@@ -66,6 +66,12 @@ class ProjectsController < ApplicationController
     end
 
     @project = projects.first
+
+    @dates_properties = {}
+    @dates_properties[:start_date] = @project.start_date if @project.start_date.present?
+    @dates_properties[:end_date] = @project.end_date if @project.end_date.present?
+    @dates_properties.compact!
+
     @ontologies_used = []
     onts_used = @project.ontologyUsed
     onts_used.each do |ont_used|

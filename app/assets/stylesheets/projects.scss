@@ -184,3 +184,194 @@
     margin-top: 5px;
   }
 }
+
+
+// Project show page styles
+
+.project-center {
+  display: flex;
+  justify-content: center;
+  margin: 30px 0;
+  svg path {
+    fill: var(--primary-color)
+  }
+}
+
+.project-container {
+  display: flex;
+  max-width: 1300px;
+  margin: 0 auto;
+}
+
+.project-main-column {
+  width: 950px;
+  margin-right: 30px;
+}
+
+.project-side-column {
+  width: 450px;
+}
+
+.project-details-path {
+  display: flex;
+  align-items: center;
+  color: #888888;
+  margin-bottom: 20px;
+  
+  svg {
+    margin: 0 12px;
+  }
+  
+  a {
+    text-decoration: underline !important;
+    color: #888888 !important;
+  }
+}
+
+.project-details-header-sub-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+}
+
+.project-details-header-left-container {
+  width: 70%;
+}
+
+.project-details-name-bar {
+  display: flex;
+  align-items: center;
+  
+  > div {
+    font-size: 25px;
+    font-weight: 700;
+    margin-right: 10px;
+    
+    > span {
+      font-size: 17px;
+      font-weight: 500;
+    }
+  }
+}
+
+.project-details-header-right-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 30%;
+  gap: 1rem;
+}
+
+.project-info-row {
+  display: flex;
+  margin-bottom: 12px;
+  
+  .label {
+    margin-right: 12px;
+    font-size: 15px;
+    color: #666666;
+    min-width: 95px;
+  }
+  
+  .value {
+    font-size: 15px;
+    font-weight: 600;
+    word-break: break-word;
+    width: 100%;
+    line-height: 1.5;
+  }
+}
+
+.browse-desc-text {
+  text-align: justify;
+  text-justify: inter-word;
+}
+
+.project-logo-container {
+  text-align: center;
+  margin-bottom: 1rem;
+  
+  img.description_img {
+    width: 140px;
+    object-fit: contain;
+    display: inline-block;
+  }
+}
+
+.empty-project-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 40px;
+  
+  p {
+    color: #bbbbbb;
+    font-size: 16px;
+    margin: 26px 0;
+  }
+}
+
+.ontology-cards-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.ontology-card {
+  background-color: #F6F6F6;
+  padding: 10px 13px;
+  border-radius: 5px;
+  cursor: default;
+  margin: 0 8px 8px 0;
+  
+  &:hover {
+    background-color: #F6F6F6 !important;
+  }
+  
+  a {
+    color: #777777 !important;
+    font-weight: 500;
+    font-size: 15px;
+    cursor: pointer;
+    
+    &:hover {
+      text-decoration: none;
+    }
+  }
+}
+
+.pill-button:hover .text-primary {
+  color: #fff !important;
+}
+
+@media only screen and (max-width: 1300px) {
+  .project-main-column {
+    width: 80vw;
+    margin-right: 25px;
+  }
+  
+  .project-side-column {
+    width: 30vw;
+  }
+}
+
+@media only screen and (max-width: 950px) {
+  .project-main-column, 
+  .project-side-column {
+    width: 80vw;
+    margin-right: 20px;
+  }
+  
+  .project-container {
+    display: block;
+  }
+  
+  .project-info-row {
+    flex-direction: column;
+  }
+  
+  .project-info-row .label {
+    margin-bottom: 5px;
+  }
+}
