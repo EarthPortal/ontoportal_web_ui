@@ -767,6 +767,15 @@ en:
     self: Projects
     title: Projects List
     view_projects_help: View projects help
+    details: Details
+    dates: Dates
+    start_date: Start date
+    end_date: End date
+    persons_and_organizations: Persons and organizations
+    grant_number: Grant number
+    keywords: Keywords
+    organization: Organization
+    funder: Funder
     
     filters: "Filters"
     filter:
