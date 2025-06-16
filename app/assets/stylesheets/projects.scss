@@ -188,7 +188,6 @@
 
 // Project show page styles
 
-// Main layout containers
 .project-center {
   display: flex;
   justify-content: center;
@@ -213,7 +212,6 @@
   width: 450px;
 }
 
-// Path and navigation
 .project-details-path {
   display: flex;
   align-items: center;
@@ -230,7 +228,6 @@
   }
 }
 
-// Header section
 .project-details-header-sub-container {
   display: flex;
   justify-content: space-between;
@@ -266,7 +263,6 @@
   gap: 1rem;
 }
 
-// Info rows styling
 .project-info-row {
   display: flex;
   margin-bottom: 12px;
@@ -287,7 +283,6 @@
   }
 }
 
-// Description styles
 .browse-desc-text {
   text-align: justify;
   text-justify: inter-word;
@@ -304,7 +299,6 @@
   }
 }
 
-// Ontology section
 .empty-project-section {
   display: flex;
   align-items: center;
@@ -347,12 +341,10 @@
   }
 }
 
-// Button styles
 .pill-button:hover .text-primary {
   color: #fff !important;
 }
 
-// Responsive design
 @media only screen and (max-width: 1300px) {
   .project-main-column {
     width: 80vw;
