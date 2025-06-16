@@ -425,7 +425,7 @@ en:
       login: "Login"
 
     suggest_slice: Suggest a new slice
-    slices_description: Slices allow users to interact (both via API or UI) only with a subset of ontologies in EarthPortal. If browsing the slice, all the portal features will be restricted to the chosen subset, enabling users to focus on their specific use cases. On EarthPortal, slices and groups are synchronized, so every group has a corresponding slice displaying only the ontologies from that group.
+    slices_description: Slices allow users to interact (both via API or UI) only with a subset of ontologies in EarthPortal. If browsing the slice, all the portal features will be restricted to the chosen subset, enabling users to focus on their specific use cases.
     ontoportal_description: "The <a href=%{ontoportal_link}>OntoPortal Alliance</a> is a consortium of research and infrastructure teams dedicated to promoting the development of ontology repositories and semantic artefact catalogues based on the open, collaboratively developed <a href=%{github_link}>OntoPortal</a> software . Hereafter are the current public and open repositories built with the technology maintained by the Alliance."
     viewing_slice: "Viewing the slice:"
     view_full_site: View full website
@@ -535,9 +535,9 @@ en:
       terms: Terms and Conditions
       terms_anchor: "#h-agroportal-terms-and-conditions-english"
       privacy_policy: Privacy Policy
-      privacy_policy_anchor: "#h-privacy-policy"
+      privacy_policy_anchor: "#privacy-policy"
       legal_notices: Legal Notices
-      legal_notices_anchor: "#h-legal-notice"
+      legal_notices_anchor: "#legal-notice"
       cite_us: Cite Us
       acknowledgments: Acknowledgments
       about: About
@@ -1053,7 +1053,7 @@ en:
       export_users_link: "Export Appliance Users As CSV"
       bioportal_user: BioPortal User ID
   submission_inputs:
-    edit_ontology_title: Edit ontology
+    edit_ontology_title: Edit ontology metadata
     metadata_selector_label: "Filter properties to show"
     metadata_selector_placeholder: "Start typing to select properties"
     administrators: Administrators

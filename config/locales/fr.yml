@@ -516,9 +516,9 @@ fr:
       terms: Termes et conditions
       terms_anchor: "#h-conditions-generales-dutilisation-dagroportal-francais"
       privacy_policy: Politique de confidentialité
-      privacy_policy_anchor: "#h-vie-privee"
+      privacy_policy_anchor: "#vie-privée"
       legal_notices: Mentions légales
-      legal_notices_anchor: "#h-mentions-legales"
+      legal_notices_anchor: "#mentions-légales"
       cite_us: Citez-nous
       acknowledgments: Remerciements
       about: À propos
@@ -1045,7 +1045,7 @@ fr:
       bioportal_user: ID utilisateur BioPortal
 
   submission_inputs:
-    edit_ontology_title: Edition de l'ontologie
+    edit_ontology_title: Edition des métadonnées de l'ontologie
     metadata_selector_label: "Filtrer les propriétés à afficher"
     metadata_selector_placeholder: "Commencez à taper pour sélectionner les propriétés"
     administrators: Administrateurs
