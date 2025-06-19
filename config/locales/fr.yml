@@ -321,6 +321,9 @@ fr:
     visualization: Visualisation
     mappings: Alignements
     permanent_link_class: Obtenir un lien permanent vers cette classe
+    cancel: Annuler
+    confirm: Confirmer
+
 
   home:
     ontoportal_instances: "Autres installations d’OntoPortal"
@@ -793,7 +796,6 @@ fr:
       home_page: "Page d'accueil :"
       ontologies_used: Ontologies utilisées
       no_ontologies_associated: Aucune ontologie n'est actuellement associée à ce projet
-
     form:
       errors_on_form: Erreurs sur le formulaire
       name: "Nom : *"
@@ -804,17 +806,78 @@ fr:
       description: "Description :*"
       select_ontologies: Sélectionner les ontologies utilisées
       select_administrators: Sélectionner les administrateurs
-
+      title: "Titre du Projet"
+      acronym: "Acronyme"
+      description: "Description"
+      start_date: "Date de Début"
+      end_date: "Date de Fin"
+      institution: "Institution"
+      coordinator: "Coordinateur"
+      homepage: "Homepage"
+      keywords: "Mots-clés"
+      organization: "Organisation"
+      contact: "Contact"
+      ontologies: "Ontologies"
+      funding_details: "Détails du Financement"
+      funding_program: "Programme de Financement"
+      grant_number: "Numéro de Subvention"
+      funder: "Financeur"
+      logo_url: "URL du logo"
+      summary_confirmation: "Veuillez vérifier les détails de votre projet avant de soumettre."
+      summary_title: "Résumé du Projet"
+      organization_tooltip: "C'est l'organisation coordinatrice du projet."
+      error-submission-message: "Veuillez remplir tous les champs obligatoires avant de soumettre"
+      field_required: "%{field} est requis"
+      selection_required: "Au moins un %{field} doit être sélectionné"
+    search:
+      missing_parameters: "Paramètres requis manquants"
+      found_projects:
+        one: "1 projet trouvé"
+        other: "%{count} projets trouvés"
+      no_projects_found: "Aucun projet trouvé"
+      invalid_response_format: "Format de réponse invalide de l'API"
+      no_projects_found_criteria: "Aucun projet trouvé correspondant aux critères de recherche"
+      connection_failed: "Échec de la connexion à l'API"
+      error_occurred: "Une erreur s'est produite"
     edit:
       title: Édition du Projet %{name}
       editing_project: Édition du projet
       cancel: Annuler
       update_project: Mettre à jour le Projet
-
     new:
       title: Ajoutez votre projet
       new_project: Nouveau projet
       create_project: Créer le Projet
+    project_type_selection:
+      title: "Type de Projet"
+      description: "Sélectionnez le type de projet que vous souhaitez créer."
+      select_type: "Sélectionner le type de projet"
+      funded: "Projet financé"
+      not_funded: "Projet non financé"
+    funding_search:
+      title: "Source de Financement"
+      description: "Recherchez la source de financement de votre projet."
+      source: "Source de financement"
+      datasets: "Jeu de données"
+      search_button: "Rechercher"
+    project_search:
+      anr_title: "Recherche de Projet ANR"
+      cordis_title: "Recherche de Projet CORDIS"
+      search_by_id: "Rechercher par ID"
+      search_by_term: "Rechercher par acronyme"
+      project_id: "ID du Projet"
+      id_placeholder: "Entrez l'ID du projet"
+      term_placeholder: "Entrez l'acronyme"
+      results: "Résultats de recherche"
+      api_error: "Erreur de connexion au service de recherche"
+      no_results: "Aucun résultat trouvé"
+      enter_valid_id: "Veuillez entrer un ID de projet valide"
+      enter_valid_term: "Veuillez entrer au moins 3 caractères"
+    create:
+      success: "Projet créé avec succès"
+      error: "Un problème est survenu lors de la création du projet"
+    call_annotator: "Annoter"
+    details: "Détails du Projet"
 
   recommender:
     title: Recommandeur

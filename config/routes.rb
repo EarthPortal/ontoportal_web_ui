@@ -21,15 +21,17 @@ Rails.application.routes.draw do
   resources :agents, constraints: { id: /.+/ }
   post 'agents/:id', to: 'agents#update', constraints: { id: /.+/ }
 
-
-
+  
+  resources :users, path: :accounts, constraints: { id: /[\d\w\.\@\-\%\+ ]+/ }
+  get 'projects/search_external', to: 'projects#search_external_projects'
   resources :projects, constraints: { id: /[^\/]+/ } do
     collection do
       get :projects_filter
     end
   end
 
-  resources :users, path: :accounts, constraints: { id: /[\d\w\.\@\-\%\+ ]+/ }
+
+  resources :users, path: :accounts, constraints: { id: /[\d\w\.\-\%\+ ]+/ }
 
   get '/users/subscribe/:username', to: 'users#subscribe'
   get '/users/un-subscribe/:email', to: 'users#un_subscribe'

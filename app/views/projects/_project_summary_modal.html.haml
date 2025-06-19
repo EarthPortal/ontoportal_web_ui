@@ -1,0 +1,71 @@
+= render_in_modal size: "xl", dialog_options: { class: "wide-modal", style: "max-width: 1400px; width: 95vw; margin: 1.75rem auto;" } do
+  .modal-content{'data-controller': 'project-summary', 'data-project-summary-target-modal-value': '#submissionModal'}
+    .modal-header
+      %h5.modal-title#submissionModalLabel
+        %i.bi.bi-clipboard-check.me-2
+        = t("projects.form.summary_title")
+      %button.close{ style: "position: absolute; top: 10px; right: 10px;", data: { dismiss: 'modal' }, aria: { label: 'Close' } }
+        %span{ aria: { hidden: 'true' } } &times;    
+    .modal-body
+      .w-100.mb-2.d-none#validation-alert-container
+        = render Display::AlertComponent.new(message: t("projects.form.error-submission-message"), closable: false, type: "danger")
+
+      .row.mb-4
+        .col-auto
+          %div.bg-white.rounded.shadow-sm.p-2.d-flex.align-items-center.justify-content-center{style: "height: 80px; width: 120px;"}
+            %img#summary-logo-img{src: "/", alt: "Logo", style: "max-height: 60px; max-width: 100px; object-fit: contain;"}
+        .col
+          %h4.mb-1.fw-bold.text-primary#summary-title /
+          .text-muted.small#summary-acronym /
+          .invalid-feedback.d-none#title-error= t("projects.form.field_required", field: t("projects.form.title"))
+          .invalid-feedback.d-none#acronym-error= t("projects.form.field_required", field: t("projects.form.acronym"))
+      %hr
+      .row
+        .col-md-6.mb-3
+          %span.fw-bold= t("projects.form.homepage") + ":"
+          %a.ms-2#summary-homepage.text-break{href: "#", target: "_blank"} /
+          .invalid-feedback.d-none#homepage-error= t("projects.form.field_required", field: t("projects.form.homepage"))
+        .col-md-6.mb-3
+          %span.fw-bold= t("projects.form.keywords") + ":"
+          %span.ms-2#summary-keywords.text-break /
+          .invalid-feedback.d-none#keywords-error= t("projects.form.field_required", field: t("projects.form.keywords"))
+      .row
+        .col-12.mb-3
+          %span.fw-bold= t("projects.form.description") + ":"
+          %span.ms-2#summary-description /
+          .invalid-feedback.d-none#description-error= t("projects.form.field_required", field: t("projects.form.description"))
+
+      .row
+        .col-md-6.mb-3
+          %span.fw-bold= t("projects.form.start_date") + ":"
+          %span.ms-2#summary-start-date /
+        .col-md-6.mb-3
+          %span.fw-bold= t("projects.form.end_date") + ":"
+          %span.ms-2#summary-end-date /
+      .row
+        .col-12.mb-3
+          %span.fw-bold= t("projects.form.organization") + ":"
+          %span.ms-2#summary-organization /
+      .row
+        .col-12.mb-3
+          %span.fw-bold= t("projects.form.contact") + ":"
+          %span.ms-2#summary-contact /
+      .row
+        .col-md-6.mb-3
+          %span.fw-bold= t("projects.form.grant_number") + ":"
+          %span.ms-2#summary-grant-number /
+        .col-md-6.mb-3
+          %span.fw-bold= t("projects.form.funder") + ":"
+          %span.ms-2#summary-funder /
+      .row
+        .col-12.mb-3
+          %span.fw-bold= t("projects.form.ontologies") + ":"
+          %ul#summary-ontologies.mb-0.ps-3
+            %li.text-muted /
+          .invalid-feedback.d-none#ontologies-error= t("projects.form.selection_required", field: t("projects.form.ontologies"))
+
+    .modal-footer.bg-light
+      .cancel-button{'data-action': "click->project-summary#cancel"}
+        = render Buttons::RegularButtonComponent.new(id: 'cancel-button', value: t('concepts.cancel'), variant: 'secondary', size: 'slim', state: 'regular')
+      .confirm-button{'data-action': "click->project-summary#confirm"}
+        = render Buttons::RegularButtonComponent.new(id: 'submit-project-btn', value: t('concepts.confirm'), variant: 'primary', size: 'slim', state: 'regular')

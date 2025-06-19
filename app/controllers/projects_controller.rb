@@ -86,6 +86,7 @@ class ProjectsController < ApplicationController
   # GET /projects/new
   # GET /projects/new.xml
   def new
+    @step = params[:step].present? ? params[:step].to_i : 1
     if session[:user].nil?
       redirect_to :controller => 'login', :action => 'index'
     else
@@ -97,17 +98,21 @@ class ProjectsController < ApplicationController
 
   # GET /projects/1/edit
   def edit
-    projects = LinkedData::Client::Models::Project.find_by_acronym(params[:id])
-    if projects.nil? || projects.empty?
-      flash[:notice] = flash_error(t('projects.project_not_found', id: params[:id]))
-      redirect_to projects_path
-      return
+    if session[:user].nil?
+      redirect_to :controller => 'login', :action => 'index'
+    else
+      projects = LinkedData::Client::Models::Project.find_by_acronym(params[:id])
+      if projects.nil? || projects.empty?
+        flash[:notice] = flash_error(t('projects.project_not_found', id: params[:id]))
+        redirect_to projects_path
+        return
+      end
+      @project = projects.first
+      @user_select_list = LinkedData::Client::Models::User.all.map {|u| [u.username, u.id]}
+      @user_select_list.sort! {|a,b| a[1].downcase <=> b[1].downcase}
+      @usedOntologies = @project.ontologyUsed&.map{|o| o.split('/').last}
+      @ontologies = LinkedData::Client::Models::Ontology.all
     end
-    @project = projects.first
-    @user_select_list = LinkedData::Client::Models::User.all.map {|u| [u.username, u.id]}
-    @user_select_list.sort! {|a,b| a[1].downcase <=> b[1].downcase}
-    @usedOntologies = @project.ontologyUsed&.map{|o| o.split('/').last}
-    @ontologies = LinkedData::Client::Models::Ontology.all
   end
 
   # POST /projects
@@ -117,8 +122,39 @@ class ProjectsController < ApplicationController
       redirect_to projects_path
       return
     end
+    
+    create_params = project_params.to_h
+    create_params[:creator] = [session[:user].id]
 
-    @project = LinkedData::Client::Models::Project.new(values: project_params)
+    project_type = params[:project][:project_type].presence || 'funded'
+    
+    if project_type == 'not_funded'
+      create_params[:type] = "NonFundedProject"
+      create_params[:funder] = nil
+      create_params[:source] = nil
+      create_params.delete(:funders_attributes)
+    else
+      create_params[:type] = "FundedProject"
+      create_params[:funder] = params[:project][:funders_attributes]&.values&.first&.dig("id")
+    end
+    
+    organization_id = nil
+    if params[:project][:organizations_attributes].present?
+      orgs = params[:project][:organizations_attributes].values
+      organization_id = orgs.first["id"] if orgs.first && orgs.first["id"].present?
+      create_params[:organization] = organization_id
+    end
+
+    contact_ids = []
+    if params[:project][:contacts_attributes].present?
+      contacts = params[:project][:contacts_attributes].values
+      contact_ids = contacts.map { |contact| contact["id"] if contact["id"].present? }.compact
+    end
+    create_params[:contact] = contact_ids
+  
+    create_params[:ontologyUsed] ||= []
+  
+    @project = LinkedData::Client::Models::Project.new(values: create_params)
     @project_saved = @project.save
 
     # Project successfully created.
@@ -127,7 +163,7 @@ class ProjectsController < ApplicationController
       redirect_to project_path(@project.acronym)
       return
     end
-
+  
     # Errors creating project.
     if @project_saved.status == 409
       error = OpenStruct.new existence: t('projects.error_unique_acronym', acronym: params[:project][:acronym])
@@ -135,8 +171,6 @@ class ProjectsController < ApplicationController
     else
       @errors = response_errors(@project_saved)
     end
-
-    @project = LinkedData::Client::Models::Project.new(values: project_params)
     @user_select_list = LinkedData::Client::Models::User.all.map {|u| [u.username, u.id]}
     @user_select_list.sort! {|a,b| a[1].downcase <=> b[1].downcase}
     render action: "new"
@@ -149,19 +183,42 @@ class ProjectsController < ApplicationController
       redirect_to projects_path
       return
     end
+
     projects = LinkedData::Client::Models::Project.find_by_acronym(params[:id])
     if projects.nil? || projects.empty?
       flash[:notice] = flash_error(t('projects.project_not_found', id: params[:id]))
       redirect_to projects_path
       return
     end
+
     @project = projects.first
     @project.update_from_params(project_params)
+
+    # Clean up fields AFTER update_from_params
+    @project.start_date = nil if @project.start_date.blank?
+    @project.end_date = nil if @project.end_date.blank?
+    @project.organization = @project.organization&.id if @project.organization.respond_to?(:id)
+    @project.funder = @project.funder&.id if @project.funder.respond_to?(:id)
+    @project.contact = @project.contact&.id if @project.contact.respond_to?(:id)
+    @project.type = "FundedProject" unless %w[FundedProject NonFundedProject].include?(@project.type)
+    @project.creator ||= [session[:user].id] if session[:user]
+    @project.type ||= "FundedProject"
+
     @user_select_list = LinkedData::Client::Models::User.all.map {|u| [u.username, u.id]}
     @user_select_list.sort! {|a,b| a[1].downcase <=> b[1].downcase}
     @usedOntologies = @project.ontologyUsed || []
     @ontologies = LinkedData::Client::Models::Ontology.all
-    error_response = @project.update
+
+    Rails.logger.debug "Project update payload: #{@project.to_hash.inspect}"
+
+    begin
+      error_response = @project.update
+    rescue => e
+      Rails.logger.error "Project update failed: #{e.message}"
+      @errors = { error: { general: OpenStruct.new(existence: "Error updating project: #{e.message}") } }
+      render :edit and return
+    end
+
     if response_error?(error_response)
       @errors = response_errors(error_response)
       render :edit
@@ -196,7 +253,82 @@ class ProjectsController < ApplicationController
         format.xml  { head :ok }
       end
     end
+  end
 
+  def search_external_projects
+    source = params[:source]
+    search_term = params[:term]
+    search_type = params[:type] || "acronym"
+    
+    if source.blank? || search_term.blank?
+      render json: { 
+        success: false, 
+        results: [], 
+        message: t('projects.search.missing_parameters') 
+      }
+      return
+    end
+    
+    begin
+      endpoint = "/connector/projects"
+      
+      response = api_connection.get(endpoint) do |req|
+        req.params[search_type.to_sym] = search_term
+        req.params[:source] = source
+      end
+      
+      case response.status
+      when 200
+        if response.body && response.body.is_a?(Hash) && response.body.key?("collection")
+          results = response.body["collection"] || []
+
+          results.each do |project|
+            if project["funder"] && project["funder"]["value"]
+              funder_uri = project["funder"]["value"]
+              agent_id = funder_uri.split('/').last
+              agent_response = api_connection.get("/agents/#{agent_id}")
+              project["funder"] = agent_response.body if agent_response.status == 200 && agent_response.body
+            end
+          end
+
+          render json: {
+            success: true,
+            results: results,
+            message: results.any? ? 
+              t('projects.search.found_projects', count: results.length) : 
+              t('projects.search.no_projects_found')
+          }
+        else
+          render json: { 
+            success: false, 
+            results: [], 
+            message: t('projects.search.invalid_response_format') 
+          }
+        end
+      when 404
+        render json: { 
+          success: false, 
+          results: [], 
+          message: t('projects.search.no_projects_found_criteria') 
+        }
+      else
+        handle_error_response(response)
+      end
+      
+    rescue Faraday::ConnectionFailed
+      render json: { 
+        success: false, 
+        results: [], 
+        message: t('projects.search.connection_failed') 
+      }
+    rescue => e
+      render json: { 
+        success: false, 
+        results: [], 
+        message: t('projects.search.error_occurred'), 
+        error: e.message 
+      }
+    end
   end
 
   private
@@ -392,12 +524,12 @@ class ProjectsController < ApplicationController
   end
 
   def project_params
-    p = params.require(:project).permit(:name, :acronym, :institution, :contacts, { creator:[] }, :homePage,
-                                        :description, { ontologyUsed:[] })
-                                        
-    p[:creator]&.reject!(&:blank?)
-    p[:ontologyUsed] ||= []
-    p = p.to_h
+    params.require(:project).permit(
+      :acronym, { creator: [] }, :type, :name, :homePage, :description, 
+      { ontologyUsed: [] }, :source, { keywords: [] }, :contact, :organization, 
+      :logo, :grant_number, :start_date, :end_date, :funder,
+      organizations_attributes: [:id], contacts_attributes: [:id], funders_attributes: [:id]
+    )
   end
 
   def flash_error(msg)
@@ -407,4 +539,29 @@ class ProjectsController < ApplicationController
     html << '</span>'.html_safe
   end
 
+  def api_connection
+    @api_connection ||= Faraday.new(url: rest_url) do |faraday|
+      faraday.headers['Authorization'] = "apikey token=#{get_apikey}"
+      faraday.headers['Accept'] = "application/json"
+      faraday.request :url_encoded
+      faraday.response :json, content_type: /\bjson$/
+      faraday.adapter Faraday.default_adapter
+    end
+  end
+
+  def handle_error_response(response)
+    message = case response.status
+              when 400...500
+                "Invalid request: #{response.body['error'] || 'Bad request'}"
+              when 500...600
+                "Server error: The external service is currently unavailable"
+              else
+                "Unexpected response: #{response.status}"
+              end
+    
+    respond_to do |format|
+      format.json { render json: { success: false, results: [], message: message } }
+      format.html { render json: { success: false, results: [], message: message } }
+    end
+  end
 end

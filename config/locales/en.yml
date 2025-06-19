@@ -795,6 +795,7 @@ en:
       one: "Showing 1 project"
       other: "Showing %{count} projects"
 
+
     show:
       title: Project %{name}
       edit_project: Edit Project
@@ -815,7 +816,36 @@ en:
       description: "Description:*"
       select_ontologies: Select Ontologies Used
       select_administrators: Select administrators
-    
+      title: "Title"
+      acronym: "Acronym"
+      description: "Description"
+      start_date: "Start date"
+      end_date: "End date"
+      homepage: "Homepage"
+      keywords: "Keywords"
+      organization: "Organization"
+      contact: "Contact"
+      ontologies: "Ontologies"
+      grant_number: "Grant number"
+      funder: "Funder"
+      logo_url: "Logo URL"
+      summary_confirmation: "Please review your project details before submitting."
+      summary_title: "Project summary"
+      organization_tooltip: "This is the project’s organization coordinator."
+      field_required: "%{field} is required"
+      selection_required: "At least one %{field} must be selected"
+      error-submission-message: "Please fill all required fields before submitting"
+    search:
+      missing_parameters: "Missing required parameters"
+      found_projects:
+        one: "Found 1 project"
+        other: "Found %{count} projects"
+      no_projects_found: "No projects found"
+      invalid_response_format: "Invalid response format from API"
+      no_projects_found_criteria: "No projects found matching search criteria"
+      connection_failed: "Connection to API failed"
+      error_occurred: "An error occurred"
+
     edit:
       title: Editing Project %{name}
       editing_project: Editing project
@@ -826,6 +856,36 @@ en:
       title: Add your project
       new_project: New project
       create_project: Create Project
+    project_type_selection:
+      title: "Project Type"
+      description: "Select the type of project you want to create."
+      select_type: "Select project type"
+      funded: "Funded project"
+      not_funded: "Non-funded project"
+    funding_search:
+      title: "Funding Source"
+      description: "Search for your project's funding source."
+      source: "Funding source"
+      datasets: "Dataset"
+      search_button: "Search"
+    project_search:
+      anr_title: "ANR Project Search"
+      cordis_title: "CORDIS Project Search"
+      search_by_id: "Search by ID"
+      project_id: "Project ID"
+      id_placeholder: "Enter project ID"
+      search_by_term: "Search by acronym"
+      term_placeholder: "Enter acronym"
+      results: "Search Results"
+      api_error: "Error connecting to the search service"
+      no_results: "No results found"
+      enter_valid_id: "Please enter a valid project ID"
+      enter_valid_term: "Please enter at least 3 characters"
+    create:
+      success: "Project created successfully"
+      error: "There was a problem creating the project"
+    call_annotator: "Annotate"
+    details: "Project Details"
   recommender:
     title: Recommender
     intro: Get recommendations for the most relevant ontologies from an excerpt of text or a list of keywords
