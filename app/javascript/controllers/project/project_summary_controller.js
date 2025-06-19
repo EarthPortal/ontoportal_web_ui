@@ -178,11 +178,17 @@ export default class extends Controller {
         const requiredFields = [
             { name: 'project[name]', display: 'Project Title', summaryId: 'title', errorId: 'title-error' },
             { name: 'project[acronym]', display: 'Project Acronym', summaryId: 'acronym', errorId: 'acronym-error' },
-            { name: 'project[description]', display: 'Project Description', summaryId: 'description', errorId: 'description-error' }
+            { name: 'project[description]', display: 'Project Description', summaryId: 'description', errorId: 'description-error' },
+            { name: 'project[homePage]', display: 'Homepage', summaryId: 'homepage', errorId: 'homepage-error' }
         ]
         
         const ontologySelect = document.querySelector('[name="project[ontologyUsed][]"], #project_ontologies')
         const ontologiesSelected = ontologySelect?.selectedOptions?.length > 0
+        
+        // Check keywords field
+        const keywordsSelect = document.querySelector('[name="project[keywords][]"]')
+        const keywordsSelected = keywordsSelect?.selectedOptions?.length > 0 || 
+                                (keywordsSelect?.value && keywordsSelect.value.trim() !== '')
         
         this.clearValidationWarnings()
         
@@ -201,6 +207,11 @@ export default class extends Controller {
         if (!ontologiesSelected) {
             missingFields.push({ display: 'Ontologies', errorId: 'ontologies-error' })
             this.showFieldError('ontologies', 'ontologies-error')
+        }
+        
+        if (!keywordsSelected) {
+            missingFields.push({ display: 'Keywords', errorId: 'keywords-error' })
+            this.showFieldError('keywords', 'keywords-error')
         }
         
         if (missingFields.length > 0) {

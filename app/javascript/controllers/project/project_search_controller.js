@@ -184,6 +184,13 @@ export default class extends Controller {
     const source = this.apiValue || this.datasetParamValue || ''
     const projectWithSource = { ...projectData, source }
     localStorage.setItem('project_type', 'funded')
+    
+    // Set the hidden field for funded projects
+    const projectTypeField = document.querySelector('[data-project-creation-target="projectTypeField"]')
+    if (projectTypeField) {
+      projectTypeField.value = 'funded'
+    }
+    
     localStorage.setItem('selectedProjectData', JSON.stringify(projectWithSource))
     document.dispatchEvent(new CustomEvent('project-selected', {
       bubbles: true,

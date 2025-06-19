@@ -13,7 +13,21 @@ export default class extends Controller {
   selectNotFundedProject(event) {
     event.preventDefault()
     localStorage.setItem('project_type', 'not_funded')
+    
+    // Set the hidden field
+    const projectTypeField = document.querySelector('[data-project-creation-target="projectTypeField"]')
+    if (projectTypeField) {
+      projectTypeField.value = 'not_funded'
+    }
+    
+    // Clear source field for non-funded projects
+    const sourceField = document.getElementById('project_source')
+    if (sourceField) {
+      sourceField.value = ''
+    }
+    
     localStorage.removeItem('selectedProjectData')
+
     localStorage.removeItem('selectedProject')
     const projectDataField = document.querySelector('input[name="project_data"]')
     if (projectDataField) projectDataField.value = "{}"

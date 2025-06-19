@@ -70,7 +70,14 @@ export default class extends Controller {
   handleFundedSelection(event) {
     const isFunded = event.currentTarget.value === "funded"
     if (this.hasIsFundedTarget) this.isFundedTarget.value = isFunded.toString()
-    localStorage.setItem('project_type', isFunded ? 'funded' : 'not_funded')
+    const projectType = isFunded ? 'funded' : 'not_funded'
+    localStorage.setItem('project_type', projectType)
+
+    const projectTypeField = document.querySelector('[data-project-creation-target="projectTypeField"]')
+    if (projectTypeField) projectTypeField.value = projectType
+
+
+
     if (isFunded) {
       if (this.hasAcronymTarget) this.makeFieldReadOnly(this.acronymTarget)
       if (this.hasGrantNumberTarget) this.makeFieldReadOnly(this.grantNumberTarget)
@@ -87,13 +94,20 @@ export default class extends Controller {
     if (this.hasFundingSourceTarget) this.fundingSourceTarget.value = event.currentTarget.value
   }
   
-  handleProjectSelection(event) {
-    if (!event.detail?.projectData) return
-    const projectData = event.detail.projectData
-    localStorage.setItem('project_type', 'funded')
-    if (this.hasProjectDataTarget) this.projectDataTarget.value = JSON.stringify(projectData)
-    this.storeSelectedProject(projectData)
+handleProjectSelection(event) {
+  if (!event.detail?.projectData) return
+  const projectData = event.detail.projectData
+  localStorage.setItem('project_type', 'funded')
+  
+  // Set the hidden field for funded projects
+  const projectTypeField = document.querySelector('[data-project-creation-target="projectTypeField"]')
+  if (projectTypeField) {
+    projectTypeField.value = 'funded'
   }
+  
+  if (this.hasProjectDataTarget) this.projectDataTarget.value = JSON.stringify(projectData)
+  this.storeSelectedProject(projectData)
+}
   
   storeSelectedProject(projectData) {
     if (!projectData) return

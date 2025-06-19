@@ -121,8 +121,21 @@ class ProjectsController < ApplicationController
     create_params = project_params.to_h
     
     create_params[:creator] = [session[:user].id]
+
+    # Get project type from multiple possible sources
+    project_type = params[:project_type] || params[:project][:project_type] || 'funded'
     
-    create_params[:type] ||= "FundedProject"
+    if project_type == 'not_funded'
+      create_params[:type] = "NonFundedProject"
+      create_params[:funder] = nil
+      create_params[:source] = nil
+      # Remove any funder data that might have been submitted
+      create_params.delete(:funders_attributes)
+    else
+      create_params[:type] = "FundedProject"
+      create_params[:funder] = params[:project][:funders_attributes]&.values&.first&.dig("id")
+      # Keep the source if it exists
+    end
     
     organization_id = nil
     if params[:project][:organizations_attributes].present?
@@ -130,15 +143,13 @@ class ProjectsController < ApplicationController
       organization_id = orgs.first["id"] if orgs.first && orgs.first["id"].present?
       create_params[:organization] = organization_id
     end
-  
-    contact_id = nil
+
+    contact_ids = []
     if params[:project][:contacts_attributes].present?
       contacts = params[:project][:contacts_attributes].values
-      contact_id = contacts.first["id"] if contacts.first && contacts.first["id"].present?
-      create_params[:contact] = contact_id
+      contact_ids = contacts.map { |contact| contact["id"] if contact["id"].present? }.compact
     end
-
-    create_params[:funder] = params[:project][:funders_attributes]&.values&.first&.dig("id")
+    create_params[:contact] = contact_ids
   
     create_params[:ontologyUsed] ||= []
   

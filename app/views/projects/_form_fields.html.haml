@@ -1,5 +1,6 @@
 .upload-ontology-input-field-container{"data-project-creation-target" => "source"}
   = hidden_field_tag "project[source]", @project&.source || "", id: "project_source"
+= hidden_field_tag "project[project_type]", "", data: { "project-creation-target": "projectTypeField" }
 .upload-ontology-input-field-container{"data-project-creation-target" => "name"}
   = render Input::TextInputComponent.new(label: label_required(t("projects.form.title")), name: "project[name]", value: @project&.name)
 .upload-ontology-input-field-container{"data-project-creation-target" => "acronym"}
@@ -43,10 +44,10 @@
               = hidden_field_tag "project[contacts_attributes][NEW_RECORD]", nil, id: "project_contacts_attributes_NEW_RECORD"
               = render AgentSearchInputComponent.new(id: "NEW_RECORD", agent_type: 'person', name_prefix: "project[contacts_attributes]", parent_id: "project_contact", show_affiliations: true, edit_on_modal: true, deletable: true)
 .upload-ontology-input-field-container{"data-project-creation-target" => "homePage"}
-  = render Input::UrlComponent.new(label: t("projects.form.homepage"), name: "project[homePage]", value: @project&.homePage)
+  = render Input::UrlComponent.new(label: label_required(t("projects.form.homepage")), name: "project[homePage]", value: @project&.homePage)
 .upload-ontology-input-field-container{"data-project-creation-target" => "keywords"}
   %label.text-input-label{for: "select_project_keywords"}
-    = t("projects.form.keywords")
+    = label_required(t("projects.form.keywords"))
   - keywords_array = @project&.keywords.is_a?(Array) ? @project.keywords : (@project&.keywords.to_s.split(',').map(&:strip) rescue [])
   = render SelectInputComponent.new(id: "project_keywords", name: "project[keywords][]", values: keywords_array, selected: keywords_array, multiple: true, open_to_add_values: true)
 .upload-ontology-input-field-container.logo-url-container
