@@ -12,10 +12,12 @@
 .row
   .col-md-6
     .upload-ontology-input-field-container{"data-project-creation-target" => "startDate"}
-      = render Input::DateComponent.new(label: t("projects.form.start_date"), name: "project[start_date]", value: @project&.start_date)
+      - start_date = @project&.start_date&.to_s&.split('T')&.first
+      = render Input::DateComponent.new(label: t("projects.form.start_date"), name: "project[start_date]", value: start_date)
   .col-md-6
     .upload-ontology-input-field-container{"data-project-creation-target" => "endDate"}
-      = render Input::DateComponent.new(label: t("projects.form.end_date"), name: "project[end_date]", value: @project&.end_date)
+      - end_date = @project&.end_date&.to_s&.split('T')&.first
+      = render Input::DateComponent.new(label: t("projects.form.end_date"), name: "project[end_date]", value: end_date)
 
 - unless @hide_fields && @hide_fields.include?('organizations')
   .organization-project-input-field{"data-project-creation-target" => "organizations"}
