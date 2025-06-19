@@ -795,6 +795,7 @@ en:
       one: "Showing 1 project"
       other: "Showing %{count} projects"
 
+
     show:
       title: Project %{name}
       edit_project: Edit Project
@@ -834,6 +835,17 @@ en:
       field_required: "%{field} is required"
       selection_required: "At least one %{field} must be selected"
       error-submission-message: "Please fill all required fields before submitting"
+    search:
+      missing_parameters: "Missing required parameters"
+      found_projects:
+        one: "Found 1 project"
+        other: "Found %{count} projects"
+      no_projects_found: "No projects found"
+      invalid_response_format: "Invalid response format from API"
+      no_projects_found_criteria: "No projects found matching search criteria"
+      connection_failed: "Connection to API failed"
+      error_occurred: "An error occurred"
+
     edit:
       title: Editing Project %{name}
       editing_project: Editing project

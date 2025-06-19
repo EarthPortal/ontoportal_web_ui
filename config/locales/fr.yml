@@ -321,6 +321,9 @@ fr:
     visualization: Visualisation
     mappings: Alignements
     permanent_link_class: Obtenir un lien permanent vers cette classe
+    cancel: Annuler
+    confirm: Confirmer
+
 
   home:
     ontoportal_instances: "Autres installations d’OntoPortal"
@@ -810,7 +813,7 @@ fr:
       end_date: "Date de Fin"
       institution: "Institution"
       coordinator: "Coordinateur"
-      homepage: "Site Web du Projet"
+      homepage: "Homepage"
       keywords: "Mots-clés"
       organization: "Organisation"
       contact: "Contact"
@@ -826,7 +829,16 @@ fr:
       error-submission-message: "Veuillez remplir tous les champs obligatoires avant de soumettre"
       field_required: "%{field} est requis"
       selection_required: "Au moins un %{field} doit être sélectionné"
-      error-submission-message: "Veuillez remplir tous les champs obligatoires avant de soumettre"
+    search:
+      missing_parameters: "Paramètres requis manquants"
+      found_projects:
+        one: "1 projet trouvé"
+        other: "%{count} projets trouvés"
+      no_projects_found: "Aucun projet trouvé"
+      invalid_response_format: "Format de réponse invalide de l'API"
+      no_projects_found_criteria: "Aucun projet trouvé correspondant aux critères de recherche"
+      connection_failed: "Échec de la connexion à l'API"
+      error_occurred: "Une erreur s'est produite"
     edit:
       title: Édition du Projet %{name}
       editing_project: Édition du projet
@@ -852,7 +864,7 @@ fr:
       anr_title: "Recherche de Projet ANR"
       cordis_title: "Recherche de Projet CORDIS"
       search_by_id: "Rechercher par ID"
-      search_by_term: "Rechercher par Mots-clés"
+      search_by_term: "Rechercher par acronyme"
       project_id: "ID du Projet"
       id_placeholder: "Entrez l'ID du projet"
       term_placeholder: "Entrez l'acronyme"

@@ -56,7 +56,8 @@
     - has_logo = @project&.logo.present?
     .logo-preview-placeholder{"data-project-creation-target" => "logoPlaceholder", class: has_logo ? "d-none" : ""}
     %img.img-thumbnail{"data-project-creation-target" => "logoPreview", style: "max-height: 100px; max-width: 200px;", src: @project&.logo, class: has_logo ? "" : "d-none"}
-.row.mt-4
+
+.row.mt-4.funding-related-field{"data-project-creation-target" => "fundingFields"}
   .col-md-6
     .upload-ontology-input-field-container{"data-project-creation-target" => "grantNumber"}
       - is_readonly = @edit_mode || (@force_readonly && @force_readonly.include?('grant_number'))
@@ -68,6 +69,7 @@
         - funder = @project&.funders&.first
         = hidden_field_tag "project[funders_attributes][0][id]", funder&.id || "", id: "project_funders_attributes_0_id"
         = render Input::TextInputComponent.new(label: t("projects.form.funder"), name: "project_funder_display", value: funder&.name)
+
 .upload-ontology-input-field-container.mt-3
   %label.text-input-label
     = t("projects.form.ontologies")

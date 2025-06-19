@@ -98,17 +98,21 @@ class ProjectsController < ApplicationController
 
   # GET /projects/1/edit
   def edit
-    projects = LinkedData::Client::Models::Project.find_by_acronym(params[:id])
-    if projects.nil? || projects.empty?
-      flash[:notice] = flash_error(t('projects.project_not_found', id: params[:id]))
-      redirect_to projects_path
-      return
+    if session[:user].nil?
+      redirect_to :controller => 'login', :action => 'index'
+    else
+      projects = LinkedData::Client::Models::Project.find_by_acronym(params[:id])
+      if projects.nil? || projects.empty?
+        flash[:notice] = flash_error(t('projects.project_not_found', id: params[:id]))
+        redirect_to projects_path
+        return
+      end
+      @project = projects.first
+      @user_select_list = LinkedData::Client::Models::User.all.map {|u| [u.username, u.id]}
+      @user_select_list.sort! {|a,b| a[1].downcase <=> b[1].downcase}
+      @usedOntologies = @project.ontologyUsed&.map{|o| o.split('/').last}
+      @ontologies = LinkedData::Client::Models::Ontology.all
     end
-    @project = projects.first
-    @user_select_list = LinkedData::Client::Models::User.all.map {|u| [u.username, u.id]}
-    @user_select_list.sort! {|a,b| a[1].downcase <=> b[1].downcase}
-    @usedOntologies = @project.ontologyUsed&.map{|o| o.split('/').last}
-    @ontologies = LinkedData::Client::Models::Ontology.all
   end
 
   # POST /projects
@@ -118,23 +122,20 @@ class ProjectsController < ApplicationController
       redirect_to projects_path
       return
     end
-    create_params = project_params.to_h
     
+    create_params = project_params.to_h
     create_params[:creator] = [session[:user].id]
 
-    # Get project type from multiple possible sources
-    project_type = params[:project_type] || params[:project][:project_type] || 'funded'
+    project_type = params[:project][:project_type].presence || 'funded'
     
     if project_type == 'not_funded'
       create_params[:type] = "NonFundedProject"
       create_params[:funder] = nil
       create_params[:source] = nil
-      # Remove any funder data that might have been submitted
       create_params.delete(:funders_attributes)
     else
       create_params[:type] = "FundedProject"
       create_params[:funder] = params[:project][:funders_attributes]&.values&.first&.dig("id")
-      # Keep the source if it exists
     end
     
     organization_id = nil
@@ -260,7 +261,11 @@ class ProjectsController < ApplicationController
     search_type = params[:type] || "acronym"
     
     if source.blank? || search_term.blank?
-      render json: { success: false, results: [], message: "Missing required parameters" }
+      render json: { 
+        success: false, 
+        results: [], 
+        message: t('projects.search.missing_parameters') 
+      }
       return
     end
     
@@ -289,21 +294,40 @@ class ProjectsController < ApplicationController
           render json: {
             success: true,
             results: results,
-            message: results.any? ? "Found #{results.length} projects" : "No projects found"
+            message: results.any? ? 
+              t('projects.search.found_projects', count: results.length) : 
+              t('projects.search.no_projects_found')
           }
         else
-          render json: { success: false, results: [], message: "Invalid response format from API" }
+          render json: { 
+            success: false, 
+            results: [], 
+            message: t('projects.search.invalid_response_format') 
+          }
         end
       when 404
-        render json: { success: false, results: [], message: "No projects found matching search criteria" }
+        render json: { 
+          success: false, 
+          results: [], 
+          message: t('projects.search.no_projects_found_criteria') 
+        }
       else
         handle_error_response(response)
       end
       
     rescue Faraday::ConnectionFailed
-      render json: { success: false, results: [], message: "Connection to API failed" }
+      render json: { 
+        success: false, 
+        results: [], 
+        message: t('projects.search.connection_failed') 
+      }
     rescue => e
-      render json: { success: false, results: [], message: "An error occurred", error: e.message }
+      render json: { 
+        success: false, 
+        results: [], 
+        message: t('projects.search.error_occurred'), 
+        error: e.message 
+      }
     end
   end
 

@@ -185,7 +185,6 @@ export default class extends Controller {
         const ontologySelect = document.querySelector('[name="project[ontologyUsed][]"], #project_ontologies')
         const ontologiesSelected = ontologySelect?.selectedOptions?.length > 0
         
-        // Check keywords field
         const keywordsSelect = document.querySelector('[name="project[keywords][]"]')
         const keywordsSelected = keywordsSelect?.selectedOptions?.length > 0 || 
                                 (keywordsSelect?.value && keywordsSelect.value.trim() !== '')

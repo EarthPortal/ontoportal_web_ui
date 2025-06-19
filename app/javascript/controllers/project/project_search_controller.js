@@ -51,7 +51,7 @@ export default class extends Controller {
     event.preventDefault()
     const searchTerm = this.searchTermInputTarget.value.trim()
     if (!searchTerm || searchTerm.length < 2) {
-      this.showError("Please enter a valid search term with at least 2 characters")
+      this.showError("Please enter a valid search term with at least 3 characters")
       return
     }
     this.performSearch(searchTerm, 'acronym')
@@ -185,7 +185,6 @@ export default class extends Controller {
     const projectWithSource = { ...projectData, source }
     localStorage.setItem('project_type', 'funded')
     
-    // Set the hidden field for funded projects
     const projectTypeField = document.querySelector('[data-project-creation-target="projectTypeField"]')
     if (projectTypeField) {
       projectTypeField.value = 'funded'

@@ -1,5 +1,5 @@
 - form_options = { url: projects_path, method: :post, html: { id: "new_project", multipart: true, novalidate: true } }
-- form_options = nil if @edit_mode # Skip form creation in edit mode, as it's done by the parent
+- form_options = nil if @edit_mode 
 
 - if !@edit_mode
   = form_with(**form_options) do

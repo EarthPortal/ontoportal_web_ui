@@ -1,14 +1,12 @@
 .funding-source-selection-container.d-flex.flex-column{"data-controller" => "funding-source-selection", "data-funding-source-selection-target" => "content"}
-  .not-funded-button.my-4{'data-action': "click->funding-source-selection#selectNotFundedProject"}
-    = render Buttons::RegularButtonComponent.new(id: '', value: t("projects.project_type_selection.not_funded"), variant: 'secondary', state: 'regular', size: 'slim')
-
   .funding-sources-options
     - funding_sources = Rails.configuration.respond_to?(:funding_sources) ? Rails.configuration.funding_sources : [        { id: "cordis", name: "European Union" },        { id: "ANR_FRANCE2030", name: "ANR (France 2030)" },        { id: "ANR_AAPG", name: "ANR (AAPG)" }      ]
     - select_options = funding_sources.map { |src| [src[:name], src[:id]] }
+    - select_options.push([t("projects.project_type_selection.not_funded"), "not_funded"])
     .funding-source-select.my-4
       = render Input::SelectComponent.new( id: "funding_source_select", name: "funding_source", value: select_options, selected: select_options.first[1], data: { action: "change->funding-source-selection#handleSourceSelect", "funding-source-selection-target": "sourceSelect", "project-creation-target": "fundingSourceSelect" })
 
-  .project-search-container.mt-3{
+  .project-search-container.mt-3#project-search-section{"data-funding-source-selection-target" => "searchContainer",
     "data-controller" => "project-search",
     "data-project-search-api-value" => funding_sources.first[:id],
     "data-funding-source-selection-target" => "searchComponent"
