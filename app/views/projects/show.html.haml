@@ -72,9 +72,10 @@
         = dropdown_component(id: 'people_and_organizations', title: t('projects.persons_and_organizations'), is_open: true) do
           = render Layout::ListComponent.new do |l|
             - if @project.contact.present?
-              - l.row do
-                = render FieldContainerComponent.new(label: t('projects.contact')) do
-                  = agent_chip_component(@project.contact)
+              - Array(@project.contact).each_with_index do |contact, index|
+                - l.row do
+                  = render FieldContainerComponent.new(label: index == 0 ? t('projects.contact') : '') do
+                    = agent_chip_component(contact)
             - if @project.organization.present?
               - l.row do
                 = render FieldContainerComponent.new(label: t('projects.organization')) do
