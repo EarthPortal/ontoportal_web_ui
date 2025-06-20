@@ -14,7 +14,7 @@
             = @project.name
             %span{title: @project.acronym, style: "font-size: 1.1rem; font-weight: 400; margin-left: 0.5rem;"}= "(#{@project.acronym})"
       .project-details-header-right-container{style: 'display: flex; align-items: center; justify-content: flex-end; width: 30%; gap: 1rem;'}
-        = render RoundedButtonComponent.new(link: "#{@project.id}?apikey=#{@apikey}", target: '_blank', size: 'medium', title: t('ontologies.go_to_api'))
+        = render RoundedButtonComponent.new(link: "#{@project.id}?apikey=#{@get_apikey}", target: '_blank', size: 'medium', title: t('ontologies.go_to_api'))
         - if session[:user] && (Array(@project.creator).include?(session[:user].id) || session[:user].admin?)
           = link_to edit_project_path(@project.acronym), class: 'pill-button d-flex align-items-center ml-1' do
             = inline_svg_tag('edit.svg', style: 'vertical-align: middle; margin-right: 6px;')
@@ -72,9 +72,10 @@
         = dropdown_component(id: 'people_and_organizations', title: t('projects.persons_and_organizations'), is_open: true) do
           = render Layout::ListComponent.new do |l|
             - if @project.contact.present?
-              - l.row do
-                = render FieldContainerComponent.new(label: t('projects.contact')) do
-                  = agent_chip_component(@project.contact)
+              - Array(@project.contact).each_with_index do |contact, index|
+                - l.row do
+                  = render FieldContainerComponent.new(label: index == 0 ? t('projects.contact') : '') do
+                    = agent_chip_component(contact)
             - if @project.organization.present?
               - l.row do
                 = render FieldContainerComponent.new(label: t('projects.organization')) do

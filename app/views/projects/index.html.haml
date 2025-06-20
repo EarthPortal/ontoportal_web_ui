@@ -3,7 +3,11 @@
 .browse-center
   .browse-container
     .projects-page-title
-      .text= t("projects.title")
+      .d-flex.justify-content-between.align-items-center
+        .text= t("projects.title")
+        = render RoundedButtonComponent.new(link: "#{$REST_URL}/projects?apikey=#{@get_apikey}", target: '_blank', size: 'medium', title: t('ontologies.go_to_api')) do |btn|
+          - btn.icon_left do
+            = inline_svg_tag "json.svg"
       .line
 
     :javascript
