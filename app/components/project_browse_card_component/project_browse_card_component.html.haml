@@ -16,7 +16,7 @@
                                           count: ontology_count,
                                           link: "#{project_link}#ontologies_section")
         - if project.homePage.present?
-          = link_to project.homePage, target: "_blank", rel: "nofollow", class: "text-decoration-none", style: "display: flex; align-items: center; justify-content: center;", data: {controller: "tooltip"}, title: "#{t('projects.home_page')}<br>#{link_to(project.homePage, target: '_blank')}".html_safe do
+          = link_to project.homePage, target: "_blank", rel: "nofollow", class: "text-decoration-none", style: "display: flex; align-items: center; justify-content: center;", data: {controller: "tooltip"}, title: "#{t('projects.home_page')}".html_safe do
             = inline_svg("summary/homepage.svg", width: "25", height: '25')
         - else
           %span.disabled-icon{style: "display: flex; align-items: center; justify-content: center; cursor: not-allowed;", data: {controller: "tooltip"}, title: t('projects.home_page')}
