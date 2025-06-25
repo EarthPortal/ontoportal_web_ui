@@ -631,3 +631,87 @@ button:disabled,
 .pointer-cursor .form-check-label {
   cursor: pointer;
 }
+
+
+// Project chip  component
+
+.project-container-simple {
+  display: flex;
+  align-items: center;
+  margin: 5px;
+  max-width: 200px;
+}
+
+.project-circle-simple {
+  width: 40px;
+  height: 40px;
+  background-color: var(--light-color);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+.project-info-simple {
+  flex: 1;
+  min-width: 0;
+}
+
+.project-name-simple {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 2px;
+  color: var(--text-color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.project-chip {
+  display: flex;
+  align-items: center;
+}
+
+.project-chip-circle {
+  height: 30px;
+  width: 30px;
+  background-color: rgba(128, 128, 128, 0.08);
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+}
+
+.project-chip-name {
+  color: #8C8E8D;
+  font-size: 15px;
+}
+
+.project-type-icon path {
+  fill: var(--primary-color);
+}
+
+.project-logo-icon {
+  width: 15px;
+  height: 15px;
+  object-fit: contain;
+}
+
+.project-circle-simple .project-logo-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.project-circle-simple svg,
+.project-chip-circle svg {
+  width: 15px;
+  height: 15px;
+}
+
+.project-circle-simple svg {
+  width: 20px;
+  height: 20px;
+}

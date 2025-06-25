@@ -1,0 +1,7 @@
+= render ChipButtonComponent.new(    url: project_url,    type: chip_type,    'data-controller': 'tooltip',    title: project_tooltip,    class: 'text-truncate',    style: 'max-width: 280px; display:block; line-height: unset'  ) do
+  = link_to project_url, target: '_blank' do
+    .project-chip
+      .project-chip-circle
+        = project_icon_or_logo
+      .project-chip-name.text-truncate
+        = project_name
