@@ -108,22 +108,28 @@ module SubmissionInputsHelper
 
   end
 
- def ontology_projects_input(ontology = @ontology, projects = @projects)
-  ontology_with_projects = LinkedData::Client::Models::Ontology.find_by_acronym(ontology.acronym, include: 'projects').first
-  existing_project_urls = ontology_with_projects&.projects || []
-    
-  content_tag(:div, class: 'mb-3') do
-    content_tag(:label, t('submission_inputs.projects'), class: 'text-input-label') +
-    render(ProjectSearchInputComponent.new(
-      id: "ontology_projects",
-      name: "ontology[projects][]",
-      selected: existing_project_urls,
-      placeholder: t('projects.selector_placeholder'),
-      multiple: true,
-      open_to_add_values: true
-    ))
+  def ontology_projects_input(ontology = @ontology, projects = @projects)
+    ontology_with_projects = LinkedData::Client::Models::Ontology.find_by_acronym(ontology.acronym, include: 'projects').first
+    existing_project_urls = ontology_with_projects&.projects || []
+      
+    content_tag(:div, class: 'mb-3') do
+      content_tag(:label, t('submission_inputs.projects'), class: 'text-input-label') +
+      render(ProjectSearchInputComponent.new(
+        id: "ontology_projects",
+        name: "ontology[projects][]",
+        selected: existing_project_urls,
+        placeholder: t('projects.selector_placeholder'),
+        multiple: true,
+        open_to_add_values: true
+      )) +
+      content_tag(:div, class: 'mt-2') do
+        link_to(t('projects.create_new_project'), new_project_path, 
+                class: 'btn btn-outline-primary btn-sm', 
+                target: '_blank',
+                title: t('projects.create_new_project'))
+      end
+    end
   end
-end
 
   def ontology_name_input(ontology = @ontology, label: 'Name')
     text_input(name: 'ontology[name]', value: ontology.name, label: label_required(label))
