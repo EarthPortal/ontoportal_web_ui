@@ -768,6 +768,7 @@ fr:
     keywords: Mots-clés
     organization: Organisation
     funder: Financeur
+    selector_placeholder: Rechercher un projet ...
 
     filters: "Filtres"
     filter:
@@ -1140,6 +1141,7 @@ fr:
     metadata_selector_label: "Filtrer les propriétés à afficher"
     metadata_selector_placeholder: "Commencez à taper pour sélectionner les propriétés"
     administrators: Administrateurs
+    projects: Projets
     ontology_skos_language_link: Veuillez vous référer à la documentation pour plus de détails.
     ontology_skos_language_help: >
       Les vocabulaires SKOS soumis à %{portal_name} doivent suivre quelques contraintes (par exemple, contenir au minimum un skos:ConceptScheme également typé comme owl:Ontology)
@@ -1302,7 +1304,7 @@ fr:
     confirm_submission_message: En soumettant cette ontologie dans l’EarthPortal, vous vous portez garant de la mise à jour du contenu et des métadonnées. Si vous n’en êtes pas propriétaire, assurez-vous d’en respecter la licence.
     edit_metadata: Modifier les métadonnées
     projects_using_ontology: Projets utilisant %{acronym}
-    create_new_project: Créer un nouveau projet
+    add_new_project: Ajouter un nouveau projet
     no_projects_using_ontology: Aucun projet n'utilise %{acronym}
     outside: extérieur
     relation_with_other_ontologies: Relation avec d'autres ontologies soit à l'intérieur soit à l'extérieur

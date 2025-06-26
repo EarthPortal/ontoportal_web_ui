@@ -776,6 +776,7 @@ en:
     keywords: Keywords
     organization: Organization
     funder: Funder
+    selector_placeholder: Search a project ...
     
     filters: "Filters"
     filter:
@@ -1145,6 +1146,7 @@ en:
     metadata_selector_label: "Filter properties to show"
     metadata_selector_placeholder: "Start typing to select properties"
     administrators: Administrators
+    projects: Projects
     ontology_skos_language_link: Please refer to the documentation for more details.
     ontology_skos_language_help: >
       SKOS vocabularies submitted to %{portal_name} shall follow a few constraints (e.g., contain a minimum of one skos:ConceptScheme also typed as owl:Ontology) 
@@ -1304,7 +1306,7 @@ en:
     edit_metadata: Edit metadata
     go_to_api: Go to API
     projects_using_ontology: Projects using %{acronym}
-    create_new_project: Create new project
+    add_new_project: Add new project
     no_projects_using_ontology: No projects using %{acronym}
     outside: outside
     relation_with_other_ontologies: Relation with other ontologies either in %{inside} or %{outside}
