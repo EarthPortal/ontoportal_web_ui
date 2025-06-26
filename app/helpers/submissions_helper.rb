@@ -236,6 +236,12 @@ module SubmissionsHelper
       output += ontology_acronym_input(update: true)
     end
 
+    if selected_attribute?('projects')
+      output += attribute_form_group_container('projects') do
+        ontology_projects_input
+      end
+    end
+
     if selected_attribute?('name')
       output += ontology_name_input
     end

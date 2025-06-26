@@ -29,6 +29,8 @@ Rails.application.routes.draw do
       get :projects_filter
     end
   end
+  get '/ajax/projects' => 'projects#ajax_projects'
+
 
 
   resources :users, path: :accounts, constraints: { id: /[\d\w\.\-\%\+ ]+/ }
