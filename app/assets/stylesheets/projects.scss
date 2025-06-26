@@ -635,42 +635,10 @@ button:disabled,
 
 // Project chip  component
 
-.project-container-simple {
-  display: flex;
-  align-items: center;
-  margin: 5px;
-  max-width: 200px;
-}
-
-.project-circle-simple {
-  width: 40px;
-  height: 40px;
-  background-color: var(--light-color);
-  border-radius: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 8px;
-  flex-shrink: 0;
-}
-
-.project-info-simple {
-  flex: 1;
-  min-width: 0;
-}
-
-.project-name-simple {
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 2px;
-  color: var(--text-color);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
+// Project chip component - styled exactly like agent chip
 .project-chip {
   display: flex;
+  justify-content: center;
   align-items: center;
 }
 
@@ -680,14 +648,24 @@ button:disabled,
   background-color: rgba(128, 128, 128, 0.08);
   border-radius: 15px;
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   margin-right: 10px;
+
+  svg, .project-logo-icon {
+    width: 15px;
+    height: 15px;
+  }
 }
 
 .project-chip-name {
   color: #8C8E8D;
   font-size: 15px;
+  font-weight: 400;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px; // Allow more space for project names
 }
 
 .project-type-icon path {
@@ -700,18 +678,44 @@ button:disabled,
   object-fit: contain;
 }
 
-.project-circle-simple .project-logo-icon {
-  width: 20px;
-  height: 20px;
+// Project tooltip component (tooltip content - bigger icon and circle)
+.project-container-simple {
+  display: flex;
+  align-items: center;
+  margin: 8px;
+  max-width: 280px;
+  padding: 10px px;
 }
 
-.project-circle-simple svg,
-.project-chip-circle svg {
-  width: 15px;
-  height: 15px;
+.project-circle-simple {
+  width: 65px;   // increased from 48px
+  height: 65px;  // increased from 48px
+  background-color: var(--light-color);
+  border-radius: 30px; // increased from 24px
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 14px;
+  flex-shrink: 0;
+
+  svg, .project-logo-icon {
+    width: 40px !important; // increased from 28px
+    height: 40px !important; // increased from 28px
+  }
 }
 
-.project-circle-simple svg {
-  width: 20px;
-  height: 20px;
+.project-info-simple {
+  flex: 1;
+  min-width: 0;
+}
+
+.project-name-simple {
+  font-size: 17px;
+  font-weight: 600;
+  margin-bottom: 2px;
+  color: var(--text-color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
 }
