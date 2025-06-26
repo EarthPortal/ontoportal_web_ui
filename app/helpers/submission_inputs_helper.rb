@@ -113,7 +113,7 @@ module SubmissionInputsHelper
   existing_project_urls = ontology_with_projects&.projects || []
     
   content_tag(:div, class: 'mb-3') do
-    content_tag(:label, t('submission_inputs.projects'), class: 'text-input-labelx') +
+    content_tag(:label, t('submission_inputs.projects'), class: 'text-input-label') +
     render(ProjectSearchInputComponent.new(
       id: "ontology_projects",
       name: "ontology[projects][]",
