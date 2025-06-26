@@ -45,10 +45,6 @@
             %span{style: 'display: inline-flex; align-items: center;'}
               = render ClipboardComponent.new(title: t('projects.copy_grant_number'), message: project.grant_number, show_content: false)
 
-      - if project.contact.present?
-        .metadata-item
-          = helpers.agent_chip_component(project.contact)
-
       - if project.organization.present?
         .metadata-item
           = helpers.agent_chip_component(project.organization)

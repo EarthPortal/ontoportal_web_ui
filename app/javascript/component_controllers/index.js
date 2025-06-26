@@ -28,7 +28,6 @@ import RDFHighlighter from '../../components/display/rdf_highlighter_component/r
 import FederationController from "../../components/federated_portal_button_component/federated_portal_button_component_controller"
 import SubmissionModalController from '../controllers/submission_controller'
 import ShowModalController from '../controllers/show_modal_controller'
-import project_type_selection_controller from '../controllers/project/project_type_selection_controller'
 import project_search_controller from '../controllers/project/project_search_controller'
 import funding_source_selection_controller from '../controllers/project/funding_source_selection_controller'
 import project_creation_controller from '../controllers/project/project_creation_controller'
@@ -56,7 +55,6 @@ application.register('submission-modal', SubmissionModalController)
 application.register('range-slider', range_slider_component_controller)
 application.register("federation-portals-colors", FederationController)
 
-application.register('project-type-selection',project_type_selection_controller)
 application.register('project-search', project_search_controller)
 application.register("funding-source-selection", funding_source_selection_controller)
 application.register("project-creation", project_creation_controller)

@@ -538,7 +538,9 @@ class ProjectsController < ApplicationController
   end
 
   def filter_by_status(projects)
-    projects = projects.select { |p| p.type == "FundedProject" } if params[:funded_only] == "true"
+    if params[:funded_only] == "true"
+      projects = projects.select { |p| p.funder.present? }
+    end
     projects = projects.select { |p| project_active?(p) } if params[:active_only] == "true"
     projects
   end
