@@ -255,6 +255,31 @@ class ProjectsController < ApplicationController
     end
   end
 
+  def ajax_projects
+    query = params[:query].to_s.strip.downcase
+    limit = params[:limit]&.to_i || 20
+
+    projects = LinkedData::Client::Models::Project.all || []
+
+    if query.present?
+      projects = projects.select do |project|
+        project.name&.downcase&.include?(query) ||
+        project.acronym&.downcase&.include?(query) ||
+        project.description&.downcase&.include?(query)
+      end
+    end
+
+    projects = projects.first(limit)
+
+    projects_json = projects.map do |project|
+      {
+        value: project.acronym, 
+        text: "#{project.name} (#{project.acronym})"
+      }
+    end
+    render json: projects_json
+  end
+  
   def search_external_projects
     source = params[:source]
     search_term = params[:term]
