@@ -43,7 +43,9 @@ module SubmissionFilter
                formality_level: request_params[:hasFormalityLevel],
                is_of_type: request_params[:isOfType],
                groups: request_params[:group], categories: request_params[:hasDomain],
-               formats: request_params[:hasOntologyLanguage] }
+               formats: request_params[:hasOntologyLanguage],
+               projects: request_params[:projects]  
+            }
 
     submissions = filter_submissions(@ontologies, **params)
 
@@ -79,7 +81,7 @@ module SubmissionFilter
   end
 
 
-  def filter_submissions(ontologies, query:, status:, show_views:, private_only:, languages:, page_size:, formality_level:, is_of_type:, groups:, categories:, formats:)
+  def filter_submissions(ontologies, query:, status:, show_views:, private_only:, languages:, page_size:, formality_level:, is_of_type:, groups:, categories:, formats:, projects: nil)
     submissions = LinkedData::Client::Models::OntologySubmission.all(include: BROWSE_ATTRIBUTES.join(','), also_include_views: true, display_links: false, display_context: false)
 
     submissions = submissions.map { |x| x[:ontology] ? [x[:ontology][:id], x] : nil }.compact.to_h
@@ -98,6 +100,12 @@ module SubmissionFilter
       out = out && (s[:ontology].viewOf.blank? || (show_views && !s[:ontology].viewOf.blank?))
 
       out = out && (query.blank? || [s[:description], s[:ontology].name, s[:ontology].acronym].any? { |x| (x || '').downcase.include?(query.downcase) })
+
+      if projects.present?
+        project_acronyms = projects.split(',').map(&:strip)
+        ontology_projects = Array(s[:ontology].projects).map { |p| helpers.link_last_part(p) }
+        out = out && (ontology_projects & project_acronyms).any?
+      end
 
       if out
         s[:rank] = 0
@@ -161,6 +169,7 @@ module SubmissionFilter
     filters_values_map = {
       categories: :hasDomain,
       groups: :group,
+      projects: :projects,
       naturalLanguage: :naturalLanguage,
       isOfType: :isOfType,
       format: :hasOntologyLanguage,
@@ -294,6 +303,7 @@ module SubmissionFilter
   end
 
   def ontology_filters_init(categories, groups)
+
     @languages = submission_metadata.select { |x| x['@id']['naturalLanguage'] }.first['enforcedValues'].map do |id, name|
       { 'id' => id, 'name' => name, 'value' => id.split('/').last, 'acronym' => name }
     end
@@ -331,9 +341,11 @@ module SubmissionFilter
     #   {'id' => 'DIFF', 'name' => 'DIFF', 'acronym' => 'DIFF'}
     # ]
 
+    projects = LinkedData::Client::Models::Project.all(display_links: false, display_context: false)
     {
       categories: object_filter(categories, :categories),
       groups: object_filter(groups, :groups),
+      projects: object_filter(projects, :projects, "acronym"),
       naturalLanguage: object_filter(@languages, :naturalLanguage, "value"),
       hasFormalityLevel: object_filter(@formalityLevel, :hasFormalityLevel),
       isOfType: object_filter(@isOfType, :isOfType, "value"),

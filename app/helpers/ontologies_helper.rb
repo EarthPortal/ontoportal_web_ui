@@ -840,6 +840,7 @@ module OntologiesHelper
     labels = {
       categories: t('ontologies.categories'),
       groups: t('ontologies.groups'),
+      projects: t('ontologies.projects'), 
       hasFormalityLevel: t('ontologies.formality_levels'),
       isOfType: t('ontologies.ontology_types'),
       naturalLanguage: t('ontologies.natural_languages')
