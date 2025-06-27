@@ -386,10 +386,9 @@ module SubmissionFilter
       object_names.each do |name|
         values = Array(ontology[name])
         values.each do |v|
-          v = helpers.link_last_part(v)
-
+          v_key = helpers.link_last_part(v)
           objects_count[name] = {} unless objects_count[name]
-          objects_count[name][v] = (objects_count[name][v] || 0) + 1
+          objects_count[name][v_key] = (objects_count[name][v_key] || 0) + 1
         end
       end
     end
