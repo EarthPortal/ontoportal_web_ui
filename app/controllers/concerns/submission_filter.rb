@@ -83,12 +83,16 @@ module SubmissionFilter
 
   def filter_submissions(ontologies, query:, status:, show_views:, private_only:, languages:, page_size:, formality_level:, is_of_type:, groups:, categories:, formats:, projects:)
     submissions = LinkedData::Client::Models::OntologySubmission.all(include: BROWSE_ATTRIBUTES.join(','), also_include_views: true, display_links: false, display_context: false)
-
     submissions = submissions.map { |x| x[:ontology] ? [x[:ontology][:id], x] : nil }.compact.to_h
-
     submissions = ontologies.map { |ont| ontology_hash(ont, submissions) }
 
     submissions.map do |s|
+      if projects.present?
+        project_acronyms = projects.split(',').map(&:strip)
+        ontology_projects = Array(s[:ontology].projects).map { |p| helpers.link_last_part(p) }
+        Rails.logger.info "DEBUG PROJECTS: Ontology=#{s[:ontology].acronym} | ontology_projects=#{ontology_projects.inspect} | filter=#{project_acronyms.inspect}"
+      end
+
       out = ((s[:ontology].viewingRestriction.eql?('public') && !private_only) || private_only && s[:ontology].viewingRestriction.eql?('private'))
       out = out && (groups.blank? || (s[:ontology].group.map { |x| helpers.link_last_part(x) } & groups.split(',')).any?)
       out = out && (categories.blank? || (s[:ontology].hasDomain.map { |x| helpers.link_last_part(x) } & categories.split(',')).any?)
@@ -98,31 +102,23 @@ module SubmissionFilter
       out = out && (formality_level.blank? || formality_level.split(',').any? { |f| helpers.link_last_part(s[:hasFormalityLevel]).eql?(f) })
       out = out && (languages.blank? || languages.split(',').any? { |f| Array(s[:naturalLanguage]).any? { |n| helpers.link_last_part(n).eql?(f) } })
       out = out && (s[:ontology].viewOf.blank? || (show_views && !s[:ontology].viewOf.blank?))
-
       out = out && (query.blank? || [s[:description], s[:ontology].name, s[:ontology].acronym].any? { |x| (x || '').downcase.include?(query.downcase) })
 
       if projects.present?
-        project_acronyms = projects.split(',').map(&:strip)
-        ontology_projects = Array(s[:ontology].projects).map { |p| helpers.link_last_part(p) }
         out = out && (ontology_projects & project_acronyms).any?
+        Rails.logger.info "DEBUG PROJECTS RESULT: Ontology=#{s[:ontology].acronym} | matched=#{(ontology_projects & project_acronyms).any?}"
       end
 
       if out
         s[:rank] = 0
-
         next s if query.blank?
-
         s[:rank] += 3 if s[:ontology].acronym && s[:ontology].acronym.downcase.include?(query.downcase)
-
         s[:rank] += 2 if s[:ontology].name && s[:ontology].name.downcase.include?(query.downcase)
-
         s[:rank] += 1 if s[:description] && s[:description].downcase.include?(query.downcase)
-
         s
       else
         nil
       end
-
     end.compact
   end
 
@@ -370,6 +366,7 @@ module SubmissionFilter
   end
 
   def count_objects(ontologies)
+    Rails.logger.info "==== count_objects ===="
     objects_count = {}
     @categories = LinkedData::Client::Models::Category.all(display_links: false, display_context: false)
     @groups = LinkedData::Client::Models::Group.all(display_links: false, display_context: false)
@@ -383,15 +380,19 @@ module SubmissionFilter
     end
 
     ontologies.each do |ontology|
+      Rails.logger.info "Ontology for counting: #{ontology[:acronym]} | Projects: #{ontology[:projects].inspect}"
       object_names.each do |name|
         values = Array(ontology[name])
+        Rails.logger.info "  Counting for filter: #{name} | Values: #{values.inspect}"
         values.each do |v|
           v_key = helpers.link_last_part(v)
+          Rails.logger.info "    Value: #{v.inspect} | v_key: #{v_key}"
           objects_count[name] = {} unless objects_count[name]
           objects_count[name][v_key] = (objects_count[name][v_key] || 0) + 1
         end
       end
     end
+    Rails.logger.info "Final objects_count: #{objects_count.inspect}"
     objects_count
   end
 
