@@ -103,7 +103,8 @@ module SubmissionFilter
 
       if projects.present?
         project_acronyms = projects.split(',').map(&:strip)
-        ontology_projects = Array(s[:ontology].projects).map { |p| helpers.link_last_part(p) }
+        projects_data = s[:ontology]['projects'] || s[:ontology].try(:projects) || []
+        ontology_projects = Array(projects_data).map { |p| helpers.link_last_part(p) }        
         out = out && (ontology_projects & project_acronyms).any?
       end
 
@@ -248,7 +249,7 @@ module SubmissionFilter
     o[:individual_count_formatted] = number_with_delimiter(o[:individual_count], delimiter: ',')
 
     o[:note_count] = ont.notes&.length || 0
-    o[:project_count] = ont.projects&.length || 0
+    o[:project_count] = ont['projects']&.length || 0
     o[:popularity] = @analytics[ont.id.split('/').last.to_s] || 0
     o[:rank] = sub ? sub[:rank] : 0
 
@@ -287,7 +288,7 @@ module SubmissionFilter
     ont_hash[:administeredBy] = ont.administeredBy
     ont_hash[:name] = ont.name
     ont_hash[:acronym] = ont.acronym
-    ont_hash[:projects] = ont.projects
+    ont_hash[:projects] = ont['projects']
     ont_hash[:notes] = ont.notes
     ont_hash[:viewOfOnt] = ont.viewOf
   end
