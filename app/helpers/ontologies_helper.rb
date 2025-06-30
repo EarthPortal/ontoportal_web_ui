@@ -808,7 +808,7 @@ module OntologiesHelper
   end
 
   def browse_taxonomy_tooltip(taxonomy_type)
-    return nil unless taxonomy_type.eql?("categories") || taxonomy_type.eql?("groups")
+    return nil unless ["categories", "groups", "projects"].include?(taxonomy_type)
 
     content_tag(:div, class: '') do
       content_tag(:span, "See more information about #{taxonomy_type} in ", class: 'mr-1') +
