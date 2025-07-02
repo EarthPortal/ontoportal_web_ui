@@ -830,6 +830,11 @@ fr:
       error-submission-message: "Veuillez remplir tous les champs obligatoires avant de soumettre"
       field_required: "%{field} est requis"
       selection_required: "Au moins un %{field} doit être sélectionné"
+      acronym_validation:
+        start_letter: "L'acronyme doit commencer par une lettre"
+        capital_letters: "L'acronyme doit être entièrement en majuscules"
+        special_chars: "L'acronyme ne doit contenir que des lettres, des chiffres, des tirets et des traits de soulignement"
+        length: "L'acronyme ne doit pas dépasser seize caractères"
     search:
       missing_parameters: "Paramètres requis manquants"
       found_projects:

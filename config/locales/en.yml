@@ -836,6 +836,11 @@ en:
       field_required: "%{field} is required"
       selection_required: "At least one %{field} must be selected"
       error-submission-message: "Please fill all required fields before submitting"
+      acronym_validation:
+        start_letter: "The acronym must start with a letter"
+        capital_letters: "The acronym must be all capital letters"
+        special_chars: "The acronym must only contain letters, numbers, hyphens, and underscores"
+        length: "The acronym must be sixteen characters or less"
     search:
       missing_parameters: "Missing required parameters"
       found_projects:
