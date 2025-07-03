@@ -99,20 +99,32 @@ class ProjectsController < ApplicationController
   # GET /projects/1/edit
   def edit
     if session[:user].nil?
-      redirect_to :controller => 'login', :action => 'index'
-    else
-      projects = LinkedData::Client::Models::Project.find_by_acronym(params[:id])
-      if projects.nil? || projects.empty?
-        flash[:notice] = flash_error(t('projects.project_not_found', id: params[:id]))
-        redirect_to projects_path
-        return
-      end
-      @project = projects.first
-      @user_select_list = LinkedData::Client::Models::User.all.map {|u| [u.username, u.id]}
-      @user_select_list.sort! {|a,b| a[1].downcase <=> b[1].downcase}
-      @usedOntologies = @project.ontologyUsed&.map{|o| o.split('/').last}
-      @ontologies = LinkedData::Client::Models::Ontology.all
+      redirect_to controller: 'login', action: 'index'
+      return
     end
+
+    projects = LinkedData::Client::Models::Project.find_by_acronym(params[:id])
+    if projects.nil? || projects.empty?
+      flash[:notice] = flash_error(t('projects.project_not_found', id: params[:id]))
+      redirect_to projects_path
+      return
+    end
+
+    @project = projects.first
+    user_id = session[:user].id
+    is_admin = session[:user].admin?
+    is_creator = Array(@project.creator).include?(user_id)
+
+    unless is_creator || is_admin
+      flash[:alert] = t('projects.edit.not_authorized')
+      redirect_to project_path(@project.acronym)
+      return
+    end
+
+    @user_select_list = LinkedData::Client::Models::User.all.map { |u| [u.username, u.id] }
+    @user_select_list.sort! { |a, b| a[1].downcase <=> b[1].downcase }
+    @usedOntologies = @project.ontologyUsed&.map { |o| o.split('/').last }
+    @ontologies = LinkedData::Client::Models::Ontology.all
   end
 
   # POST /projects

@@ -857,6 +857,8 @@ en:
       editing_project: Editing project
       cancel: Cancel
       update_project: Update Project
+      not_authorized: You are not authorized to edit this project.
+
     
     new:
       title: Add your project
