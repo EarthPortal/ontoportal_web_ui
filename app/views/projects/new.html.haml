@@ -3,8 +3,21 @@
 
 %div{:style => "margin:50px;"}
   .project-creation-container
+    - if @errors
+      .mb-4{:style => "width:650px; margin:auto"}
+        - if @errors[:error]
+          .alert.alert-danger
+            %strong= t("projects.form.errors_on_form")
+            %ul
+              - if @errors[:error].is_a?(OpenStruct)
+                %li= @errors[:error].acronym&.existence
+              - else
+                - @errors.each do |key, message|
+                  %li= message
+        - else
+          = error_message_alert
+    
     %div{:style => "display: flex; justify-content: center;"}
-      = error_message_alert
       .upload-ontology-card{:style => "width:650px;"}
         .upload-ontology-center
           .d-flex.justify-content-between

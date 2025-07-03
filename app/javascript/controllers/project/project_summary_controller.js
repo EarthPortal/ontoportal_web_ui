@@ -175,55 +175,67 @@ export default class extends Controller {
     }
 
     validateRequiredFields() {
-        const requiredFields = [
-            { name: 'project[name]', display: 'Project Title', summaryId: 'title', errorId: 'title-error' },
-            { name: 'project[acronym]', display: 'Project Acronym', summaryId: 'acronym', errorId: 'acronym-error' },
-            { name: 'project[description]', display: 'Project Description', summaryId: 'description', errorId: 'description-error' },
-            { name: 'project[homePage]', display: 'Homepage', summaryId: 'homepage', errorId: 'homepage-error' }
-        ]
+    const requiredFields = [
+        { name: 'project[name]', display: 'Project Title', summaryId: 'title', errorId: 'title-error' },
+        { name: 'project[acronym]', display: 'Project Acronym', summaryId: 'acronym', errorId: 'acronym-error' },
+        { name: 'project[description]', display: 'Project Description', summaryId: 'description', errorId: 'description-error' },
+        { name: 'project[homePage]', display: 'Homepage', summaryId: 'homepage', errorId: 'homepage-error' }
+    ]
+    
+    const ontologySelect = document.querySelector('[name="project[ontologyUsed][]"], #project_ontologies')
+    const ontologiesSelected = ontologySelect?.selectedOptions?.length > 0
+    
+    const keywordsSelect = document.querySelector('[name="project[keywords][]"]')
+    const keywordsSelected = keywordsSelect?.selectedOptions?.length > 0 || 
+                            (keywordsSelect?.value && keywordsSelect.value.trim() !== '')
+    
+    this.clearValidationWarnings()
+    
+    const missingFields = []
+    let hasErrors = false
+    
+    requiredFields.forEach(field => {
+        const el = document.querySelector(`[name="${field.name}"]`)
+        const value = el ? el.value?.trim() : ''
         
-        const ontologySelect = document.querySelector('[name="project[ontologyUsed][]"], #project_ontologies')
-        const ontologiesSelected = ontologySelect?.selectedOptions?.length > 0
-        
-        const keywordsSelect = document.querySelector('[name="project[keywords][]"]')
-        const keywordsSelected = keywordsSelect?.selectedOptions?.length > 0 || 
-                                (keywordsSelect?.value && keywordsSelect.value.trim() !== '')
-        
-        this.clearValidationWarnings()
-        
-        const missingFields = []
-        
-        requiredFields.forEach(field => {
-            const el = document.querySelector(`[name="${field.name}"]`)
-            const value = el ? el.value?.trim() : ''
-            
-            if (!value) {
-                missingFields.push(field)
-                this.showFieldError(field.summaryId, field.errorId)
-            }
-        })
-        
-        if (!ontologiesSelected) {
-            missingFields.push({ display: 'Ontologies', errorId: 'ontologies-error' })
-            this.showFieldError('ontologies', 'ontologies-error')
-        }
-        
-        if (!keywordsSelected) {
-            missingFields.push({ display: 'Keywords', errorId: 'keywords-error' })
-            this.showFieldError('keywords', 'keywords-error')
-        }
-        
-        if (missingFields.length > 0) {
-            this.showValidationAlert()
-            
-            const confirmBtn = document.querySelector('#submit-project-btn')
-            if (confirmBtn) {
-                confirmBtn.disabled = true
+        if (!value) {
+            missingFields.push(field)
+            this.showFieldError(field.summaryId, field.errorId)
+            hasErrors = true
+        } else if (field.name === 'project[acronym]') {
+            const acronymErrors = this.validateAcronym(value)
+            if (acronymErrors.length > 0) {
+                acronymErrors.forEach(error => {
+                    this.showFieldError('acronym', `acronym-${error[0]}-error`)
+                })
+                hasErrors = true
             }
         }
-        
-        return missingFields.length === 0
+    })
+    
+    if (!ontologiesSelected) {
+        missingFields.push({ display: 'Ontologies', errorId: 'ontologies-error' })
+        this.showFieldError('ontologies', 'ontologies-error')
+        hasErrors = true
     }
+    
+    if (!keywordsSelected) {
+        missingFields.push({ display: 'Keywords', errorId: 'keywords-error' })
+        this.showFieldError('keywords', 'keywords-error')
+        hasErrors = true
+    }
+    
+    if (hasErrors) {
+        this.showValidationAlert()
+        
+        const confirmBtn = document.querySelector('#submit-project-btn')
+        if (confirmBtn) {
+            confirmBtn.disabled = true
+        }
+    }
+    
+    return !hasErrors
+}
     
     showFieldError(summaryId, errorId) {
         const summaryEl = document.querySelector(`#summary-${summaryId}`)
@@ -265,6 +277,28 @@ export default class extends Controller {
             confirmBtn.disabled = false
         }
     }    
+
+    validateAcronym(acronym) {
+    const errors = []
+    
+    if (!acronym.match(/^[a-zA-Z]/)) {
+        errors.push(['start-letter'])
+    }
+    
+    if (acronym.match(/[a-z]/)) {
+        errors.push(['capital-letters'])
+    }
+    
+    if (acronym.match(/[^-_0-9a-zA-Z]/)) {
+        errors.push(['special-chars'])
+    }
+    
+    if (acronym.length > 16) {
+        errors.push(['length'])
+    }
+    
+    return errors
+}
 
     updateSummaryField(id, value) {
         if (id === 'homepage') {
