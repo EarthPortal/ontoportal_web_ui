@@ -742,6 +742,9 @@ en:
     header:
       last_submission_date: Last submission date
   projects:
+    not_funded: Non funded
+    not_funded_tooltip: This project is not funded
+    grant_id: Grant ID
     project_not_found: "Project not found: %{id}"
     project_successfully_created: Project successfully created
     error_unique_acronym: Project with acronym %{acronym} already exists.  Please enter a unique acronym.

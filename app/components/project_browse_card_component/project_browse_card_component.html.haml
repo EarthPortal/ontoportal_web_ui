@@ -49,6 +49,5 @@
         .metadata-item
           = helpers.agent_chip_component(project.organization)
 
-      - if project.funder.present?
-        .metadata-item
-          = helpers.funder_chip_component(project.funder)
+      .metadata-item
+        = helpers.funder_chip_component(project.funder)
