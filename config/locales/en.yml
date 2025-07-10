@@ -807,7 +807,7 @@ en:
       institution: "Institution:"
       contacts: "Contacts:"
       home_page: "Homepage:"
-      ontologies_used: Ontologies Used
+      ontologies_used: Used ontologies 
       no_ontologies_associated: No ontologies are currently associated with this project
 
     form:
@@ -818,7 +818,7 @@ en:
       home_page: "Homepage: *"
       example: "Example:"
       description: "Description:*"
-      select_ontologies: Select Ontologies Used
+      select_ontologies: Select used ontologies 
       select_administrators: Select administrators
       title: "Title"
       acronym: "Acronym"
@@ -856,19 +856,19 @@ en:
       error_occurred: "An error occurred"
 
     edit:
-      title: Editing Project %{name}
+      title: Editing project %{name}
       editing_project: Editing project
       cancel: Cancel
-      update_project: Update Project
+      update_project: Update project
       not_authorized: You are not authorized to edit this project.
 
     
     new:
       title: Add your project
       new_project: New project
-      create_project: Create Project
+      create_project: Create troject
     project_type_selection:
-      title: "Project Type"
+      title: "Project type"
       description: "Select the type of project you want to create."
       select_type: "Select project type"
       funded: "Funded project"
@@ -880,8 +880,8 @@ en:
       datasets: "Dataset"
       search_button: "Search"
     project_search:
-      anr_title: "ANR Project Search"
-      cordis_title: "CORDIS Project Search"
+      anr_title: "ANR project Search"
+      cordis_title: "CORDIS project Search"
       search_by_id: "Search by ID"
       project_id: "Project ID"
       id_placeholder: "Enter project ID"
@@ -896,7 +896,7 @@ en:
       success: "Project created successfully"
       error: "There was a problem creating the project"
     call_annotator: "Annotate"
-    details: "Project Details"
+    details: "Project details"
   recommender:
     title: Recommender
     intro: Get recommendations for the most relevant ontologies from an excerpt of text or a list of keywords
