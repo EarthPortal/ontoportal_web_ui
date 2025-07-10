@@ -45,7 +45,7 @@
               .ontology-cards-container
                 - @ontologies_used.each do |ontology|
                   .ontology-card{data: {controller: 'tooltip'}, title: ontology["name"]}
-                    %a{href: ontology_path(ontology["acronym"])}= ontology["acronym"]
+                    %a{href: ontology_path(ontology["acronym"]), target: "_blank"}= ontology["acronym"]
 
       .project-side-column
         = dropdown_component(id: 'project_details', title: t('projects.details'), is_open: true) do
