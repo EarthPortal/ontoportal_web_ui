@@ -8,7 +8,7 @@
   = render Input::TextInputComponent.new(label: label_required(t("projects.form.acronym")), name: "project[acronym]", value: @project&.acronym, disabled: is_readonly)
   = hidden_field_tag "project[acronym]", @project&.acronym if is_readonly
 .upload-ontology-input-field-container{"data-project-creation-target" => "description"}
-  = render Input::TextAreaComponent.new(label: label_required(t("projects.form.description")), name: "project[description]", value: @project&.description, rows: 4)
+  = render Input::TextAreaComponent.new(label: label_required(t("projects.form.description")), name: "project[description]", value: @project&.description, rows: 4, resize: true)
 .row
   .col-md-6
     .upload-ontology-input-field-container{"data-project-creation-target" => "startDate"}
