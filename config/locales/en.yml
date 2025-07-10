@@ -778,6 +778,7 @@ en:
     grant_number: Grant number
     keywords: Keywords
     organization: Organization
+    contact: Contacts
     funder: Funder
     selector_placeholder: Search a project ...
     
@@ -856,10 +857,9 @@ en:
       error_occurred: "An error occurred"
 
     edit:
-      title: Editing project %{name}
-      editing_project: Editing project
+      title: Edit project %{name}
+      editing_project: Edit project
       cancel: Cancel
-      update_project: Update project
       not_authorized: You are not authorized to edit this project.
 
     
@@ -887,7 +887,7 @@ en:
       id_placeholder: "Enter project ID"
       search_by_term: "Search by acronym"
       term_placeholder: "Enter acronym"
-      results: "Search Results"
+      results: "Search results"
       api_error: "Error connecting to the search service"
       no_results: "No results found"
       enter_valid_id: "Please enter a valid project ID"

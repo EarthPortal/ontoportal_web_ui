@@ -770,6 +770,7 @@ fr:
     grant_number: Grant number
     keywords: Mots-clés
     organization: Organisation
+    contact: Contacts
     funder: Financeur
     selector_placeholder: Rechercher un projet ...
 
@@ -810,11 +811,11 @@ fr:
       description: "Description :*"
       select_ontologies: Sélectionner les ontologies utilisées
       select_administrators: Sélectionner les administrateurs
-      title: "Titre du Projet"
+      title: "Titre"
       acronym: "Acronyme"
       description: "Description"
-      start_date: "Date de Début"
-      end_date: "Date de Fin"
+      start_date: "Date de début"
+      end_date: "Date de fin"
       institution: "Institution"
       coordinator: "Coordinateur"
       homepage: "Homepage"
@@ -824,7 +825,7 @@ fr:
       ontologies: "Ontologies"
       funding_details: "Détails du financement"
       funding_program: "Programme de financement"
-      grant_number: "Numéro de Subvention"
+      grant_number: "Grant number"
       funder: "Financeur"
       logo_url: "URL du logo"
       summary_confirmation: "Veuillez vérifier les détails de votre projet avant de soumettre."
@@ -849,30 +850,29 @@ fr:
       connection_failed: "Échec de la connexion à l'API"
       error_occurred: "Une erreur s'est produite"
     edit:
-      title: Édition du projet %{name}
-      editing_project: Édition du projet
+      title: Éditer le projet %{name}
+      editing_project: Éditer le projet
       cancel: Annuler
-      update_project: Mettre à jour le projet
       not_authorized: Vous n'êtes pas autorisé à modifier ce projet.
     new:
       title: Ajoutez votre projet
       new_project: Nouveau projet
       create_project: Créer le projet
     project_type_selection:
-      title: "Type de Projet"
+      title: "Type de projet"
       description: "Sélectionnez le type de projet que vous souhaitez créer."
       select_type: "Sélectionner le type de projet"
       funded: "Projet financé"
       not_funded: "Projet non financé"
     funding_search:
-      title: "Source de Financement"
+      title: "Source de financement"
       description: "Recherchez la source de financement de votre projet."
       source: "Source de financement"
       datasets: "Jeu de données"
       search_button: "Rechercher"
     project_search:
-      anr_title: "Recherche de Projet ANR"
-      cordis_title: "Recherche de Projet CORDIS"
+      anr_title: "Recherche de projet ANR"
+      cordis_title: "Recherche de projet CORDIS"
       search_by_id: "Rechercher par ID"
       search_by_term: "Rechercher par acronyme"
       project_id: "ID du Projet"
