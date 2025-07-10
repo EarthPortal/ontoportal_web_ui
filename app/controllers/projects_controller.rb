@@ -206,27 +206,22 @@ class ProjectsController < ApplicationController
     @project = projects.first
     @project.update_from_params(project_params)
 
-    # Clean up fields AFTER update_from_params
     @project.start_date = nil if @project.start_date.blank?
     @project.end_date = nil if @project.end_date.blank?
-    @project.organization = @project.organization&.id if @project.organization.respond_to?(:id)
-    @project.funder = @project.funder&.id if @project.funder.respond_to?(:id)
-    @project.contact = @project.contact&.id if @project.contact.respond_to?(:id)
+    @project.organization = extract_id(@project.organization)
+    @project.funder = extract_id(@project.funder)
+    @project.contact = Array(@project.contact).map { |c| extract_id(c) }.compact
     @project.type = "FundedProject" unless %w[FundedProject NonFundedProject].include?(@project.type)
     @project.creator ||= [session[:user].id] if session[:user]
-    @project.type ||= "FundedProject"
 
     @user_select_list = LinkedData::Client::Models::User.all.map {|u| [u.username, u.id]}
     @user_select_list.sort! {|a,b| a[1].downcase <=> b[1].downcase}
     @usedOntologies = @project.ontologyUsed || []
     @ontologies = LinkedData::Client::Models::Ontology.all
 
-    Rails.logger.debug "Project update payload: #{@project.to_hash.inspect}"
-
     begin
       error_response = @project.update
     rescue => e
-      Rails.logger.error "Project update failed: #{e.message}"
       @errors = { error: { general: OpenStruct.new(existence: "Error updating project: #{e.message}") } }
       render :edit and return
     end
@@ -370,7 +365,7 @@ class ProjectsController < ApplicationController
 
   private
 
-    def setup_categories_options
+  def setup_categories_options
     setup_categories_options_from_projects(@projects)
   end
 
@@ -569,6 +564,12 @@ class ProjectsController < ApplicationController
       :logo, :grant_number, :start_date, :end_date, :funder,
       organizations_attributes: [:id], contacts_attributes: [:id], funders_attributes: [:id]
     )
+  end
+
+  def extract_id(val)
+    return val.id if val.respond_to?(:id)
+    return val['id'] if val.is_a?(Hash)
+    val
   end
 
   def flash_error(msg)
