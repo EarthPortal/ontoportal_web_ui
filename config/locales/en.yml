@@ -742,6 +742,7 @@ en:
     header:
       last_submission_date: Last submission date
   projects:
+    page_description: "Browse, filter, and discover research projects that use or contribute to ontologies in %{portal}."
     not_funded: Non funded
     not_funded_tooltip: This project is not funded
     grant_id: Grant ID
