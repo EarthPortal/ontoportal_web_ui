@@ -19,6 +19,10 @@
           .text-muted.small#summary-acronym /
           .invalid-feedback.d-none#title-error= t("projects.form.field_required", field: t("projects.form.title"))
           .invalid-feedback.d-none#acronym-error= t("projects.form.field_required", field: t("projects.form.acronym"))
+          .invalid-feedback.d-none#acronym-start-letter-error= t("projects.form.acronym_validation.start_letter")
+          .invalid-feedback.d-none#acronym-capital-letters-error= t("projects.form.acronym_validation.capital_letters")
+          .invalid-feedback.d-none#acronym-special-chars-error= t("projects.form.acronym_validation.special_chars")
+          .invalid-feedback.d-none#acronym-length-error= t("projects.form.acronym_validation.length")
       %hr
       .row
         .col-md-6.mb-3
@@ -33,7 +37,7 @@
         .col-12.mb-3
           %span.fw-bold= t("projects.form.description") + ":"
           %span.ms-2#summary-description /
-          .invalid-feedback.d-none#description-error= t("projects.form.field_required", field: t("projects.form.description"))
+          .invalid-feedback.d-none#description-error= t("projects.form.field_required", field: t("projects.form.description"))  
 
       .row
         .col-md-6.mb-3

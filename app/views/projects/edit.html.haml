@@ -29,4 +29,4 @@
       .d-flex.justify-content-end.py-3
         = render Buttons::RegularButtonComponent.new(id: 'cancel-project-edit', value: t('concepts.cancel'), variant: 'secondary', state: 'regular', href: project_path(@project.acronym))
         .ml-3
-          = render Buttons::RegularButtonComponent.new(id: 'update-project', value: t('projects.edit.update_project'), variant: 'primary', type: 'submit', state: 'regular')
+          = render Buttons::RegularButtonComponent.new(id: 'update-project', value: t('components.save_button'), variant: 'primary', type: 'submit', state: 'regular')

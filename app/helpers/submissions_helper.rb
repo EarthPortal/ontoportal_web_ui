@@ -196,7 +196,7 @@ module SubmissionsHelper
   end
   def ontology_properties
     ['acronym', 'name', [t('submission_inputs.visibility'), :viewingRestriction], 'viewOf', 'groups', 'categories',
-     [t('submission_inputs.administrators'), 'administeredBy']]
+     [t('submission_inputs.administrators'), 'administeredBy'],'projects']
   end
 
   def submission_editable_properties
@@ -234,6 +234,12 @@ module SubmissionsHelper
 
     if selected_attribute?('acronym')
       output += ontology_acronym_input(update: true)
+    end
+
+    if selected_attribute?('projects')
+      output += attribute_form_group_container('projects') do
+        ontology_projects_input
+      end
     end
 
     if selected_attribute?('name')

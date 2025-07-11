@@ -14,7 +14,7 @@
             = @project.name
             %span{title: @project.acronym, style: "font-size: 1.1rem; font-weight: 400; margin-left: 0.5rem;"}= "(#{@project.acronym})"
       .project-details-header-right-container{style: 'display: flex; align-items: center; justify-content: flex-end; width: 30%; gap: 1rem;'}
-        = render RoundedButtonComponent.new(link: "#{@project.id}?apikey=#{@get_apikey}", target: '_blank', size: 'medium', title: t('ontologies.go_to_api'))
+        = render RoundedButtonComponent.new(link: "#{@project.id}?apikey=#{get_apikey}", target: '_blank', size: 'medium', title: t('ontologies.go_to_api'))
         - if session[:user] && (Array(@project.creator).include?(session[:user].id) || session[:user].admin?)
           = link_to edit_project_path(@project.acronym), class: 'pill-button d-flex align-items-center ml-1' do
             = inline_svg_tag('edit.svg', style: 'vertical-align: middle; margin-right: 6px;')
@@ -45,7 +45,7 @@
               .ontology-cards-container
                 - @ontologies_used.each do |ontology|
                   .ontology-card{data: {controller: 'tooltip'}, title: ontology["name"]}
-                    %a{href: ontology_path(ontology["acronym"])}= ontology["acronym"]
+                    %a{href: ontology_path(ontology["acronym"]), target: "_blank"}= ontology["acronym"]
 
       .project-side-column
         = dropdown_component(id: 'project_details', title: t('projects.details'), is_open: true) do
