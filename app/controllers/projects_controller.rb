@@ -537,7 +537,6 @@ class ProjectsController < ApplicationController
     query = params[:search].downcase
     projects.select do |project|
       project.name&.downcase&.include?(query) ||
-      project.description&.downcase&.include?(query) ||
       project.acronym&.downcase&.include?(query) ||
       project.organization&.name&.downcase&.include?(query) ||
       project.organization&.acronym&.downcase&.include?(query)
@@ -605,3 +604,18 @@ class ProjectsController < ApplicationController
     end
   end
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
