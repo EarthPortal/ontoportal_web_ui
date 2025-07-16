@@ -835,6 +835,7 @@ fr:
       error-submission-message: "Veuillez remplir tous les champs obligatoires avant de soumettre"
       field_required: "%{field} est requis"
       selection_required: "Au moins un %{field} doit être sélectionné"
+      date_range_error: "La date de fin doit être postérieure à la date de début"
       acronym_validation:
         start_letter: "L'acronyme doit commencer par une lettre"
         capital_letters: "L'acronyme doit être entièrement en majuscules"

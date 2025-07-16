@@ -46,6 +46,7 @@
         .col-md-6.mb-3
           %span.fw-bold= t("projects.form.end_date") + ":"
           %span.ms-2#summary-end-date /
+          .invalid-feedback.d-none#date-range-error= t("projects.form.date_range_error")
       .row
         .col-12.mb-3
           %span.fw-bold= t("projects.form.organization") + ":"

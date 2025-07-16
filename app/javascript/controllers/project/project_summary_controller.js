@@ -225,6 +225,20 @@ export default class extends Controller {
         hasErrors = true
     }
     
+
+    const startDateInput = document.querySelector('[name="project[start_date]"]')
+    const endDateInput = document.querySelector('[name="project[end_date]"]')
+    
+    if (startDateInput?.value && endDateInput?.value) {
+        const startDate = new Date(startDateInput.value)
+        const endDate = new Date(endDateInput.value)
+        
+        if (startDate > endDate) {
+            this.showFieldError('end-date', 'date-range-error')
+            hasErrors = true
+        }
+    }
+
     if (hasErrors) {
         this.showValidationAlert()
         

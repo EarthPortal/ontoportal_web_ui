@@ -48,10 +48,11 @@
             %p.browse-filters-title= t("projects.filters")
             
             %div.browse-filter
+              = switch_input(id:'filter-active', name:'active_only', label: t("projects.filter.show_active_only"))
+              
+            %div.browse-filter
               = switch_input(id:'filter-funded', name:'funded_only', label: t("projects.filter.show_funded_only"))
             
-            %div.browse-filter
-              = switch_input(id:'filter-active', name:'active_only', label: t("projects.filter.show_active_only"))
 
             - if @funder_options.present?
               %div{id: "funders_filter_container", data:{controller: "browse_filters"}}
