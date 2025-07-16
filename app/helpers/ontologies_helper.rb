@@ -675,7 +675,9 @@ module OntologiesHelper
     render FieldContainerComponent.new do |f|
       f.label do
         concat t('ontologies.projects_using_ontology', acronym: ontology_acronym)
-        concat new_element_link(t('ontologies.add_new_project'), edit_ontology_submission_path(ontology_acronym, @submission_latest&.submissionId, section: 'community') )
+        if session[:user] && @ontology.admin?(session[:user])
+          concat new_element_link(t('ontologies.add_new_project'), edit_ontology_submission_path(ontology_acronym, @submission_latest&.submissionId, section: 'community'))
+        end
       end
 
       if projects.empty?
