@@ -27,6 +27,7 @@ class OntologiesController < ApplicationController
   before_action :authorize_and_redirect, :only => [:edit, :update, :create, :new]
   before_action :submission_metadata, only: [:show]
   before_action :set_federated_portals, only: [:index, :ontologies_filter]
+  before_action :authorize_read_only, :only => [:new, :create, :edit, :update]
 
   KNOWN_PAGES = Set.new(["terms", "classes", "mappings", "notes", "widgets", "summary", "properties", "instances", "schemes", "collections", "sparql"])
   EXTERNAL_MAPPINGS_GRAPH = "http://data.bioontology.org/metadata/ExternalMappings"
@@ -588,6 +589,7 @@ class OntologiesController < ApplicationController
 
   def keep_only_root_categories(categories)
     categories.select do |category|
+      next unless category.id
       category.id.start_with?(rest_url) || category.parentCategory.blank?
     end
   end
