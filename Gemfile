@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 # Main Rails gem
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '7.0.4'
+gem 'rails', '7.0.8'
 
 # JavaScript bundling for Rails
 gem 'jsbundling-rails'
@@ -119,12 +119,10 @@ gem 'omniauth-orcid'
 gem "color", "~> 1.8"
 
 group :staging, :production, :appliance do
-  # Application performance monitoring
-  gem 'newrelic_rpm'
-
-  # Error monitoring
-  gem 'bugsnag', '~> 6.26'
-
+  # Monitoring and performance profiling
+  gem "stackprof", "~> 0.2.27"
+  gem "sentry-ruby", "~> 5.23"
+  gem "sentry-rails", "~> 5.23"
   # Logs in JSON format, useful for shipping logs to logstash
   # gem 'rackstash', git: 'https://github.com/planio-gmbh/rackstash.git'
   # gem 'logstash-logger'
@@ -184,3 +182,10 @@ group :test do
   # Testing framework for Rails
   gem 'rspec-rails'
 end
+
+gem 'concurrent-ruby', '1.3.4'
+
+# pinned gems for Centos 7 to remove when no more needed
+gem 'nokogiri', '~> 1.13.10'
+gem 'rexml'
+gem "sparql", "~> 3.3"
