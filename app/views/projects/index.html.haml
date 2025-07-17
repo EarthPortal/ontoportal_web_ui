@@ -71,7 +71,7 @@
             %div{id: "categories_filter_container", data:{controller: "browse_filters show-filter-count", action: "change->show-filter-count#updateCount change->browse-filters#dispatchFilterEvent"}}
               - objects, checked_values, count = @categories_filters
               = dropdown_component(id: "browse-categories-filter", is_open: count.positive?) do |d|
-                - d.title { browse_filter_section_header(key: 'categories', count: count)}
+                - d.title { browse_filter_section_header(key: t('projects.filter.categories'), count: count)}
                 .browse-filter-checks-container.px-3
                   - objects.each do |category|
                     - category_count = @count_objects&.dig(:categories, category['id']) || 0

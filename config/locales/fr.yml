@@ -734,7 +734,7 @@ fr:
       last_submission_date: Date de la dernière soumission le
 
   projects:
-    page_description: "Parcourez, filtrez et découvrez des projets de recherche qui utilisent ou contribuent aux ontologies dans %{portal}."
+    page_description: "Parcourez, filtrez et découvrez des projets qui utilisent ou contribuent aux ontologies dans %{portal}."
     not_funded: Non financé
     not_funded_tooltip: Ce projet n'est pas financé
     grant_id: Grant ID
@@ -783,6 +783,7 @@ fr:
       all_funders: "Tous les financeurs"
       not_funded: "Non financés"
       funder: "Financeur"
+      categories: "Catégories"
     sort:
       name: "Trier par nom"
       acronym: "Trier par acronyme" 
