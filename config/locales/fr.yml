@@ -770,10 +770,11 @@ fr:
     persons_and_organizations: Personnes et organisations
     grant_number: Grant number
     keywords: Mots-clés
-    organization: Organisation
+    organization: Coordinateur
     contact: Contacts
     funder: Financeur
     selector_placeholder: Rechercher un projet ...
+    copy_grant_number: Copier le grant number
 
     filters: "Filtres"
     filter:
@@ -821,7 +822,7 @@ fr:
       coordinator: "Coordinateur"
       homepage: "Homepage"
       keywords: "Mots-clés"
-      organization: "Organisation"
+      organization: "Coordinateur"
       contact: "Contact"
       ontologies: "Ontologies"
       funding_details: "Détails du financement"

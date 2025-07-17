@@ -40,9 +40,10 @@
       - if project.grant_number.present?
         .chip-button-component-container{data: {controller: "tooltip"}}
           %span.chip_button_container_clickable
-            %span.identifier-label= t('projects.grant_id') + ':'
-            %span.identifier-value.font-monospace.mr-2= project.grant_number
-            %span{style: 'display: inline-flex; align-items: center;'}
+            %span{style: 'display: inline-flex; align-items: center; margin-right: 6px; vertical-align: middle;'}
+              = inline_svg("icons/orcid.svg", width: "16", height: '16')
+            %span.identifier-value.font-monospace{style: 'vertical-align: middle;'}= project.grant_number
+            %span{style: 'display: inline-flex; align-items: center; vertical-align: middle; margin-left: 6px;'}
               = render ClipboardComponent.new(title: t('projects.copy_grant_number'), message: project.grant_number, show_content: false)
 
       - if project.organization.present?

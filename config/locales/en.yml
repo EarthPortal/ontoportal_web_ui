@@ -762,7 +762,7 @@ en:
     description_text: Description text
     edit_text: Edit
     home_page: Homepage
-    search_projects: Search by name, acronym or organization
+    search_projects: Search by name, acronym or coordinator
     index:
       intro: Browse a selection of projects that use %{site} ontologies
     institutions: Institutions
@@ -778,10 +778,11 @@ en:
     persons_and_organizations: Persons and organizations
     grant_number: Grant number
     keywords: Keywords
-    organization: Organization
+    organization: Coordinator
     contact: Contacts
     funder: Funder
     selector_placeholder: Search a project ...
+    copy_grant_number: Copy grant number
     
     filters: "Filters"
     filter:
@@ -829,7 +830,7 @@ en:
       end_date: "End date"
       homepage: "Homepage"
       keywords: "Keywords"
-      organization: "Organization"
+      organization: "Coordinator"
       contact: "Contact"
       ontologies: "Ontologies"
       grant_number: "Grant number"
