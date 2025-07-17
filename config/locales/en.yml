@@ -1733,204 +1733,6 @@ en:
     save_button: Save
     submission_updated_successfully: Submission updated successfully
     submitted: Submitted
-    toggle_dropdown: Toggle dropdown
-    version: Version
-  taxonomy:
-    description: '"In %{portal}, ontologies are organized in groups and tagged with
-      categories. Typically, groups associate ontologies from the same project or
-      organization for better identification of the provenance. Whereas categories
-      are about subjects/topics and enable to classify ontologies. As of 2016, %{portal}''s
-      categories were established in cooperation with FAO AIMS. In 2024, we moved
-      to UNESCO Thesaurus (https://vocabularies.unesco.org). Groups and categories,
-      along with other metadata, can be used on the “Browse” page of %{portal} to
-      filter out the list of ontologies."'
-    groups_and_categories: Groups and Categories
-    no_taxonomy_created: No %{type} are created yet
-    show_sub_categories: Show sub categories
-  tools:
-    converter:
-      description: 'The Content Converter tool offers the capability to export any
-        RDF resource into various formats such as RDF/XML, Turtle, Ntriples, or JSON.
-        This functionality allows users to serialize RDF data into syntaxes suitable
-        for different purposes.
-
-        '
-      title: Content converter (coming)
-    search:
-      description: 'This tool enables users to search for any RDF Resource within
-        the repository. Users can search by either the unique identifier (URI) associated
-        with the RDF Resource or by its label.
-
-        '
-      title: Search content (coming)
-    url_checker:
-      description: This tool verifies the resolvability of Uniform Resource Identifiers
-        (URIs) and their content negotiability. It checks whether a given URI is accessible
-        and whether the content associated with it can be negotiated based on the
-        client's preferences.
-      title: URI resolvability checker
-  users:
-    account_successfully_created: Account was successfully created
-    account_successfully_updated: Account was successfully updated
-    custom_ontologies_cleared: Custom Ontologies were cleared
-    custom_ontologies_saved: Custom Ontologies were saved
-    edit:
-      admin_privileges: Are you sure you want to revoke admin privileges for this
-        user?
-      change_password: Change password
-      confirm_password: Confirm password
-      edit_information: Edit personal information
-      email: Email
-      errors_creating_account: 'Errors creating your account:'
-      first_name: First name
-      github_id: Github account
-      last_name: Last name
-      new_password: New password
-      orcid_id: ORCID
-      user_to_admin: Are you sure you want to make this user an admin?
-      username: Username
-    error_saving_custom_ontologies: Error saving Custom Ontologies, please try again
-    error_subscribe: Something went wrong ...
-    first_name_required: First name field is required
-    index:
-      actions: Actions
-      created: Created At
-      delete: Delete
-      detail: Detail
-      email: Email
-      error_delete_message: Can't delete this user because still used
-      first_name: First name
-      last_name: Last name
-      login_as: Login as
-      ontologies: Ontologies
-      project: Project
-      roles: Roles
-      turbo_confirm: Are you sure?
-      username: Username
-    last_name_required: Last name field is required
-    not_permitted: Not permitted
-    recaptcha_validation: Please fill in the proper text from the supplied image
-    show:
-      accessible_semantic_resources: Accessible Ontologies
-      api_documentation: API documentation
-      api_key_description: Your API Key can be used to access  %{portal} Web services
-      custom_semantic_resource: Custom ontology set
-      customize_portal_display: 'Customize your %{portal} display: Pick the ontologies
-        that you want to see on %{portal} will hide all other ontologies.'
-      email: 'Email:'
-      first_name: 'First name:'
-      github_id: 'GitHub account:'
-      last_name: 'Last name:'
-      mailing_list_description: Register to the %{portal} mailing list.
-      mailing_list_subscription: Mailing list subscription
-      modify_custom_semantic_resource: |
-        visit the main site
-        to modify your Custom Ontology Set.
-      my_account: My account
-      no_project_created: No project created
-      no_semantic_resources: You haven't picked any ontologies yet
-      no_uploaded_resources: You didn't upload any ontology yet
-      not_subscribed: Not subscribed to any ontology
-      note_feature_logged_in: 'Note: this feature works only when you are logged in.'
-      notes: Notes
-      orcid_id: 'ORCID:'
-      please: Please
-      projects_created: Projects created
-      save_custom_semantic_resources: Save custom ontologies
-      select_semantic_resources: Select ontologies
-      submitted_semantic_resources: Submitted ontologies
-      subscribe: Subscribe
-      subscriptions: Subscriptions
-      no_uploaded_resources: You didn't upload any ontology yet
-      notes: Notes
-  search:
-    no_search_class_provided: No search class provided
-    search_place_holder: Enter a term, e.g. oxygen
-    advanced_options:
-      search_language: Search language
-      ontologies: Ontologies
-      include_in_search_title: Include in search
-      include_in_search_values:
-        property_values: Property values
-        obolete_classses: Obsolete classes
-        ontology_views: Ontology views
-      show_only_title: Show only
-      show_only_values:
-        exact_matches: Exact matches
-        classes_with_definitions: Classes with definitions
-    show_advanced_options: Show options
-    hide_advanced_options: Hide options
-    match_in: "Match in %{results_size} ontologies from %{portals}"
-    ontologies: ontologies
-    result_component:
-      details: Details
-      visualize: Visualize
-      more_from_ontology: more from this ontology
-      reuses_in: Reuses in
-  notes:
-    no_notes: No notes to display
-    filter_hide_archived: Hide Archived
-    new_class_proposal: New Class Proposal
-    new_relationship_proposal: New Relationship Proposal
-    change_property_value_proposal: Change Property Value Proposal
-    new_comment_added: New comment added successfully
-    note_deleted_successfully: Note %{note_id}  was deleted successfully
-    note_not_found: Note %{note_id}  was not found in the system
-    comment: Comment
-    new_comment:
-      subject: Subject
-      comment: Comment
-      save: Save
-    new_proposal:
-      reason_for_change: Reason for change
-      new_target: New target
-      old_target: Old target
-      relationship_type: Relationship type
-      property_id: Property id
-      new_value: New value
-      old_value: Old value
-      class_id: Class id
-      label: Label
-      synonym: Synonym
-      definition: Definition
-      parent: Parent
-      save: Save
-    note_line:
-      alert_text: "Are you sure you want to delete the note <span style='color:red;font-weight:bold;'> ''%{subject}''</span> created by <span style='color:red;font-weight:bold;'>%{creator}</span>?<br/><b>This action CAN NOT be undone!!!</b>"
-      delete: Delete
-      archived: archived
-      comment: Comment
-    thread:
-      submitted_by: submitted by
-    reply:
-      about_note_decorator: about %{note_decorator}
-      comment: Comment
-      save: Save
-      cancel: Cancel
-  ontolobridge:
-    problem_of_creating_new_term: "Problem creating a new term %{endpoint}: %{class} - %{message}"
-    new_term_instructions_saved: New term request instructions for %{acronym} saved
-    error_saving_new_term_instructions: Unable to save new term instructions for %{acronym} due to a server error
-  submissions:
-    filter:
-      all_formats: All formats
-      sort_by_name: Sort by name
-      sort_by_classes: Sort by classes count
-      sort_by_instances_concepts: Sort by instances/concepts count
-      sort_by_submitted_date: Sort by submitted date
-      sort_by_creation_date: Sort by creation date
-      sort_by_fair_score: Sort by FAIR score
-      sort_by_popularity: Sort by popularity
-      sort_by_notes: Sort by notes
-      sort_by_projects: Sort by projects
-    no_submissions_for_ontology: "No submissions for ontology: %{ontology}"
-    submission_updated_successfully: Submission updated successfully
-    save_button: Save
-    id: ID
-    version: Version
-    actions: Actions
-    modified: Modified
-    submitted: Submitted
     download: Download
     toggle_dropdown: Toggle Dropdown
     go_to_api: Go to API
@@ -2389,6 +2191,129 @@ en:
     domain: Domain
     range: Range
     no_properties_alert: "%{acronym} does not contain properties"
+    toggle_dropdown: Toggle dropdown
+    version: Version
+  taxonomy:
+    description: '"In %{portal}, ontologies are organized in groups and tagged with
+      categories. Typically, groups associate ontologies from the same project or
+      organization for better identification of the provenance. Whereas categories
+      are about subjects/topics and enable to classify ontologies. As of 2016, %{portal}''s
+      categories were established in cooperation with FAO AIMS. In 2024, we moved
+      to UNESCO Thesaurus (https://vocabularies.unesco.org). Groups and categories,
+      along with other metadata, can be used on the “Browse” page of %{portal} to
+      filter out the list of ontologies."'
+    groups_and_categories: Groups and Categories
+    no_taxonomy_created: No %{type} are created yet
+    show_sub_categories: Show sub categories
+  tools:
+    converter:
+      description: 'The Content Converter tool offers the capability to export any
+        RDF resource into various formats such as RDF/XML, Turtle, Ntriples, or JSON.
+        This functionality allows users to serialize RDF data into syntaxes suitable
+        for different purposes.
+
+        '
+      title: Content converter (coming)
+    search:
+      description: 'This tool enables users to search for any RDF Resource within
+        the repository. Users can search by either the unique identifier (URI) associated
+        with the RDF Resource or by its label.
+
+        '
+      title: Search content (coming)
+    url_checker:
+      description: This tool verifies the resolvability of Uniform Resource Identifiers
+        (URIs) and their content negotiability. It checks whether a given URI is accessible
+        and whether the content associated with it can be negotiated based on the
+        client's preferences.
+      title: URI resolvability checker
+  users:
+    account_successfully_created: Account was successfully created
+    account_successfully_updated: Account was successfully updated
+    custom_ontologies_cleared: Custom Ontologies were cleared
+    custom_ontologies_saved: Custom Ontologies were saved
+    edit:
+      admin_privileges: Are you sure you want to revoke admin privileges for this
+        user?
+      change_password: Change password
+      confirm_password: Confirm password
+      edit_information: Edit personal information
+      email: Email
+      errors_creating_account: 'Errors creating your account:'
+      first_name: First name
+      github_id: Github account
+      last_name: Last name
+      new_password: New password
+      orcid_id: ORCID
+      user_to_admin: Are you sure you want to make this user an admin?
+      username: Username
+    error_saving_custom_ontologies: Error saving Custom Ontologies, please try again
+    error_subscribe: Something went wrong ...
+    first_name_required: First name field is required
+    index:
+      actions: Actions
+      created: Created At
+      delete: Delete
+      detail: Detail
+      email: Email
+      error_delete_message: Can't delete this user because still used
+      first_name: First name
+      last_name: Last name
+      login_as: Login as
+      ontologies: Ontologies
+      project: Project
+      roles: Roles
+      turbo_confirm: Are you sure?
+      username: Username
+    last_name_required: Last name field is required
+    not_permitted: Not permitted
+    recaptcha_validation: Please fill in the proper text from the supplied image
+    show:
+      accessible_semantic_resources: Accessible Ontologies
+      api_documentation: API documentation
+      api_key_description: Your API Key can be used to access  %{portal} Web services
+      custom_semantic_resource: Custom ontology set
+      customize_portal_display: 'Customize your %{portal} display: Pick the ontologies
+        that you want to see on %{portal} will hide all other ontologies.'
+      email: 'Email:'
+      first_name: 'First name:'
+      github_id: 'GitHub account:'
+      last_name: 'Last name:'
+      mailing_list_description: Register to the %{portal} mailing list.
+      mailing_list_subscription: Mailing list subscription
+      modify_custom_semantic_resource: |
+        visit the main site
+        to modify your Custom Ontology Set.
+      my_account: My account
+      no_project_created: No project created
+      no_semantic_resources: You haven't picked any ontologies yet
+      no_uploaded_resources: You didn't upload any ontology yet
+      not_subscribed: Not subscribed to any ontology
+      note_feature_logged_in: 'Note: this feature works only when you are logged in.'
+      notes: Notes
+      orcid_id: 'ORCID:'
+      please: Please
+      projects_created: Projects created
+      save_custom_semantic_resources: Save custom ontologies
+      select_semantic_resources: Select ontologies
+      submitted_semantic_resources: Submitted ontologies
+      subscribe: Subscribe
+      subscriptions: Subscriptions
+      unsubscribe: Unsubscribe
+      upload_semantic_resources: Upload Ontologies
+      username: 'Username:'
+    subscribe_flash_message: 'You have successfully  %{action} %{to_or_from} our user
+      mailing list: %{list}'
+    user_deleted_successfully: User deleted successfully
+    valid_email_adresse: Please enter a valid email adresse
+    validate_email_address: Please enter an email address
+    validate_orcid: Please enter a valid ORCID
+    validate_password: Please enter a password
+    validate_password_confirmation: Your Password and Password Confirmation do not
+      match
+    validate_terms_and_conditions: Accepting the terms and conditions is required,
+      please check the box to proceed.
+    validate_username: please enter a valid username
   visits:
     count: concepts
   ontologies_selector:
