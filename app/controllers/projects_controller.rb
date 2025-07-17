@@ -73,7 +73,7 @@ class ProjectsController < ApplicationController
     @dates_properties.compact!
 
     @ontologies_used = []
-    onts_used = @project.ontologyUsed
+    onts_used = @project.ontologyUsed || []
     onts_used.each do |ont_used|
       ont = LinkedData::Client::Models::Ontology.find(ont_used)
       unless ont.nil? || ont.errors
@@ -88,156 +88,147 @@ class ProjectsController < ApplicationController
   def new
     @step = params[:step].present? ? params[:step].to_i : 1
     if session[:user].nil?
-      redirect_to :controller => 'login', :action => 'index'
+      redirect_to controller: 'login', action: 'index'
     else
       @project = LinkedData::Client::Models::Project.new
-      @user_select_list = LinkedData::Client::Models::User.all.map {|u| [u.username, u.id]}
-      @user_select_list.sort! {|a,b| a[1].downcase <=> b[1].downcase}
+      @user_select_list = load_user_select_list
     end
   end
 
-  # GET /projects/1/edit
   def edit
     if session[:user].nil?
-      redirect_to :controller => 'login', :action => 'index'
-    else
-      projects = LinkedData::Client::Models::Project.find_by_acronym(params[:id])
-      if projects.nil? || projects.empty?
-        flash[:notice] = flash_error(t('projects.project_not_found', id: params[:id]))
-        redirect_to projects_path
-        return
-      end
-      @project = projects.first
-      @user_select_list = LinkedData::Client::Models::User.all.map {|u| [u.username, u.id]}
-      @user_select_list.sort! {|a,b| a[1].downcase <=> b[1].downcase}
-      @usedOntologies = @project.ontologyUsed&.map{|o| o.split('/').last}
-      @ontologies = LinkedData::Client::Models::Ontology.all
+      redirect_to controller: 'login', action: 'index'
+      return
     end
+
+    @project = find_project_or_redirect
+    return unless @project
+
+    user_id = session[:user].id
+    is_admin = session[:user].admin?
+    is_creator = Array(@project.creator).include?(user_id)
+
+    unless is_creator || is_admin
+      flash[:alert] = t('projects.edit.not_authorized')
+      redirect_to project_path(@project.acronym)
+      return
+    end
+
+    @user_select_list = load_user_select_list
+    @usedOntologies = @project.ontologyUsed&.map { |o| o.split('/').last }
+    @ontologies = LinkedData::Client::Models::Ontology.all
   end
 
-  # POST /projects
-  # POST /projects.xml
   def create
     if params['commit'] == 'Cancel'
-      redirect_to projects_path
+      redirect_to projects_path 
       return
     end
     
     create_params = project_params.to_h
     create_params[:creator] = [session[:user].id]
-
+    
     project_type = params[:project][:project_type].presence || 'funded'
+    set_project_type(create_params, project_type)
     
-    if project_type == 'not_funded'
-      create_params[:type] = "NonFundedProject"
-      create_params[:funder] = nil
-      create_params[:source] = nil
-      create_params.delete(:funders_attributes)
-    else
-      create_params[:type] = "FundedProject"
-      create_params[:funder] = params[:project][:funders_attributes]&.values&.first&.dig("id")
+    org_id = extract_organization_id
+    if org_id.present?
+      create_params[:organization] = org_id
+      @organization = fetch_agent(org_id)
     end
     
-    organization_id = nil
-    if params[:project][:organizations_attributes].present?
-      orgs = params[:project][:organizations_attributes].values
-      organization_id = orgs.first["id"] if orgs.first && orgs.first["id"].present?
-      create_params[:organization] = organization_id
-    end
-
-    contact_ids = []
-    if params[:project][:contacts_attributes].present?
-      contacts = params[:project][:contacts_attributes].values
-      contact_ids = contacts.map { |contact| contact["id"] if contact["id"].present? }.compact
-    end
-    create_params[:contact] = contact_ids
-  
+    contact_ids = extract_contact_ids
+    create_params[:contact] = contact_ids if contact_ids.any?
+    
     create_params[:ontologyUsed] ||= []
-  
+    
     @project = LinkedData::Client::Models::Project.new(values: create_params)
     @project_saved = @project.save
-
-    # Project successfully created.
-    if response_success?(@project_saved)
-      flash[:notice] = t('projects.project_successfully_created')
-      redirect_to project_path(@project.acronym)
-      return
-    end
-  
-    # Errors creating project.
-    if @project_saved.status == 409
-      error = OpenStruct.new existence: t('projects.error_unique_acronym', acronym: params[:project][:acronym])
-      @errors = Hash[:error, OpenStruct.new(acronym: error)]
-    else
-      @errors = response_errors(@project_saved)
-    end
-    @user_select_list = LinkedData::Client::Models::User.all.map {|u| [u.username, u.id]}
-    @user_select_list.sort! {|a,b| a[1].downcase <=> b[1].downcase}
-    render action: "new"
+    
+    # Handle response
+    handle_create_response
   end
 
-  # PUT /projects/1
-  # PUT /projects/1.xml
   def update
     if params['commit'] == 'Cancel'
-      redirect_to projects_path
+      redirect_to projects_path 
       return
     end
 
-    projects = LinkedData::Client::Models::Project.find_by_acronym(params[:id])
-    if projects.nil? || projects.empty?
-      flash[:notice] = flash_error(t('projects.project_not_found', id: params[:id]))
-      redirect_to projects_path
-      return
-    end
-
-    @project = projects.first
+    @project = find_project_or_redirect
+    return unless @project
+    
     @project.update_from_params(project_params)
-
-    # Clean up fields AFTER update_from_params
+    
+    org_id = extract_organization_id
+    if org_id.present?
+      @project.organization = org_id
+      @organization = fetch_agent(org_id)
+    end
+    
+    contact_ids = extract_contact_ids
+    @project.contact = contact_ids if contact_ids.any?
+    
     @project.start_date = nil if @project.start_date.blank?
     @project.end_date = nil if @project.end_date.blank?
-    @project.organization = @project.organization&.id if @project.organization.respond_to?(:id)
-    @project.funder = @project.funder&.id if @project.funder.respond_to?(:id)
-    @project.contact = @project.contact&.id if @project.contact.respond_to?(:id)
+    @project.funder = extract_id(@project.funder)
     @project.type = "FundedProject" unless %w[FundedProject NonFundedProject].include?(@project.type)
     @project.creator ||= [session[:user].id] if session[:user]
-    @project.type ||= "FundedProject"
-
-    @user_select_list = LinkedData::Client::Models::User.all.map {|u| [u.username, u.id]}
-    @user_select_list.sort! {|a,b| a[1].downcase <=> b[1].downcase}
-    @usedOntologies = @project.ontologyUsed || []
-    @ontologies = LinkedData::Client::Models::Ontology.all
-
-    Rails.logger.debug "Project update payload: #{@project.to_hash.inspect}"
-
+    
+    setup_data_for_edit
+    
     begin
-      error_response = @project.update
-    rescue => e
-      Rails.logger.error "Project update failed: #{e.message}"
-      @errors = { error: { general: OpenStruct.new(existence: "Error updating project: #{e.message}") } }
-      render :edit and return
-    end
+      minimal_update = {
+        id: @project.id,
+        acronym: @project.acronym,
+        name: @project.name,
+        description: @project.description,
+        type: @project.type,
+      }
+      
+      if @project.organization.present?
+        org_id = extract_organization_from_object(@project.organization)
+        minimal_update[:organization] = org_id if org_id.present?
+      end
+      
+      update_project = LinkedData::Client::Models::Project.new(values: minimal_update)
+      error_response = update_project.update
+      
+      if response_error?(error_response)
+        @errors = response_errors(error_response)
+        render :edit
+      else
+        full_update = {
+          id: @project.id,
+          organization: org_id,
+          homePage: @project.homePage,
+          keywords: @project.keywords,
+          logo: @project.logo,
+          grant_number: @project.grant_number,
+          start_date: @project.start_date,
+          end_date: @project.end_date,
+          ontologyUsed: @project.ontologyUsed,
+          source: @project.source,
+          contact: @project.contact
 
-    if response_error?(error_response)
-      @errors = response_errors(error_response)
+        }
+        
+        full_project = LinkedData::Client::Models::Project.new(values: full_update)
+        full_project.update rescue nil  # Ignore errors on secondary update
+        
+        flash[:notice] = t('projects.project_successfully_updated')
+        redirect_to project_path(@project.acronym)
+      end
+    rescue => e
+      @errors = { error: { general: OpenStruct.new(existence: "Error updating project: #{e.message}") } }
       render :edit
-    else
-      flash[:notice] = t('projects.project_successfully_updated')
-      redirect_to project_path(@project.acronym)
     end
   end
 
-  # DELETE /projects/1
-  # DELETE /projects/1.xml
   def destroy
-    projects = LinkedData::Client::Models::Project.find_by_acronym(params[:id])
-    if projects.nil? || projects.empty?
-      flash[:notice] = flash_error(t('projects.project_not_found', id: params[:id]))
-      redirect_to projects_path
-      return
-    end
-    @project = projects.first
+    @project = find_project_or_redirect
+    return unless @project
+
     error_response = @project.delete
     if response_error?(error_response)
       @errors = response_errors(error_response)
@@ -255,6 +246,31 @@ class ProjectsController < ApplicationController
     end
   end
 
+  def ajax_projects
+    query = params[:query].to_s.strip.downcase
+    limit = params[:limit]&.to_i || 20
+
+    projects = LinkedData::Client::Models::Project.all || []
+
+    if query.present?
+      projects = projects.select do |project|
+        project.name&.downcase&.include?(query) ||
+        project.acronym&.downcase&.include?(query) ||
+        project.description&.downcase&.include?(query)
+      end
+    end
+
+    projects = projects.first(limit)
+
+    projects_json = projects.map do |project|
+      {
+        value: project.acronym, 
+        text: "#{project.name} (#{project.acronym})"
+      }
+    end
+    render json: projects_json
+  end
+  
   def search_external_projects
     source = params[:source]
     search_term = params[:term]
@@ -333,7 +349,7 @@ class ProjectsController < ApplicationController
 
   private
 
-    def setup_categories_options
+  def setup_categories_options
     setup_categories_options_from_projects(@projects)
   end
 
@@ -505,7 +521,6 @@ class ProjectsController < ApplicationController
     query = params[:search].downcase
     projects.select do |project|
       project.name&.downcase&.include?(query) ||
-      project.description&.downcase&.include?(query) ||
       project.acronym&.downcase&.include?(query) ||
       project.organization&.name&.downcase&.include?(query) ||
       project.organization&.acronym&.downcase&.include?(query)
@@ -525,13 +540,122 @@ class ProjectsController < ApplicationController
     Date.parse(project.end_date) >= Date.current rescue true
   end
 
-  def project_params
-    params.require(:project).permit(
-      :acronym, { creator: [] }, :type, :name, :homePage, :description, 
-      { ontologyUsed: [] }, :source, { keywords: [] }, :contact, :organization, 
-      :logo, :grant_number, :start_date, :end_date, :funder,
-      organizations_attributes: [:id], contacts_attributes: [:id], funders_attributes: [:id]
-    )
+  
+  def extract_id(val)
+    return val.id if val.respond_to?(:id)
+    return val['id'] if val.is_a?(Hash)
+    val
+  end
+
+  def extract_agent_id(params_hash)
+    return nil unless params_hash.present?
+    
+    if params_hash.is_a?(Hash)
+      # Handle nested structure: {"id123" => {"id" => "full/uri/path"}}
+      params_hash.values.first&.dig("id") if params_hash.values.first.is_a?(Hash)
+    else
+      # Handle direct ID
+      params_hash
+    end
+  end
+
+  def extract_organization_id
+    # Try organization (direct format)
+    org_id = extract_agent_id(params[:project][:organization])
+    return org_id if org_id.present?
+    
+    # Try organizations_attributes (nested attributes format)
+    if params[:project][:organizations_attributes].present?
+      orgs = params[:project][:organizations_attributes].values
+      orgs.first&.dig("id")
+    end
+  end
+
+  def extract_organization_from_object(organization_object)
+    if organization_object.is_a?(ActionController::Parameters)
+      organization_object.each do |key, value|
+        if value.is_a?(ActionController::Parameters) && value["id"].present?
+          return value["id"]
+        end
+      end
+    end
+    
+    organization_object
+  end
+
+  def extract_contact_ids
+    # Try direct contact array
+    return Array(params[:project][:contact]) if params[:project][:contact].present?
+    
+    # Try contacts_attributes (nested format)
+    if params[:project][:contacts_attributes].present?
+      contacts = params[:project][:contacts_attributes].values
+      contacts.map { |c| c["id"] if c["id"].present? }.compact
+    else
+      []
+    end
+  end
+
+  def fetch_agent(id)
+    return nil unless id.present?
+    agent_acronym = id.split('/').last rescue id
+    LinkedData::Client::Models::Agent.find(agent_acronym).first rescue nil
+  end
+
+
+  def find_project_or_redirect
+    projects = LinkedData::Client::Models::Project.find_by_acronym(params[:id])
+    if projects.nil? || projects.empty?
+      flash[:notice] = flash_error(t('projects.project_not_found', id: params[:id]))
+      redirect_to projects_path
+      return nil
+    end
+    projects.first
+  end
+
+  def set_project_type(params_hash, project_type)
+    if project_type == 'not_funded'
+      params_hash[:type] = "NonFundedProject"
+      params_hash[:funder] = nil
+      params_hash[:source] = nil
+      params_hash.delete(:funders_attributes)
+    else
+      params_hash[:type] = "FundedProject"
+      params_hash[:funder] = params[:project][:funders_attributes]&.values&.first&.dig("id")
+    end
+  end
+
+  def setup_data_for_edit
+    @user_select_list = load_user_select_list
+    @usedOntologies = @project.ontologyUsed || []
+    @ontologies = LinkedData::Client::Models::Ontology.all
+  end
+
+  def load_user_select_list
+    users = LinkedData::Client::Models::User.all.map { |u| [u.username, u.id] }
+    users.sort! { |a, b| a[1].downcase <=> b[1].downcase }
+    users
+  end
+
+
+  def handle_create_response
+    if response_success?(@project_saved)
+      flash[:notice] = t('projects.project_successfully_created')
+      redirect_to project_path(@project.acronym)
+    else
+      handle_project_save_error(@project_saved)
+      @user_select_list = load_user_select_list
+      render action: "new"
+    end
+  end
+
+  def handle_project_save_error(response)
+    if response.status == 409
+      error = OpenStruct.new existence: t('projects.error_unique_acronym', acronym: params[:project][:acronym])
+      @errors = Hash[:error, OpenStruct.new(acronym: error)]
+    else
+      @errors = response_errors(response)
+    end
   end
 
   def flash_error(msg)
@@ -540,6 +664,7 @@ class ProjectsController < ApplicationController
     html << msg
     html << '</span>'.html_safe
   end
+
 
   def api_connection
     @api_connection ||= Faraday.new(url: rest_url) do |faraday|
@@ -565,5 +690,20 @@ class ProjectsController < ApplicationController
       format.json { render json: { success: false, results: [], message: message } }
       format.html { render json: { success: false, results: [], message: message } }
     end
+  end
+
+  def project_params
+    params.require(:project).permit(
+      :acronym, { creator: [] }, :type, :name, :homePage, :description, 
+      { ontologyUsed: [] }, :source, { keywords: [] },
+      # Both formats for backward compatibility  
+      :contact, { contact: [] },
+      :organization, { organization: {} },
+      :logo, :grant_number, :start_date, :end_date, :funder,
+      { organizations_attributes: [:id] },
+      { contacts_attributes: [:id] },
+      { funders_attributes: [:id] },
+      :project_type
+    )
   end
 end

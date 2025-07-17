@@ -19,12 +19,17 @@
           .text-muted.small#summary-acronym /
           .invalid-feedback.d-none#title-error= t("projects.form.field_required", field: t("projects.form.title"))
           .invalid-feedback.d-none#acronym-error= t("projects.form.field_required", field: t("projects.form.acronym"))
+          .invalid-feedback.d-none#acronym-start-letter-error= t("projects.form.acronym_validation.start_letter")
+          .invalid-feedback.d-none#acronym-capital-letters-error= t("projects.form.acronym_validation.capital_letters")
+          .invalid-feedback.d-none#acronym-special-chars-error= t("projects.form.acronym_validation.special_chars")
+          .invalid-feedback.d-none#acronym-length-error= t("projects.form.acronym_validation.length")
       %hr
       .row
         .col-md-6.mb-3
           %span.fw-bold= t("projects.form.homepage") + ":"
           %a.ms-2#summary-homepage.text-break{href: "#", target: "_blank"} /
           .invalid-feedback.d-none#homepage-error= t("projects.form.field_required", field: t("projects.form.homepage"))
+          .invalid-feedback.d-none#homepage-uri-error= t("projects.form.homepage_uri_error")
         .col-md-6.mb-3
           %span.fw-bold= t("projects.form.keywords") + ":"
           %span.ms-2#summary-keywords.text-break /
@@ -33,7 +38,7 @@
         .col-12.mb-3
           %span.fw-bold= t("projects.form.description") + ":"
           %span.ms-2#summary-description /
-          .invalid-feedback.d-none#description-error= t("projects.form.field_required", field: t("projects.form.description"))
+          .invalid-feedback.d-none#description-error= t("projects.form.field_required", field: t("projects.form.description"))  
 
       .row
         .col-md-6.mb-3
@@ -42,6 +47,7 @@
         .col-md-6.mb-3
           %span.fw-bold= t("projects.form.end_date") + ":"
           %span.ms-2#summary-end-date /
+          .invalid-feedback.d-none#date-range-error= t("projects.form.date_range_error")
       .row
         .col-12.mb-3
           %span.fw-bold= t("projects.form.organization") + ":"

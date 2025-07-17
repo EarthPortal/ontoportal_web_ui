@@ -742,6 +742,10 @@ en:
     header:
       last_submission_date: Last submission date
   projects:
+    page_description: "Browse, filter, and discover projects that use or contribute to ontologies in %{portal}."
+    not_funded: Non funded
+    not_funded_tooltip: This project is not funded
+    grant_id: Grant ID
     project_not_found: "Project not found: %{id}"
     project_successfully_created: Project successfully created
     error_unique_acronym: Project with acronym %{acronym} already exists.  Please enter a unique acronym.
@@ -758,7 +762,7 @@ en:
     description_text: Description text
     edit_text: Edit
     home_page: Homepage
-    search_projects: Search by name, acronym or organization
+    search_projects: Search by name, acronym or coordinator
     index:
       intro: Browse a selection of projects that use %{site} ontologies
     institutions: Institutions
@@ -774,8 +778,11 @@ en:
     persons_and_organizations: Persons and organizations
     grant_number: Grant number
     keywords: Keywords
-    organization: Organization
+    organization: Coordinator
+    contact: Contacts
     funder: Funder
+    selector_placeholder: Search a project ...
+    copy_grant_number: Copy grant number
     
     filters: "Filters"
     filter:
@@ -784,6 +791,7 @@ en:
       all_funders: "All funders"
       not_funded: "Not funded"
       funder: "Funder"
+      categories: "Categories"
     sort:
       name: "Sort by name"
       acronym: "Sort by acronym" 
@@ -803,7 +811,7 @@ en:
       institution: "Institution:"
       contacts: "Contacts:"
       home_page: "Homepage:"
-      ontologies_used: Ontologies Used
+      ontologies_used: Used ontologies 
       no_ontologies_associated: No ontologies are currently associated with this project
 
     form:
@@ -814,7 +822,7 @@ en:
       home_page: "Homepage: *"
       example: "Example:"
       description: "Description:*"
-      select_ontologies: Select Ontologies Used
+      select_ontologies: Select used ontologies 
       select_administrators: Select administrators
       title: "Title"
       acronym: "Acronym"
@@ -823,7 +831,7 @@ en:
       end_date: "End date"
       homepage: "Homepage"
       keywords: "Keywords"
-      organization: "Organization"
+      organization: "Coordinator"
       contact: "Contact"
       ontologies: "Ontologies"
       grant_number: "Grant number"
@@ -835,6 +843,13 @@ en:
       field_required: "%{field} is required"
       selection_required: "At least one %{field} must be selected"
       error-submission-message: "Please fill all required fields before submitting"
+      date_range_error: "End date must be after start date"
+      homepage_uri_error: "Homepage must be a valid URL (e.g., https://example.com)"
+      acronym_validation:
+        start_letter: "The acronym must start with a letter"
+        capital_letters: "The acronym must be all capital letters"
+        special_chars: "The acronym must only contain letters, numbers, hyphens, and underscores"
+        length: "The acronym must be sixteen characters or less"
     search:
       missing_parameters: "Missing required parameters"
       found_projects:
@@ -847,17 +862,18 @@ en:
       error_occurred: "An error occurred"
 
     edit:
-      title: Editing Project %{name}
-      editing_project: Editing project
+      title: Edit project %{name}
+      editing_project: Edit project
       cancel: Cancel
-      update_project: Update Project
+      not_authorized: You are not authorized to edit this project.
+
     
     new:
       title: Add your project
       new_project: New project
-      create_project: Create Project
+      create_project: Create troject
     project_type_selection:
-      title: "Project Type"
+      title: "Project type"
       description: "Select the type of project you want to create."
       select_type: "Select project type"
       funded: "Funded project"
@@ -869,14 +885,14 @@ en:
       datasets: "Dataset"
       search_button: "Search"
     project_search:
-      anr_title: "ANR Project Search"
-      cordis_title: "CORDIS Project Search"
+      anr_title: "ANR project Search"
+      cordis_title: "CORDIS project Search"
       search_by_id: "Search by ID"
       project_id: "Project ID"
       id_placeholder: "Enter project ID"
       search_by_term: "Search by acronym"
       term_placeholder: "Enter acronym"
-      results: "Search Results"
+      results: "Search results"
       api_error: "Error connecting to the search service"
       no_results: "No results found"
       enter_valid_id: "Please enter a valid project ID"
@@ -885,7 +901,7 @@ en:
       success: "Project created successfully"
       error: "There was a problem creating the project"
     call_annotator: "Annotate"
-    details: "Project Details"
+    details: "Project details"
   recommender:
     title: Recommender
     intro: Get recommendations for the most relevant ontologies from an excerpt of text or a list of keywords
@@ -1145,6 +1161,7 @@ en:
     metadata_selector_label: "Filter properties to show"
     metadata_selector_placeholder: "Start typing to select properties"
     administrators: Administrators
+    projects: Projects
     ontology_skos_language_link: Please refer to the documentation for more details.
     ontology_skos_language_help: >
       SKOS vocabularies submitted to %{portal_name} shall follow a few constraints (e.g., contain a minimum of one skos:ConceptScheme also typed as owl:Ontology) 
@@ -1304,7 +1321,7 @@ en:
     edit_metadata: Edit metadata
     go_to_api: Go to API
     projects_using_ontology: Projects using %{acronym}
-    create_new_project: Create new project
+    add_new_project: Add new project
     no_projects_using_ontology: No projects using %{acronym}
     outside: outside
     relation_with_other_ontologies: Relation with other ontologies either in %{inside} or %{outside}

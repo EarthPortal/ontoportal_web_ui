@@ -7,14 +7,94 @@ module OntologyUpdater
     @ontology = LinkedData::Client::Models::Ontology.find_by_acronym(acronym).first
     return nil if @ontology.nil?
 
+    old_project_uris = load_ontology_projects(@ontology)
     new_values = ontology_params
-    new_values.each do |key, values|
-      @ontology.send("#{key}=", values)
-    rescue StandardError
-      next
+    projects_param_included = params[:ontology].key?(:projects)
+    new_project_acronyms = projects_param_included ? 
+      (new_values[:projects] || []) : 
+      old_project_uris.map { |uri| uri.split('/').last }.compact
+    
+    ontology_uri = @ontology.id.to_s
+    normalized_ontology_uri = normalize_uri(ontology_uri)
+
+    # Add ontology to new projects
+    new_project_acronyms.each do |project_acronym|
+      begin
+        projects = LinkedData::Client::Models::Project.find_by_acronym(project_acronym)
+        next if projects.nil? || projects.empty?
+        
+        project = projects.first
+        project.ontologyUsed ||= []
+        project_ontology_uris = project.ontologyUsed.map { |uri| normalize_uri(uri) }
+        
+        unless project_ontology_uris.include?(normalized_ontology_uri)
+          project.ontologyUsed << ontology_uri
+          normalize_project_references(project)
+          project.update(values: { ontologyUsed: project.ontologyUsed })
+        end
+      rescue => e
+        Rails.logger.error "Error adding ontology to project #{project_acronym}: #{e.message}"
+      end
     end
-    [@ontology, @ontology.update(values: new_values, cache_refresh_all: false)]
+
+    # Remove ontology from projects no longer associated
+    old_project_uris = Array(old_project_uris).compact.reject(&:blank?).select { |uri| uri.is_a?(String) && uri.include?('/') }
+    old_project_acronyms = old_project_uris.map { |uri| uri.split('/').last }.compact
+    removed_project_acronyms = old_project_acronyms - new_project_acronyms
+
+    removed_project_acronyms.each do |project_acronym|
+      begin
+        projects = LinkedData::Client::Models::Project.find_by_acronym(project_acronym)
+        next if projects.nil? || projects.empty?
+        
+        project = projects.first
+        project.ontologyUsed ||= []
+        
+        if project.ontologyUsed.any? { |uri| normalize_uri(uri) == normalized_ontology_uri }
+          project.ontologyUsed = project.ontologyUsed.reject { |uri| normalize_uri(uri) == normalized_ontology_uri }
+          normalize_project_references(project)
+          project.update(values: { ontologyUsed: project.ontologyUsed })
+        end
+      rescue => e
+        Rails.logger.error "Error removing ontology from project #{project_acronym}: #{e.message}"
+      end
+    end
+
+    # Update other ontology fields
+    other_values = new_values.except(:projects)
+    result = if other_values.present?
+      other_values.each { |key, values| @ontology.send("#{key}=", values) rescue nil }
+      @ontology.update(values: other_values, cache_refresh_all: false)
+    else
+      true
+    end
+    
+    [@ontology, result]
   end
+
+  private
+
+  def normalize_uri(uri)
+    uri.to_s.chomp('/').split('#').first.split('?').first
+  end
+
+  def normalize_project_references(project)
+    project.organization = project.organization&.id if project.organization.respond_to?(:id)
+    project.funder = project.funder&.id if project.funder.respond_to?(:id)
+  end
+
+  def load_ontology_projects(ontology)
+    begin
+      # Direct API approach - most reliable method
+      full_ontology = LinkedData::Client::Models::Ontology.find_by_acronym(ontology.acronym, include: 'projects').first
+      projects = Array(full_ontology&.projects).compact.select { |p| p.is_a?(String) }
+      return projects
+    rescue => e
+      Rails.logger.error "Error loading projects for ontology #{ontology.acronym}: #{e.message}"
+      return []
+    end
+  end
+
 
   def ontology_from_params
     ontology = LinkedData::Client::Models::Ontology.new(values: ontology_params)
@@ -26,7 +106,7 @@ module OntologyUpdater
     return {} unless params[:ontology]
 
     p = params.require(:ontology).permit(:name, :acronym, { administeredBy: [] }, :viewingRestriction, { acl: [] },
-                                         { hasDomain: [] }, :viewOf, :isView, :subscribe_notifications, { group: [] })
+                                         { hasDomain: [] }, :viewOf, :isView, :subscribe_notifications, { group: [] }, { projects: [] })
 
     p[:administeredBy].reject!(&:blank?) if p[:administeredBy]
     # p[:acl].reject!(&:blank?)
