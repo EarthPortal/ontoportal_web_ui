@@ -232,10 +232,19 @@ export default class extends Controller {
     if (startDateInput?.value && endDateInput?.value) {
         const startDate = new Date(startDateInput.value)
         const endDate = new Date(endDateInput.value)
-        
+    
         if (startDate > endDate) {
             this.showFieldError('end-date', 'date-range-error')
             hasErrors = true
+        }
+    }
+
+
+    const homepageInput = document.querySelector('[name="project[homePage]"]');
+    if (homepageInput?.value?.trim() && homepageInput.value !== '/') {
+        if (!this.validateUri(homepageInput.value.trim())) {
+            this.showFieldError('homepage', 'homepage-uri-error');
+            hasErrors = true;
         }
     }
 
@@ -291,6 +300,24 @@ export default class extends Controller {
             confirmBtn.disabled = false
         }
     }    
+
+    validateUri(uri) {
+        if (!uri || uri === '/') return true;
+        
+        if (!uri.match(/^https:\/\//)) {
+            return false;
+        }
+        if (uri === 'https://' || uri.match(/^https:\/\/\s*$/)) {
+            return false;
+        }
+
+        try {
+            const url = new URL(uri);
+            return url.hostname && url.hostname.length > 0;
+        } catch (e) {
+            return false;
+        }
+    }
 
     validateAcronym(acronym) {
     const errors = []

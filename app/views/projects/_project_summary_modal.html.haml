@@ -29,6 +29,7 @@
           %span.fw-bold= t("projects.form.homepage") + ":"
           %a.ms-2#summary-homepage.text-break{href: "#", target: "_blank"} /
           .invalid-feedback.d-none#homepage-error= t("projects.form.field_required", field: t("projects.form.homepage"))
+          .invalid-feedback.d-none#homepage-uri-error= t("projects.form.homepage_uri_error")
         .col-md-6.mb-3
           %span.fw-bold= t("projects.form.keywords") + ":"
           %span.ms-2#summary-keywords.text-break /

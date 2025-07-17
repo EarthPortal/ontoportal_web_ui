@@ -836,6 +836,7 @@ fr:
       field_required: "%{field} est requis"
       selection_required: "Au moins un %{field} doit être sélectionné"
       date_range_error: "La date de fin doit être postérieure à la date de début"
+      homepage_uri_error: "Homepage doit être une URL valide (ex: https://example.com)"
       acronym_validation:
         start_letter: "L'acronyme doit commencer par une lettre"
         capital_letters: "L'acronyme doit être entièrement en majuscules"

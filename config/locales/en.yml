@@ -842,6 +842,7 @@ en:
       selection_required: "At least one %{field} must be selected"
       error-submission-message: "Please fill all required fields before submitting"
       date_range_error: "End date must be after start date"
+      homepage_uri_error: "Homepage must be a valid URL (e.g., https://example.com)"
       acronym_validation:
         start_letter: "The acronym must start with a letter"
         capital_letters: "The acronym must be all capital letters"
