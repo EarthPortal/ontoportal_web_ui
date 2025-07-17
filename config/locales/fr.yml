@@ -1437,6 +1437,16 @@ fr:
     web_user_interface: Interface utilisateur web de BioPortal (incluant la visualisation
       d'ontologies, widgets et UI d'Annotateur)
   projects:
+    page_description: "Parcourez, filtrez et découvrez des projets qui utilisent ou contribuent aux ontologies dans %{portal}."
+    not_funded: Non financé
+    not_funded_tooltip: Ce projet n'est pas financé
+    grant_id: Grant ID
+    project_not_found: "Projet non trouvé : %{id}"
+    project_successfully_created: Projet créé avec succès
+    error_unique_acronym: Le projet avec l'acronyme %{acronym} existe déjà. Veuillez entrer un acronyme unique.
+    project_successfully_updated: Projet mis à jour avec succès
+    error_delete_project: "Échec de la suppression du projet : %{errors}"
+    project_successfully_deleted: Projet supprimé avec succès
     contacts: Contacts
     create_new_project: Créer un nouveau projet
     created: Créé
@@ -1480,7 +1490,7 @@ fr:
     project_successfully_deleted: Projet supprimé
     project_successfully_updated: Projet mis à jour
     self: Projets
-    title: Liste des Projets
+    title: Projets
     view_projects_help: Voir l'aide des projets
     details: Détails
     dates: Dates
@@ -1489,8 +1499,11 @@ fr:
     persons_and_organizations: Personnes et organisations
     grant_number: Grant number
     keywords: Mots-clés
-    organization: Organisation
+    organization: Coordinateur
+    contact: Contacts
     funder: Financeur
+    selector_placeholder: Rechercher un projet ...
+    copy_grant_number: Copier le grant number
 
     filters: "Filtres"
     filter:
@@ -1499,6 +1512,7 @@ fr:
       all_funders: "Tous les financeurs"
       not_funded: "Non financés"
       funder: "Financeur"
+      categories: "Catégories"
     sort:
       name: "Trier par nom"
       acronym: "Trier par acronyme" 
@@ -1530,29 +1544,36 @@ fr:
       description: "Description :*"
       select_ontologies: Sélectionner les ontologies utilisées
       select_administrators: Sélectionner les administrateurs
-      title: "Titre du Projet"
+      title: "Titre"
       acronym: "Acronyme"
       description: "Description"
-      start_date: "Date de Début"
-      end_date: "Date de Fin"
+      start_date: "Date de début"
+      end_date: "Date de fin"
       institution: "Institution"
       coordinator: "Coordinateur"
       homepage: "Homepage"
       keywords: "Mots-clés"
-      organization: "Organisation"
+      organization: "Coordinateur"
       contact: "Contact"
       ontologies: "Ontologies"
-      funding_details: "Détails du Financement"
-      funding_program: "Programme de Financement"
-      grant_number: "Numéro de Subvention"
+      funding_details: "Détails du financement"
+      funding_program: "Programme de financement"
+      grant_number: "Grant number"
       funder: "Financeur"
       logo_url: "URL du logo"
       summary_confirmation: "Veuillez vérifier les détails de votre projet avant de soumettre."
-      summary_title: "Résumé du Projet"
+      summary_title: "Résumé du projet"
       organization_tooltip: "C'est l'organisation coordinatrice du projet."
       error-submission-message: "Veuillez remplir tous les champs obligatoires avant de soumettre"
       field_required: "%{field} est requis"
       selection_required: "Au moins un %{field} doit être sélectionné"
+      date_range_error: "La date de fin doit être postérieure à la date de début"
+      homepage_uri_error: "Homepage doit être une URL valide (ex: https://example.com)"
+      acronym_validation:
+        start_letter: "L'acronyme doit commencer par une lettre"
+        capital_letters: "L'acronyme doit être entièrement en majuscules"
+        special_chars: "L'acronyme ne doit contenir que des lettres, des chiffres, des tirets et des traits de soulignement"
+        length: "L'acronyme ne doit pas dépasser seize caractères"
     search:
       missing_parameters: "Paramètres requis manquants"
       found_projects:
@@ -1564,29 +1585,29 @@ fr:
       connection_failed: "Échec de la connexion à l'API"
       error_occurred: "Une erreur s'est produite"
     edit:
-      title: Édition du Projet %{name}
-      editing_project: Édition du projet
+      title: Éditer le projet %{name}
+      editing_project: Éditer le projet
       cancel: Annuler
-      update_project: Mettre à jour le Projet
+      not_authorized: Vous n'êtes pas autorisé à modifier ce projet.
     new:
       title: Ajoutez votre projet
       new_project: Nouveau projet
-      create_project: Créer le Projet
+      create_project: Créer le projet
     project_type_selection:
-      title: "Type de Projet"
+      title: "Type de projet"
       description: "Sélectionnez le type de projet que vous souhaitez créer."
       select_type: "Sélectionner le type de projet"
       funded: "Projet financé"
       not_funded: "Projet non financé"
     funding_search:
-      title: "Source de Financement"
+      title: "Source de financement"
       description: "Recherchez la source de financement de votre projet."
       source: "Source de financement"
       datasets: "Jeu de données"
       search_button: "Rechercher"
     project_search:
-      anr_title: "Recherche de Projet ANR"
-      cordis_title: "Recherche de Projet CORDIS"
+      anr_title: "Recherche de projet ANR"
+      cordis_title: "Recherche de projet CORDIS"
       search_by_id: "Rechercher par ID"
       search_by_term: "Rechercher par acronyme"
       project_id: "ID du Projet"
@@ -1601,16 +1622,8 @@ fr:
       success: "Projet créé avec succès"
       error: "Un problème est survenu lors de la création du projet"
     call_annotator: "Annoter"
-    details: "Détails du Projet"
-  properties:
-    definitions: Définitions
-    domain: Domaine
-    id: ID
-    no_properties_alert: "%{acronym} ne contient pas de propriétés"
-    parent: Parent
-    preferred_name: Nom préféré
-    range: Étendue
-    type: Type
+    details: "Détails du projet"
+
   recommender:
     acceptance: Acceptation
     call_annotator: Appeler l'Annotateur avec la même entrée

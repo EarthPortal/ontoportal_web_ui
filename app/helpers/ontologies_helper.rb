@@ -726,14 +726,18 @@ module OntologiesHelper
     render FieldContainerComponent.new do |f|
       f.label do
         concat t('ontologies.projects_using_ontology', acronym: ontology_acronym)
-        concat new_element_link(t('ontologies.create_new_project'), new_project_path)
+        if session[:user] && @ontology.admin?(session[:user])
+          concat new_element_link(t('ontologies.add_new_project'), edit_ontology_submission_path(ontology_acronym, @submission_latest&.submissionId, section: 'community'))
+        end
       end
 
       if projects.empty?
         empty_state_message(t('ontologies.no_projects_using_ontology', acronym: ontology_acronym))
       else
-        horizontal_list_container(projects) do |project|
-          render ChipButtonComponent.new(url: project_path(project.acronym), text: project.name, type: "clickable")
+        content_tag(:div, class: 'mt-3') do
+          horizontal_list_container(projects) do |project|
+            render ProjectChipComponent.new(project: project)
+          end
         end
       end
     end
@@ -853,7 +857,7 @@ module OntologiesHelper
   end
 
   def browse_taxonomy_tooltip(taxonomy_type)
-    return nil unless taxonomy_type.eql?("categories") || taxonomy_type.eql?("groups")
+    return nil unless ["categories", "groups", "projects"].include?(taxonomy_type)
 
     content_tag(:div, class: '') do
       content_tag(:span, t('ontologies.taxonomy_information_tooltip', taxonomy_type: taxonomy_type), class: 'mr-1') +

@@ -3,8 +3,16 @@
 .browse-center
   .browse-container
     .projects-page-title
-      .text= t("projects.title")
+      .d-flex.justify-content-between.align-items-center
+        .text= t("projects.title")
       .line
+      .d-flex.justify-content-between.align-items-center.mt-2
+        .page-description.mb-0
+          = t("projects.page_description", portal: portal_name)
+        - rest_url = $REST_URL.to_s.chomp("/")
+        = render RoundedButtonComponent.new(link: "#{rest_url}/projects?apikey=#{get_apikey}", target: '_blank', size: 'medium', title: t('ontologies.go_to_api')) do |btn|
+          - btn.icon_left do
+            = inline_svg_tag "json.svg"
 
     :javascript
       const btn = document.getElementById("back_top_btn");
@@ -40,10 +48,11 @@
             %p.browse-filters-title= t("projects.filters")
             
             %div.browse-filter
+              = switch_input(id:'filter-active', name:'active_only', label: t("projects.filter.show_active_only"))
+              
+            %div.browse-filter
               = switch_input(id:'filter-funded', name:'funded_only', label: t("projects.filter.show_funded_only"))
             
-            %div.browse-filter
-              = switch_input(id:'filter-active', name:'active_only', label: t("projects.filter.show_active_only"))
 
             - if @funder_options.present?
               %div{id: "funders_filter_container", data:{controller: "browse_filters"}}
@@ -62,7 +71,7 @@
             %div{id: "categories_filter_container", data:{controller: "browse_filters show-filter-count", action: "change->show-filter-count#updateCount change->browse-filters#dispatchFilterEvent"}}
               - objects, checked_values, count = @categories_filters
               = dropdown_component(id: "browse-categories-filter", is_open: count.positive?) do |d|
-                - d.title { browse_filter_section_header(key: 'categories', count: count)}
+                - d.title { browse_filter_section_header(key: t('projects.filter.categories'), count: count)}
                 .browse-filter-checks-container.px-3
                   - objects.each do |category|
                     - category_count = @count_objects&.dig(:categories, category['id']) || 0

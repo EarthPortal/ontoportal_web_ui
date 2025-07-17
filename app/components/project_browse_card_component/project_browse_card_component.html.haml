@@ -16,10 +16,10 @@
                                           count: ontology_count,
                                           link: "#{project_link}#ontologies_section")
         - if project.homePage.present?
-          = link_to project.homePage, target: "_blank", rel: "nofollow", class: "text-decoration-none", style: "display: flex; align-items: center; justify-content: center;", data: {controller: "tooltip"}, title: "#{t('projects.home_page')}<br>#{link_to(project.homePage, target: '_blank')}".html_safe do
+          = link_to project.homePage, target: "_blank", rel: "nofollow", class: "text-decoration-none", style: "display: flex; align-items: center; justify-content: center; border-radius: 8px; padding: 8px; width: 40px; height: 40px;", data: {controller: "tooltip"}, title: "#{t('projects.home_page')}<br>#{link_to(project.homePage, target: '_blank')}".html_safe do
             = inline_svg("summary/homepage.svg", width: "25", height: '25')
         - else
-          %span.disabled-icon{style: "display: flex; align-items: center; justify-content: center; cursor: not-allowed;", data: {controller: "tooltip"}, title: t('projects.home_page')}
+          %span.disabled-icon{style: "display: flex; align-items: center; justify-content: center; cursor: not-allowed; border-radius: 8px; padding: 8px; width: 40px; height: 40px;", data: {controller: "tooltip"}, title: t('projects.home_page')}
             = inline_svg("summary/homepage.svg", width: "25", height: '25')
 
     .d-flex.w-100.mt-3.flex-wrap.align-items-center{style: 'gap: 12px;'}
@@ -40,14 +40,11 @@
       - if project.grant_number.present?
         .chip-button-component-container{data: {controller: "tooltip"}}
           %span.chip_button_container_clickable
-            %span.identifier-label= t('projects.grant_id') + ':'
-            %span.identifier-value.font-monospace.mr-2= project.grant_number
-            %span{style: 'display: inline-flex; align-items: center;'}
+            %span{style: 'display: inline-flex; align-items: center; margin-right: 6px; vertical-align: middle;'}
+              = inline_svg("icons/orcid.svg", width: "16", height: '16')
+            %span.identifier-value.font-monospace{style: 'vertical-align: middle;'}= project.grant_number
+            %span{style: 'display: inline-flex; align-items: center; vertical-align: middle; margin-left: 6px;'}
               = render ClipboardComponent.new(title: t('projects.copy_grant_number'), message: project.grant_number, show_content: false)
-
-      - if project.contact.present?
-        .metadata-item
-          = helpers.agent_chip_component(project.contact)
 
       - if project.organization.present?
         .metadata-item

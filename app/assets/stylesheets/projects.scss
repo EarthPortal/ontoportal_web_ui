@@ -631,3 +631,115 @@ button:disabled,
 .pointer-cursor .form-check-label {
   cursor: pointer;
 }
+
+
+// Project chip  component
+
+// Project chip component - styled exactly like agent chip
+.project-chip {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.project-chip-circle {
+  height: 30px;
+  width: 30px;
+  background-color: rgba(128, 128, 128, 0.08);
+  border-radius: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 10px;
+
+  svg, .project-logo-icon {
+    width: 15px;
+    height: 15px;
+  }
+}
+
+.project-chip-name {
+  color: #8C8E8D;
+  font-size: 15px;
+  font-weight: 400;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px; // Allow more space for project names
+}
+
+.project-type-icon path {
+  fill: var(--primary-color);
+}
+
+.project-logo-icon {
+  width: 15px;
+  height: 15px;
+  object-fit: contain;
+}
+
+// Project tooltip component (tooltip content - bigger icon and circle)
+.project-container-simple {
+  display: flex;
+  align-items: center;
+  margin: 8px;
+  max-width: 280px;
+  padding: 10px px;
+}
+
+.project-circle-simple {
+  width: 65px;   // increased from 48px
+  height: 65px;  // increased from 48px
+  background-color: var(--light-color);
+  border-radius: 30px; // increased from 24px
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 14px;
+  flex-shrink: 0;
+
+  svg, .project-logo-icon {
+    width: 40px !important; // increased from 28px
+    height: 40px !important; // increased from 28px
+  }
+}
+
+.project-info-simple {
+  flex: 1;
+  min-width: 0;
+}
+
+.project-name-simple {
+  font-size: 17px;
+  font-weight: 600;
+  margin-bottom: 2px;
+  color: var(--text-color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+}
+
+// Homepage icon styling (matching ontology icons)
+a[href] svg path {
+  fill: var(--primary-color);
+}
+
+.disabled-icon svg path {
+  fill: #888;
+}
+
+// Or more specific targeting
+.browse-ontology-cards a svg path {
+  fill: var(--primary-color);
+}
+
+.browse-ontology-cards .disabled-icon svg path {
+  fill: #888;
+}
+
+/* Hide "No results found" in keywords dropdown */
+[data-project-creation-target="keywords"] .ts-dropdown .no-results,
+#project_keywords + .ts-wrapper .ts-dropdown .no-results {
+  display: none !important;
+}

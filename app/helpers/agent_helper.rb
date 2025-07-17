@@ -305,8 +305,13 @@ module AgentHelper
 
 
   def funder_chip_component(funder)
+    # if funder.blank?
+    #   non_funded_icon = inline_svg_tag 'icons/non_funded.svg', class: 'agent-type-icon'
+    #   name = t('projects.not_funded')
+    #   title = non_funded_tooltip
+    #   render_chip_component(title, non_funded_icon, name)
+    # else
     funder_icon = inline_svg_tag 'icons/funder.svg', class: 'agent-type-icon'
-    
     if funder.is_a?(String)
       name = funder
       title = nil
@@ -314,8 +319,8 @@ module AgentHelper
       name = funder.respond_to?(:name) ? funder.acronym : funder.to_s
       title = funder_tooltip(funder) if funder.respond_to?(:agentType)
     end
-    
     render_chip_component(title, funder_icon, name)
+    # end
   end
 
   def funder_tooltip(funder)
@@ -328,6 +333,13 @@ module AgentHelper
     funder_icon = inline_svg_tag 'icons/funder.svg', class: 'agent-type-icon'
     
     generate_agent_tooltip(funder_icon, name, nil, identifiers, nil, nil)
+  end
+
+  def non_funded_tooltip
+    non_funded_icon = inline_svg_tag 'icons/non_funded.svg', class: 'agent-type-icon'
+    name = t('projects.not_funded')
+    description = t('projects.not_funded_tooltip')
+    generate_agent_tooltip(non_funded_icon, name, description, nil, nil, nil)
   end
 
 
