@@ -737,3 +737,9 @@ a[href] svg path {
 .browse-ontology-cards .disabled-icon svg path {
   fill: #888;
 }
+
+/* Hide "No results found" in keywords dropdown */
+[data-project-creation-target="keywords"] .ts-dropdown .no-results,
+#project_keywords + .ts-wrapper .ts-dropdown .no-results {
+  display: none !important;
+}
