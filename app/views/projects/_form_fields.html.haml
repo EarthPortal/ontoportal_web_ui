@@ -42,7 +42,7 @@
             = turbo_frame_tag "project_organization_0", data: { "turbo-frame-error-target": "frame", action: "turbo:before-fetch-response->turbo-frame-error#showError turbo:before-fetch-request->turbo-frame-error#hideError" } do
               .hide-if-loading
                 = hidden_field_tag "project[organizations_attributes][0][id]", organization.id, id: "project_organizations_attributes_0_id"
-                = render partial: 'agents/agent_show', locals: { agent: organization, parent_id: "project_organization", name_prefix: "project[organizations_attributes]", deletable: true, edit_on_modal: false, agent_id: 0 }
+                = render partial: 'agents/agent_show', locals: { agent: organization, parent_id: "project_organization", name_prefix: "project[organizations_attributes]", deletable: true, edit_on_modal: false, agent_id: 0, editable: true }
 
 - unless @hide_fields && @hide_fields.include?('contacts')
   .contact-project-input-field.mb-4{"data-project-creation-target" => "contacts"}
@@ -74,7 +74,7 @@
                 = turbo_frame_tag "project_contact_#{index}", data: { "turbo-frame-error-target": "frame", action: "turbo:before-fetch-response->turbo-frame-error#showError turbo:before-fetch-request->turbo-frame-error#hideError" } do
                   .hide-if-loading
                     = hidden_field_tag "project[contacts_attributes][#{index}][id]", contact_id, id: "project_contacts_attributes_#{index}_id"
-                    = render partial: 'agents/agent_show', locals: { agent: agent, parent_id: "project_contact", name_prefix: "project[contacts_attributes]", deletable: true, edit_on_modal: false, agent_id: index }
+                    = render partial: 'agents/agent_show', locals: { agent: agent, parent_id: "project_contact", name_prefix: "project[contacts_attributes]", deletable: true, edit_on_modal: false, agent_id: index, editable: true }
 
 
 .upload-ontology-input-field-container{"data-project-creation-target" => "homePage"}
