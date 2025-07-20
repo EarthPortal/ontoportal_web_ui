@@ -161,13 +161,7 @@ class ProjectsController < ApplicationController
     @project.update_from_params(project_params)
     
     org_id = extract_organization_id
-    if org_id.present?
-      @project.organization = org_id
-      @organization = fetch_agent(org_id)
-    end
-    
     contact_ids = extract_contact_ids
-    @project.contact = contact_ids if contact_ids.any?
     
     @project.start_date = nil if @project.start_date.blank?
     @project.end_date = nil if @project.end_date.blank?
@@ -178,44 +172,33 @@ class ProjectsController < ApplicationController
     setup_data_for_edit
     
     begin
-      minimal_update = {
+      update_data = {
         id: @project.id,
         acronym: @project.acronym,
         name: @project.name,
         description: @project.description,
         type: @project.type,
+        homePage: @project.homePage,
+        keywords: @project.keywords,
+        logo: @project.logo,
+        grant_number: @project.grant_number,
+        start_date: @project.start_date,
+        end_date: @project.end_date,
+        ontologyUsed: @project.ontologyUsed,
+        source: @project.source
       }
       
-      if @project.organization.present?
-        org_id = extract_organization_from_object(@project.organization)
-        minimal_update[:organization] = org_id if org_id.present?
-      end
+      update_data[:organization] = org_id if org_id.present?
       
-      update_project = LinkedData::Client::Models::Project.new(values: minimal_update)
+      update_data[:contact] = contact_ids if contact_ids.any?
+      
+      update_project = LinkedData::Client::Models::Project.new(values: update_data)
       error_response = update_project.update
       
       if response_error?(error_response)
         @errors = response_errors(error_response)
         render :edit
       else
-        full_update = {
-          id: @project.id,
-          organization: org_id,
-          homePage: @project.homePage,
-          keywords: @project.keywords,
-          logo: @project.logo,
-          grant_number: @project.grant_number,
-          start_date: @project.start_date,
-          end_date: @project.end_date,
-          ontologyUsed: @project.ontologyUsed,
-          source: @project.source,
-          contact: @project.contact
-
-        }
-        
-        full_project = LinkedData::Client::Models::Project.new(values: full_update)
-        full_project.update rescue nil  # Ignore errors on secondary update
-        
         flash[:notice] = t('projects.project_successfully_updated')
         redirect_to project_path(@project.acronym)
       end
@@ -551,49 +534,58 @@ class ProjectsController < ApplicationController
     return nil unless params_hash.present?
     
     if params_hash.is_a?(Hash)
-      # Handle nested structure: {"id123" => {"id" => "full/uri/path"}}
       params_hash.values.first&.dig("id") if params_hash.values.first.is_a?(Hash)
     else
-      # Handle direct ID
       params_hash
     end
   end
 
   def extract_organization_id
-    # Try organization (direct format)
-    org_id = extract_agent_id(params[:project][:organization])
-    return org_id if org_id.present?
+    org_data = params[:project][:organization]
+    return nil unless org_data.present?
     
-    # Try organizations_attributes (nested attributes format)
-    if params[:project][:organizations_attributes].present?
-      orgs = params[:project][:organizations_attributes].values
-      orgs.first&.dig("id")
+    org_data = org_data.to_unsafe_h if org_data.respond_to?(:to_unsafe_h)
+    
+    return org_data if org_data.is_a?(String)
+    
+    if org_data.is_a?(Hash)
+      return org_data["id"] if org_data["id"].present?
+      
+      org_data.each_value do |value|
+        return value["id"] if value.is_a?(Hash) && value["id"].present?
+      end
     end
+    
+    nil
   end
 
-  def extract_organization_from_object(organization_object)
-    if organization_object.is_a?(ActionController::Parameters)
-      organization_object.each do |key, value|
-        if value.is_a?(ActionController::Parameters) && value["id"].present?
-          return value["id"]
+  def extract_contact_ids
+    contact_ids = []
+    
+    if params[:project][:contact].present?
+      contact_ids.concat(Array(params[:project][:contact]).flatten.compact)
+    end
+    
+    if params[:project][:contacts_attributes].present?
+      contacts_attrs = params[:project][:contacts_attributes]
+      contacts_attrs = contacts_attrs.to_unsafe_h if contacts_attrs.respond_to?(:to_unsafe_h)
+      
+      contacts_attrs.each do |key, contact_data|
+        next if contact_data.blank?
+        
+        contact_data = contact_data.to_unsafe_h if contact_data.respond_to?(:to_unsafe_h)
+        
+        if contact_data.is_a?(Hash) && contact_data["id"].present?
+          contact_ids << contact_data["id"]
+        elsif contact_data.is_a?(String) && contact_data.present?
+          contact_ids << contact_data
+        elsif contact_data.is_a?(Array)
+          contact_ids.concat(contact_data.select(&:present?))
         end
       end
     end
     
-    organization_object
-  end
-
-  def extract_contact_ids
-    # Try direct contact array
-    return Array(params[:project][:contact]) if params[:project][:contact].present?
-    
-    # Try contacts_attributes (nested format)
-    if params[:project][:contacts_attributes].present?
-      contacts = params[:project][:contacts_attributes].values
-      contacts.map { |c| c["id"] if c["id"].present? }.compact
-    else
-      []
-    end
+    contact_ids.flatten.uniq.compact.reject(&:blank?)
   end
 
   def fetch_agent(id)
@@ -692,16 +684,17 @@ class ProjectsController < ApplicationController
     end
   end
 
+
+
   def project_params
     params.require(:project).permit(
       :acronym, { creator: [] }, :type, :name, :homePage, :description, 
       { ontologyUsed: [] }, :source, { keywords: [] },
-      # Both formats for backward compatibility  
       :contact, { contact: [] },
-      :organization, { organization: {} },
+      :organization,
       :logo, :grant_number, :start_date, :end_date, :funder,
       { organizations_attributes: [:id] },
-      { contacts_attributes: [:id] },
+      { contacts_attributes: {} },
       { funders_attributes: [:id] },
       :project_type
     )
