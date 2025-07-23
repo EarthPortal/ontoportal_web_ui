@@ -101,6 +101,29 @@ module OntologyUpdater
       rescue => e
         failed_project = projects&.first || OpenStruct.new(acronym: project_acronym)
         failed_additions << failed_project
+        project = failed_project
+        admin_emails = []
+        creator_email = nil
+        if project.respond_to?(:admin) && project.admin
+          admin_emails = Array(project.admin).map do |admin_id|
+            user = LinkedData::Client::Models::User.find(admin_id).first rescue nil
+            user&.email
+          end.compact
+        end
+        if project.respond_to?(:creator) && project.creator
+          creator_id = Array(project.creator).first
+          user = LinkedData::Client::Models::User.find(creator_id).first rescue nil
+          creator_email = user&.email
+        end
+        recipients = (admin_emails + [creator_email]).compact.uniq
+
+        OntologyProjectRequestMailer.project_access_request(
+          project: project,
+          ontology: @ontology,
+          user: (defined?(current_user) ? current_user : nil),
+          action: 'add',
+          recipients: recipients
+        ).deliver_later if recipients.any?
       end
     end
 
@@ -134,6 +157,30 @@ module OntologyUpdater
       rescue => e
         failed_project = projects&.first || OpenStruct.new(acronym: project_acronym)
         failed_removals << failed_project
+        project = failed_project
+        admin_emails = []
+        creator_email = nil
+        if project.respond_to?(:admin) && project.admin
+          admin_emails = Array(project.admin).map do |admin_id|
+            user = LinkedData::Client::Models::User.find(admin_id).first rescue nil
+            user&.email
+          end.compact
+        end
+        if project.respond_to?(:creator) && project.creator
+          creator_id = Array(project.creator).first
+          user = LinkedData::Client::Models::User.find(creator_id).first rescue nil
+          creator_email = user&.email
+        end
+        recipients = (admin_emails + [creator_email]).compact.uniq
+
+        OntologyProjectRequestMailer.project_access_request(
+          project: project,
+          ontology: @ontology,
+          user: (defined?(current_user) ? current_user : nil),
+          action: 'remove',
+          recipients: recipients
+        ).deliver_later if recipients.any?
+
       end
     end
 
