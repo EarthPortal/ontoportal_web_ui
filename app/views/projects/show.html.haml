@@ -1,30 +1,101 @@
 - @title = t('projects.show.title', name: @project.name)
 
-%div.container
+.project-center
+  .container
+    .project-details-path
+      = link_to t('projects.self'), projects_path
+      = inline_svg_tag 'arrow-right-outlined.svg'
+      %div= @project.acronym
 
-  %div{:style => "padding: 1em;"}
-    %h1{:style => "font-size: xx-large;"}= @project.name
-    - if session[:user] && (@project.creator.include?(session[:user].id) || session[:user].admin?)
-      = link_to t('projects.show.edit_project'), edit_project_path(@project.acronym)
-    %br/
-    %br/
-    %p{:style => "margin-bottom: 5px;"}
-      %strong= t('projects.show.description')
-      = @project.description
-    %p{:style => "margin-bottom: 5px;"}
-      %strong= t('projects.show.institution')
-      = @project.institution
-    %p{:style => "margin-bottom: 5px;"}
-      %strong= t('projects.show.contacts')
-      = @project.contacts
-    %p
-      %strong= t('projects.show.home_page')
-      - if @project.homePage
-        = link_to @project.homePage, @project.homePage, rel: "nofollow"
-    %h2{:style => "padding-top: 1em;"}= t('projects.show.ontologies_used')
-    - if @ontologies_used.empty?
-      = t('projects.show.no_ontologies_associated')
-    %table.zebra{:cellpadding => "0", :cellspacing => "0", :width => "70%"}
-      %ul
-        - for ontology in @ontologies_used
-          %li= link_to(ontology["name"], ontology_path(ontology["acronym"]))
+    .project-details-header-sub-container
+      .project-details-header-left-container{style:'width: 70%'}
+        .project-details-name-bar
+          %div
+            = @project.name
+            %span{title: @project.acronym, style: "font-size: 1.1rem; font-weight: 400; margin-left: 0.5rem;"}= "(#{@project.acronym})"
+      .project-details-header-right-container{style: 'display: flex; align-items: center; justify-content: flex-end; width: 30%; gap: 1rem;'}
+        = render RoundedButtonComponent.new(link: "#{@project.id}?apikey=#{get_apikey}", target: '_blank', size: 'medium', title: t('ontologies.go_to_api'))
+        - if session[:user] && (Array(@project.creator).include?(session[:user].id) || session[:user].admin?)
+          = link_to edit_project_path(@project.acronym), class: 'pill-button d-flex align-items-center ml-1' do
+            = inline_svg_tag('edit.svg', style: 'vertical-align: middle; margin-right: 6px;')
+            %span.text-primary= t('projects.show.edit_project')
+
+    .project-container
+      .project-main-column
+        - if @project.description.present?
+          .browse-desc-container.mb-4.py-4{data:{controller:"text-truncate", 'text-truncate-more-text-value': t('components.see_more'), 'text-truncate-less-text-value': t('components.see_less'), 'text-truncate-expanded-value': 'true'}, style: '--read-more-line-clamp: 6; position: relative;'}
+            - if @project.logo.present?
+              .project-logo-container.text-center.mb-4
+                = image_tag @project.logo, class: 'description_img', style: 'width: 140px; object-fit: contain; display: inline-block;'
+            %span.browse-desc-text.mb-2{'data-text-truncate-target': 'content'}
+              = @project.description
+            %span.browse-show-more-button.mt-3{data:{'text-truncate-target': 'button', 'action':"click->text-truncate#toggle"}}
+              = t('components.see_more')
+        - else
+          .project-info-row.mb-4.px-3.py-4
+            %em.text-muted= t('projects.no_description')
+
+        = dropdown_component(id: 'ontologies', title: t('projects.ontologies'), is_open: true) do
+          .p-3
+            - if @ontologies_used.empty?
+              .empty-project-section
+                %img{:src => "#{asset_path("empty-box.svg")}"}/
+                %p= t('projects.no_ontologies_associated')
+            - else
+              .ontology-cards-container
+                - @ontologies_used.each do |ontology|
+                  .ontology-card{data: {controller: 'tooltip'}, title: ontology["name"]}
+                    %a{href: ontology_path(ontology["acronym"]), target: "_blank"}= ontology["acronym"]
+
+      .project-side-column
+        = dropdown_component(id: 'project_details', title: t('projects.details'), is_open: true) do
+          - if @project.homePage.present? || @project.grant_number.present? || @project.keywords.present?
+            = render Layout::ListComponent.new do |l|
+              - if @project.homePage.present?
+                - l.row do
+                  = render FieldContainerComponent.new(label: t('projects.home_page')) do
+                    = render ExternalLinkComponent.new(url: @project.homePage)
+              - if @project.grant_number.present?
+                - l.row do
+                  = render FieldContainerComponent.new(label: t('projects.grant_number')) do
+                    %code.text-dark.small.bg-light.px-2.py-1.rounded= @project.grant_number
+              - if @project.keywords.present?
+                - l.row do
+                  = render FieldContainerComponent.new(label: t('projects.keywords')) do
+                    = horizontal_list_container(@project.keywords) do |keyword|
+                      = render ChipButtonComponent.new(text: keyword.strip, type: "static", style: "background-color: var(--light-color); color: var(--primary-color);")
+          - else
+            .p-3
+              .project-info-row
+                %em.text-muted= t('projects.no_details')
+
+        = dropdown_component(id: 'people_and_organizations', title: t('projects.persons_and_organizations'), is_open: true) do
+          = render Layout::ListComponent.new do |l|
+            - if @project.contact.present?
+              - Array(@project.contact).each_with_index do |contact, index|
+                - l.row do
+                  = render FieldContainerComponent.new(label: index == 0 ? t('projects.contact') : '') do
+                    = agent_chip_component(contact)
+            - if @project.organization.present?
+              - l.row do
+                = render FieldContainerComponent.new(label: t('projects.organization')) do
+                  = agent_chip_component(@project.organization)
+            - if @project.funder.present?
+              - l.row do
+                = render FieldContainerComponent.new(label: t('projects.funder')) do
+                  = funder_chip_component(@project.funder)
+              - unless @project.contact.present? || @project.organization.present? || @project.funder.present?
+                - l.row do
+                  %em.text-muted= t('projects.no_people_organizations')
+
+        = dropdown_component(id: 'dates', title: t('projects.dates'), is_open: true) do
+          = render Layout::ListComponent.new do |l|
+            - if @dates_properties.is_a?(Hash)
+              - @dates_properties.each do |key, v|
+                - l.row do
+                  = render FieldContainerComponent.new(label: t("projects.#{key}")) do
+                    = render DateTimeFieldComponent.new(value: v)
+            - else
+              - l.row do
+                = render FieldContainerComponent.new(label: t('projects.date')) do
+                  = render DateTimeFieldComponent.new(value: @dates_properties)

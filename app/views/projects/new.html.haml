@@ -1,8 +1,43 @@
-- @title = t('projects.new.title')
-%h1{:style => "padding: 10px;"}
-  = t('projects.new.new_project')
-= form_for :project, url: {action: "create"}, html: {id: 'form'} do |f|
-  = render partial: 'form', locals: { f: f }
-  %p{:style => "padding: 10px;"}
-    = submit_tag t('projects.edit.cancel')
-    = f.submit t('projects.new.create_project'), class: "blueButton"
+- @title = t("projects.new.title")
+- current_step = params[:step].present? ? params[:step].to_i : 1
+
+%div{:style => "margin:50px;"}
+  .project-creation-container
+    - if @errors
+      .mb-4{:style => "width:650px; margin:auto"}
+        - if @errors[:error]
+          .alert.alert-danger
+            %strong= t("projects.form.errors_on_form")
+            %ul
+              - if @errors[:error].is_a?(OpenStruct)
+                %li= @errors[:error].acronym&.existence
+              - else
+                - @errors.each do |key, message|
+                  %li= message
+        - else
+          = error_message_alert
+    
+    %div{:style => "display: flex; justify-content: center;"}
+      .upload-ontology-card{:style => "width:650px;"}
+        .upload-ontology-center
+          .d-flex.justify-content-between
+            %a{:href => "javascript:history.go(-1)"}
+              = image_tag("arrow-back.svg", class: "lost-password-arrowback")
+            .register-title-container
+              %h2.register-title= t("projects.new.new_project")
+              %hr#register-title-line/
+            %div
+          .upload-ontology-progress
+            = render Layout::ProgressPagesComponent.new(pages_title: [t("projects.funding_search.title"), t("projects.details")]) do |c|
+              - c.page do
+                .project-step-content= render partial: 'projects/steps/funding_search'
+              - c.page do
+                .project-step-content= render partial: 'projects/steps/project_form'
+  
+  = hidden_field_tag :project_type, session[:project_type] || ""
+  = hidden_field_tag :funding_source, session[:funding_source] || ""
+  = hidden_field_tag :project_data, session[:project_data].to_json || "{}"
+
+#submissionModal.modal.fade{'data-controller': 'project-summary', 'data-project-summary-target-modal-value': '#submissionModal'}
+  .modal-dialog
+    = render partial: 'projects/project_summary_modal'

@@ -1,4 +1,3 @@
----
 en:
   activaterecord:
     errors:
@@ -750,6 +749,7 @@ en:
       submit_feedback: Send Feedback
       support: Support
       agents : Agents
+      projects: Projects
     notices:
       at: at
       slice: Slice
@@ -1308,11 +1308,11 @@ en:
     not_funded: Non funded
     not_funded_tooltip: This project is not funded
     grant_id: Grant ID
-    project_not_found: Project not found: %{id}
+    project_not_found: 'Project not found: %{id}'
     project_successfully_created: Project successfully created
     error_unique_acronym: Project with acronym %{acronym} already exists.  Please enter a unique acronym.
     project_successfully_updated: Project successfully updated
-    error_delete_project: Project delete failed: %{errors}
+    error_delete_project: 'Project delete failed: %{errors}'
     project_successfully_deleted: Project successfully deleted
     contacts: Contacts
     create_new_project: Create new project
@@ -1345,128 +1345,127 @@ en:
     funder: Funder
     selector_placeholder: Search a project .
     copy_grant_number: Copy grant number
+    filters: Filters
+    filter:
+      show_funded_only: Show funded projects only
+      show_active_only: Show active projects only
+      all_funders: All funders
+      not_funded: Not funded
+      funder: Funder
+      categories: Categories
+    sort:
+      name: Sort by name
+      acronym: Sort by acronym
+      start_date: Sort by start date
+      end_date: Sort by end date
+      ontologies: Sort by number of ontologies
+    showing_projects_count:
+      zero: No projects found
+      one: Showing 1 project
+      other: Showing %{count} projects
 
-  filters: Filters
-  filter:
-    show_funded_only: Show funded projects only
-    show_active_only: Show active projects only
-    all_funders: All funders
-    not_funded: Not funded
-    funder: Funder
-    categories: Categories
-  sort:
-    name: Sort by name
-    acronym: Sort by acronym
-    start_date: Sort by start date
-    end_date: Sort by end date
-    ontologies: Sort by number of ontologies
-  showing_projects_count:
-    zero: No projects found
-    one: Showing 1 project
-    other: Showing %{count} projects
+    show:
+      title: Project %{name}
+      edit_project: Edit Project
+      description: 'Description:'
+      institution: 'Institution:'
+      contacts: 'Contacts:'
+      home_page: 'Homepage:'
+      ontologies_used: Used ontologies
+      no_ontologies_associated: No ontologies are currently associated with this project
 
-  show:
-    title: Project %{name}
-    edit_project: Edit Project
-    description: Description:
-    institution: Institution:
-    contacts: Contacts:
-    home_page: Homepage:
-    ontologies_used: Used ontologies
-    no_ontologies_associated: No ontologies are currently associated with this project
+    form:
+      errors_on_form: Errors On Form
+      name: 'Name: *'
+      acronym: 'Acronym: *'
+      administrators: 'Administrators: *'
+      home_page: 'Homepage: *'
+      example: 'Example:'
+      description: Description:*
+      select_ontologies: Select used ontologies
+      select_administrators: Select administrators
+      title: Title
+      acronym: Acronym
+      description: Description
+      start_date: Start date
+      end_date: End date
+      homepage: Homepage
+      keywords: Keywords
+      organization: Coordinator
+      contact: Contact
+      ontologies: Ontologies
+      grant_number: Grant number
+      funder: Funder
+      logo_url: Logo URL
+      summary_confirmation: Please review your project details before submitting.
+      summary_title: Project summary
+      organization_tooltip: This is the project’s organization coordinator.
+      field_required: '%{field} is required'
+      selection_required: At least one %{field} must be selected
+      error-submission-message: Please fill all required fields before submitting
+      date_range_error: End date must be after start date
+      homepage_uri_error: Homepage must be a valid URL (e.g. https://example.com)
+      acronym_validation:
+        start_letter: The acronym must start with a letter
+        capital_letters: The acronym must be all capital letters
+        special_chars: The acronym must only contain letters, numbers, hyphens, and underscores
+        length: The acronym must be sixteen characters or less
 
-  form:
-    errors_on_form: Errors On Form
-    name: Name: *
-    acronym: Acronym: *
-    administrators: Administrators: *
-    home_page: Homepage: *
-    example: Example:
-    description: Description:*
-    select_ontologies: Select used ontologies
-    select_administrators: Select administrators
-    title: Title
-    acronym: Acronym
-    description: Description
-    start_date: Start date
-    end_date: End date
-    homepage: Homepage
-    keywords: Keywords
-    organization: Coordinator
-    contact: Contact
-    ontologies: Ontologies
-    grant_number: Grant number
-    funder: Funder
-    logo_url: Logo URL
-    summary_confirmation: Please review your project details before submitting.
-    summary_title: Project summary
-    organization_tooltip: This is the project’s organization coordinator.
-    field_required: %{field} is required
-    selection_required: At least one %{field} must be selected
-    error-submission-message: Please fill all required fields before submitting
-    date_range_error: End date must be after start date
-    homepage_uri_error: Homepage must be a valid URL (e.g. https://example.com)
-    acronym_validation:
-      start_letter: The acronym must start with a letter
-      capital_letters: The acronym must be all capital letters
-      special_chars: The acronym must only contain letters, numbers, hyphens, and underscores
-      length: The acronym must be sixteen characters or less
+    search:
+      missing_parameters: Missing required parameters
+      found_projects:
+        one: Found 1 project
+        other: Found %{count} projects
+      no_projects_found: No projects found
+      invalid_response_format: Invalid response format from API
+      no_projects_found_criteria: No projects found matching search criteria
+      connection_failed: Connection to API failed
+      error_occurred: An error occurred
 
-  search:
-    missing_parameters: Missing required parameters
-    found_projects:
-      one: Found 1 project
-      other: Found %{count} projects
-    no_projects_found: No projects found
-    invalid_response_format: Invalid response format from API
-    no_projects_found_criteria: No projects found matching search criteria
-    connection_failed: Connection to API failed
-    error_occurred: An error occurred
+    edit:
+      title: Edit project %{name}
+      editing_project: Edit project
+      cancel: Cancel
+      not_authorized: You are not authorized to edit this project.
 
-  edit:
-    title: Edit project %{name}
-    editing_project: Edit project
-    cancel: Cancel
-    not_authorized: You are not authorized to edit this project.
+    new:
+      title: Add your project
+      new_project: New project
+      create_project: Create troject
 
-  new:
-    title: Add your project
-    new_project: New project
-    create_project: Create troject
+    project_type_selection:
+      title: Project type
+      description: Select the type of project you want to create.
+      select_type: Select project type
+      funded: Funded project
+      not_funded: Non-funded project
 
-  project_type_selection:
-    title: Project type
-    description: Select the type of project you want to create.
-    select_type: Select project type
-    funded: Funded project
-    not_funded: Non-funded project
+    funding_search:
+      title: Funding Source
+      description: Search for your project's funding source.
+      source: Funding source
+      datasets: Dataset
+      search_button: Search
 
-  funding_search:
-    title: Funding Source
-    description: Search for your project's funding source.
-    source: Funding source
-    datasets: Dataset
-    search_button: Search
+    project_search:
+      anr_title: ANR project Search
+      cordis_title: CORDIS project Search
+      search_by_id: Search by ID
+      project_id: Project ID
+      id_placeholder: Enter project ID
+      search_by_term: Search by acronym
+      term_placeholder: Enter acronym
+      results: Search results
+      api_error: Error connecting to the search service
+      no_results: No results found
+      enter_valid_id: Please enter a valid project ID
+      enter_valid_term: Please enter at least 3 characters
 
-  project_search:
-    anr_title: ANR project Search
-    cordis_title: CORDIS project Search
-    search_by_id: Search by ID
-    project_id: Project ID
-    id_placeholder: Enter project ID
-    search_by_term: Search by acronym
-    term_placeholder: Enter acronym
-    results: Search results
-    api_error: Error connecting to the search service
-    no_results: No results found
-    enter_valid_id: Please enter a valid project ID
-    enter_valid_term: Please enter at least 3 characters
-
-  create:
-    success: Project created successfully
-  
-  call_annotator: Annotate
-  details: Project details
+    create:
+      success: Project created successfully
+    
+    call_annotator: Annotate
+    details: Project details
   properties:
     definitions: Definitions
     domain: Domain
@@ -1784,3 +1783,4 @@ en:
     name: name
     ontology_visits: Ontology visits
     visits: visits
+

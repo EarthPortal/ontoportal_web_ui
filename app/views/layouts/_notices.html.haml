@@ -1,8 +1,12 @@
 - if session[:user]&.admin? && Rails.env.appliance?
   = license_notification(current_license())
 
-- flash.each do |key, message|
-  = render NotificationComponent.new(title: message , type:  notification_type(key))
+- warning = flash['alert'] || flash[:alert]
+- success = flash['notice'] || flash[:notice] || flash['success'] || flash[:success]
+- if warning.present?
+  = render NotificationComponent.new(title: warning, type: notification_type('alert'))
+- elsif success.present?
+  = render NotificationComponent.new(title: success, type: notification_type('notice'))
 
 - do_not_display_subdomain_info_here = Set.new(["homeall_resources"])
 - if at_slice? && !do_not_display_subdomain_info_here.include?("#{controller.controller_name}#{controller.action_name}")

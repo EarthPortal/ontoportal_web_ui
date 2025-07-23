@@ -1,0 +1,55 @@
+.funding-source-selection-container.d-flex.flex-column{"data-controller" => "funding-source-selection", "data-funding-source-selection-target" => "content"}
+  .funding-sources-options
+    - funding_sources = Rails.configuration.respond_to?(:funding_sources) ? Rails.configuration.funding_sources : [        { id: "cordis", name: "European Union" },        { id: "ANR_FRANCE2030", name: "ANR (France 2030)" },        { id: "ANR_AAPG", name: "ANR (AAPG)" }      ]
+    - select_options = funding_sources.map { |src| [src[:name], src[:id]] }
+    - select_options.push([t("projects.project_type_selection.not_funded"), "not_funded"])
+    .funding-source-select.my-4
+      = render Input::SelectComponent.new( id: "funding_source_select", name: "funding_source", value: select_options, selected: select_options.first[1], data: { action: "change->funding-source-selection#handleSourceSelect", "funding-source-selection-target": "sourceSelect", "project-creation-target": "fundingSourceSelect" })
+
+  .project-search-container.mt-3#project-search-section{"data-funding-source-selection-target" => "searchContainer",
+    "data-controller" => "project-search",
+    "data-project-search-api-value" => funding_sources.first[:id],
+    "data-funding-source-selection-target" => "searchComponent"
+  }
+    = render TabsContainerComponent.new do |c|
+      - c.item(title: t("projects.project_search.search_by_id"), path: "#search-by-id", selected: true, page_name: "search-by-id")
+      - c.item_content do
+        .search-input-container.d-flex.my-4
+          .flex-grow-1.mr-2
+            = render Input::TextInputComponent.new(placeholder: t("projects.project_search.id_placeholder"), name: "project_id", data: { "project-search-target" => "projectIdInput", "action" => "keypress->project-search#handleIdKeypress" })
+          .d-flex.align-items-end{'data-action': "click->project-search#searchById"}
+            = render Buttons::RegularButtonComponent.new(id: 'search-by-id-button', value: t('projects.funding_search.search_button'), size: 'slim', state: 'regular') do |btn|
+              - btn.icon_right do
+                = inline_svg "icons/search.svg"
+
+      - c.item(title: t("projects.project_search.search_by_term"), path: "#search-by-acronym", selected: false, page_name: "search-by-acronym")
+      - c.item_content do
+        .search-input-container.d-flex.my-4
+          .flex-grow-1.mr-2
+            = render Input::TextInputComponent.new(placeholder: t("projects.project_search.term_placeholder"), name: "search_term", data: { "project-search-target" => "searchTermInput", "action" => "keypress->project-search#handleTermKeypress" })
+          .d-flex.align-items-end{'data-action': "click->project-search#searchByTerm"}
+            = render Buttons::RegularButtonComponent.new(id: 'search-by-term-button', value: t('projects.funding_search.search_button'), size: 'slim', state: 'regular') do |btn|
+              - btn.icon_right do
+                = inline_svg "icons/search.svg"
+
+    .text-center.py-3.d-none{"data-project-search-target" => "loading"}
+      .spinner-border.text-primary.spinner-border-sm{role: "status"}
+        %span.visually-hidden= t("common.loading")
+
+    .error-container.d-none{"data-project-search-target" => "errorContainer"}
+      = render Display::AlertComponent.new(message: "", type: "info", closable: true)
+
+    .search-results.mt-2.d-none{"data-project-search-target" => "results", "data-funding-source-selection-target" => "resultsContainer"}
+      .results-header.d-flex.justify-content-between.align-items-center.mb-2
+        %small.text-muted
+          = t("projects.project_search.results")
+          %span.ms-1{"data-project-search-target" => "resultsCount"}
+
+      .results-scrollable-container{style: "max-height: 300px; overflow-y: auto; border-radius: 0.25rem;"}
+        .list-group.project-results{"data-project-search-target" => "resultsList"}
+          -# Results will be inserted here dynamically
+
+      .no-results.text-center.py-3.d-none{"data-project-search-target" => "noResults"}
+        .text-muted.small
+          %i.bi.bi-search.d-block.mb-1
+          = t("projects.project_search.no_results")

@@ -2,8 +2,9 @@ class SubmissionsController < ApplicationController
   include SubmissionsHelper, SubmissionUpdater, OntologyUpdater
   layout :determine_layout
   before_action :authorize_and_redirect, :only => [:edit, :update, :create, :new]
+  before_action :authorize_read_only, :only => [:new, :create, :edit, :update]
   before_action :submission_metadata, only: [:create, :edit, :new, :update, :index]
-
+  
 
   def index
     @ontology = LinkedData::Client::Models::Ontology.find_by_acronym(params[:ontology_id]).first
@@ -74,6 +75,7 @@ class SubmissionsController < ApplicationController
     category_attributes['general'] << %w[acronym name groups administeredBy categories]
     category_attributes['licensing'] << 'viewingRestriction'
     category_attributes['relations'] << 'viewOf'
+    category_attributes['community'] << 'projects'
     @selected_attributes = Array(params[:properties])
     if @selected_attributes.empty?
       @categories_order = ['general', 'description', 'dates', 'licensing', 'persons and organizations', 'links', 'media', 'community', 'usage' ,'relations', 'content','methodology', 'object description properties']
@@ -88,15 +90,30 @@ class SubmissionsController < ApplicationController
     acronym = params[:ontology_id]
     submission_id = params[:id]
     if params[:ontology]
-      @ontology, response = update_existent_ontology(acronym)
+      @ontology, response, project_messages = update_existent_ontology(acronym)
 
       if response.nil? || response_error?(response)
         show_new_errors(response, partial: 'submissions/form_content', id: 'test')
         return
+      else
+        if project_messages && project_messages[:warning].any?
+          all_warnings = Array(flash[:alert]) + Array(project_messages[:warning])
+          flash[:alert] = all_warnings.uniq.join(' ')
+        elsif project_messages && project_messages[:success].any?
+          project_messages[:success].each { |msg| flash[:notice] = [flash[:notice], msg].compact.join(' ') }
+        end
       end
     end
 
     if params[:submission].nil?
+      if defined?(project_messages) && project_messages
+        if project_messages[:warning].any?
+          all_warnings = Array(flash[:alert]) + Array(project_messages[:warning])
+          flash[:alert] = all_warnings.uniq.join(' ')
+        elsif project_messages[:success].any?
+          project_messages[:success].each { |msg| flash[:notice] = [flash[:notice], msg].compact.join(' ') }
+        end
+      end
       return redirect_to "/ontologies/#{acronym}",
                          notice: t('submissions.submission_updated_successfully')
     end
@@ -106,6 +123,14 @@ class SubmissionsController < ApplicationController
       if response_error?(response)
         show_new_errors(response, partial: 'submissions/form_content', id: 'test')
       else
+        if defined?(project_messages) && project_messages
+          if project_messages[:warning].any?
+            all_warnings = Array(flash[:alert]) + Array(project_messages[:warning])
+            flash[:alert] = all_warnings.uniq.join(' ')
+          elsif project_messages[:success].any?
+            project_messages[:success].each { |msg| flash[:notice] = [flash[:notice], msg].compact.join(' ') }
+          end
+        end
         redirect_to "/ontologies/#{acronym}",
                     notice: t('submissions.submission_updated_successfully'), status: :see_other
       end

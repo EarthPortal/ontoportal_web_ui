@@ -1,7 +1,7 @@
 module SubmissionInputsHelper
 
   class SubmissionMetadataInput
-    include MetadataHelper
+    include MetadataHelper, ApplicationHelper
 
     def initialize(attribute_key:, attr_metadata:, submission: nil, label: nil)
       @attribute_key = attribute_key
@@ -108,6 +108,29 @@ module SubmissionInputsHelper
 
   end
 
+  def ontology_projects_input(ontology = @ontology, projects = @projects)
+    ontology_with_projects = LinkedData::Client::Models::Ontology.find_by_acronym(ontology.acronym, include: 'projects').first
+    existing_project_urls = ontology_with_projects&.projects || []
+      
+    content_tag(:div, class: 'mb-3') do
+      content_tag(:label, t('submission_inputs.projects'), class: 'text-input-label') +
+      render(ProjectSearchInputComponent.new(
+        id: "ontology_projects",
+        name: "ontology[projects][]",
+        selected: existing_project_urls,
+        placeholder: t('projects.selector_placeholder'),
+        multiple: true,
+        open_to_add_values: true
+      )) +
+      content_tag(:div, class: 'mt-2') do
+        link_to(t('projects.create_new_project'), new_project_path, 
+                class: 'btn btn-outline-primary btn-sm', 
+                target: '_blank',
+                title: t('projects.create_new_project'))
+      end
+    end
+  end
+
   def ontology_name_input(ontology = @ontology, label: 'Name')
     text_input(name: 'ontology[name]', value: ontology.name, label: label_required(label))
   end
@@ -128,14 +151,21 @@ module SubmissionInputsHelper
 
   def ontology_categories_input(ontology = @ontology, categories = @categories)
     categories ||= LinkedData::Client::Models::Category.all(display_links: false, display_context: false)
+    categories_children = categories_with_children(categories)
+    categories_parents = categories_with_parents(categories_children)
 
     render Input::InputFieldComponent.new(name: '', label: 'Categories') do
-      content_tag(:div, class: 'upload-ontology-chips-container') do
+      content_tag(:div, class: 'upload-ontology-chips-container', 'data-controller': 'parent-categories-selector',
+      'data-parent-categories-selector-categories-children-value': "#{categories_children.to_json}",
+      'data-parent-categories-selector-categories-parents-value': "#{categories_parents.to_json}",
+      'data-parent-categories-selector-target': "chips") do
         hidden_field_tag('ontology[hasDomain][]') +
-          categories.map do |category|
+        categories.map do |category|
+          content_tag(:div, 'data-action': 'click->parent-categories-selector#check') do
             category_chip_component(id: category[:acronym], name: "ontology[hasDomain][]",
                                     object: category, value: category[:id],
                                     checked: ontology.hasDomain&.any? { |x| x.eql?(category[:id]) })
+            end
           end.join.html_safe
       end
     end
@@ -317,7 +347,8 @@ module SubmissionInputsHelper
                                                          agent: agent,
                                                          name_prefix: attr.name,
                                                          parent_id: "submission_#{attr_key}",
-                                                         edit_on_modal: false, deletable: true }
+                                                         editable: true, edit_on_modal: false, 
+                                                         deletable: true }
         else
           render AgentSearchInputComponent.new(id: random_id, agent_type: agent_type(attr.metadata),
                                                parent_id: "submission_#{attr_key}",

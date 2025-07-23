@@ -1,0 +1,73 @@
+.upload-ontology-input-field-container{"data-project-creation-target" => "source"}
+  = hidden_field_tag "project[source]", @project&.source || "", id: "project_source"
+= hidden_field_tag "project[project_type]", "", data: { "project-creation-target": "projectTypeField" }
+.upload-ontology-input-field-container{"data-project-creation-target" => "name"}
+  = render Input::TextInputComponent.new(label: label_required(t("projects.form.title")), name: "project[name]", value: @project&.name)
+.upload-ontology-input-field-container{"data-project-creation-target" => "acronym"}
+  - is_readonly = @edit_mode || @project&.type == 'funded' || (@force_readonly && @force_readonly.include?('acronym'))
+  = render Input::TextInputComponent.new(label: label_required(t("projects.form.acronym")), name: "project[acronym]", value: @project&.acronym, disabled: is_readonly)
+  = hidden_field_tag "project[acronym]", @project&.acronym if is_readonly
+.upload-ontology-input-field-container{"data-project-creation-target" => "description"}
+  = render Input::TextAreaComponent.new(label: label_required(t("projects.form.description")), name: "project[description]", value: @project&.description, rows: 4, resize: true)
+.row
+  .col-md-6
+    .upload-ontology-input-field-container{"data-project-creation-target" => "startDate"}
+      - start_date = @project&.start_date&.to_s&.split('T')&.first
+      = render Input::DateComponent.new(label: t("projects.form.start_date"), name: "project[start_date]", value: start_date)
+  .col-md-6
+    .upload-ontology-input-field-container{"data-project-creation-target" => "endDate"}
+      - end_date = @project&.end_date&.to_s&.split('T')&.first
+      = render Input::DateComponent.new(label: t("projects.form.end_date"), name: "project[end_date]", value: end_date)
+
+- unless @hide_fields && @hide_fields.include?('organizations')
+  .upload-ontology-input-field-container.organization-project-input-field{"data-project-creation-target" => "organizations"}
+    - random_id = rand(100_000..999_999).to_s
+    = render Input::InputFieldComponent.new(name: '', label: t("projects.form.organization"), error_message: nil) do
+      = render TurboFrameComponent.new(id: "project_organization_#{random_id}") do
+        - if @project&.organization.present?
+          = render partial: 'agents/agent_show', locals: {agent_id: random_id,agent: @project.organization,name_prefix: 'project[organization]',parent_id: "project_organization",editable: true,edit_on_modal: false,deletable: true             }
+        - else
+          = render AgentSearchInputComponent.new(id: random_id,agent_type: 'organization',parent_id: "project_organization",edit_on_modal: false,name_prefix: 'project[organization]',deletable: true            )
+
+- unless @hide_fields && @hide_fields.include?('contacts')
+  .contact-project-input-field
+    = render NestedAgentSearchInputComponent.new(label: t("projects.form.contact"), agents: Array(@project&.contact).compact, agent_type: 'person', name_prefix: 'project[contacts_attributes]', show_affiliations: true, editable: true, edit_on_modal: false, parent_id: "project_contact", create_new_agent_action: true)
+
+.upload-ontology-input-field-container{"data-project-creation-target" => "homePage"}
+  = render Input::UrlComponent.new(label: label_required(t("projects.form.homepage")), name: "project[homePage]", value: @project&.homePage)
+.upload-ontology-input-field-container{"data-project-creation-target" => "keywords"}
+  %label.text-input-label{for: "select_project_keywords"}
+    = label_required(t("projects.form.keywords"))
+  - keywords_array = @project&.keywords.is_a?(Array) ? @project.keywords : (@project&.keywords.to_s.split(',').map(&:strip) rescue [])
+  = render SelectInputComponent.new(id: "project_keywords", name: "project[keywords][]", values: keywords_array, selected: keywords_array, multiple: true, open_to_add_values: true)
+.upload-ontology-input-field-container.logo-url-container
+  = render Input::UrlComponent.new(label: t("projects.form.logo_url"), name: "project[logo]", value: @project&.logo)
+  .logo-preview.mt-2
+    - has_logo = @project&.logo.present?
+    .logo-preview-placeholder{"data-project-creation-target" => "logoPlaceholder", class: has_logo ? "d-none" : ""}
+    %img.img-thumbnail{"data-project-creation-target" => "logoPreview", style: "max-height: 100px; max-width: 200px;", src: @project&.logo, class: has_logo ? "" : "d-none"}
+
+.row.mt-4.funding-related-field{"data-project-creation-target" => "fundingFields"}
+  .col-md-6
+    .upload-ontology-input-field-container{"data-project-creation-target" => "grantNumber"}
+      - is_readonly = @edit_mode || (@force_readonly && @force_readonly.include?('grant_number'))
+      = render Input::TextInputComponent.new(label: t("projects.form.grant_number"), name: "project[grant_number]", value: @project&.grant_number, disabled: is_readonly)
+      = hidden_field_tag "project[grant_number]", @project&.grant_number if is_readonly
+  - unless @hide_fields && @hide_fields.include?('funder')
+    .col-md-6
+      .upload-ontology-input-field-container{"data-project-creation-target" => "funder"}
+        - funder = @project&.funders&.first
+        = hidden_field_tag "project[funders_attributes][0][id]", funder&.id || "", id: "project_funders_attributes_0_id"
+        = render Input::TextInputComponent.new(label: t("projects.form.funder"), name: "project_funder_display", value: funder&.name)
+
+.upload-ontology-input-field-container.mt-3
+  %label.text-input-label
+    = t("projects.form.ontologies")
+    %span.text-danger *
+  .field.w-100
+    - if @edit_mode && @project&.ontologyUsed.present?
+      - selected_ontologies = @project.ontologyUsed && @project.ontologyUsed.map {|id| id.split('/').last } || []
+      - locals = { sel_text: t('projects.form.select_ontologies'), selected_ontologies: selected_ontologies, form_object: :project, form_attribute: "ontologyUsed" }
+      = ontologies_selector(id:'projects_page_ontologies_selector', name: 'project[ontologyUsed][]', selected: @usedOntologies)
+    - else
+      = ontologies_selector(id: 'project_ontologies', name: 'project[ontologyUsed][]', selected: @project&.ontologyUsed, ontologies: onts_for_select(include_views: true))

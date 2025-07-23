@@ -1,13 +1,32 @@
 - @title = t('projects.edit.title', name: @project.name)
-%div.container
-
-  %h1{:style => "padding: 10px;"}
-    = t('projects.edit.editing_project')
-  %p{:style => "padding-left: 10px;"}
-    / TODO_REV: Enable project delete
-    / = link_to("Delete Project", @project, :confirm => "Are you sure?", :method => :delete)
-  = form_for(:project, url: project_path(@project.acronym), html: {method: :put}) do |f|
-    = render partial: 'form', locals: { f: f }
-    %p{:style => "padding-left: 10px;"}
-      = submit_tag t('projects.edit.cancel')
-      = f.submit t('projects.edit.update_project'), :class => "blueButton"
+.container.py-4
+  .mb-4
+    .d-flex.justify-content-between.align-items-center
+      %a.btn.btn-link.text-decoration-none{:href => "javascript:history.go(-1)"}
+        = image_tag("arrow-back.svg", class: "lost-password-arrowback mr-2")
+      .text-center
+        %h2.mb-2= t('projects.edit.editing_project')
+      %div
+  - unless @errors.nil?
+    .alert.alert-danger.mb-4
+      %strong= t('projects.form.errors_on_form')
+      %ul.mb-0.mt-2
+        - @errors = @errors[:error] if @errors[:error]
+        - @errors.each do |key, message|
+          <style>#project_#{key} { border: 1px solid #dc3545; }</style>
+          %li= message.values.join(',')
+              
+  - @edit_mode = true
+  - @force_readonly = ['acronym', 'grant_number']
+  - @hide_fields = ['funder']
+  
+  .mb-4
+    
+    = form_for(:project, url: project_path(@project.acronym), html: {method: :put, id: "edit_project", multipart: true, novalidate: true}) do |f|
+      .p-0.mb-4
+        = render partial: 'projects/steps/project_form'
+      
+      .d-flex.justify-content-end.py-3
+        = render Buttons::RegularButtonComponent.new(id: 'cancel-project-edit', value: t('concepts.cancel'), variant: 'secondary', state: 'regular', href: project_path(@project.acronym))
+        .ml-3
+          = render Buttons::RegularButtonComponent.new(id: 'update-project', value: t('components.save_button'), variant: 'primary', type: 'submit', state: 'regular')

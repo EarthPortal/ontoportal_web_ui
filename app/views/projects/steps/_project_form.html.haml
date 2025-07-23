@@ -1,0 +1,16 @@
+- form_options = { url: projects_path, method: :post, html: { id: "new_project", multipart: true, novalidate: true } }
+- form_options = nil if @edit_mode 
+
+- if !@edit_mode
+  = form_with(**form_options) do
+    .project-form-card.mb-4{"data-controller" => "project-creation","data-mode" => "create"}
+      .card-body
+        = render partial: 'projects/form_fields'
+- else 
+  .project-form-card.mb-4{"data-controller" => "project-creation","data-mode" => "edit"}
+    .card-body
+      = render partial: 'projects/form_fields'
+
+- if @errors && @errors[:exception]
+  .alert.alert-danger
+    = @errors[:exception]

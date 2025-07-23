@@ -30,6 +30,10 @@ module ApplicationHelper
     render IconWithTooltipComponent.new(icon: "json.svg",link: link, target: '_blank', title: t('fair_score.go_to_api'), size:'small', style: custom_style)
   end
 
+  def read_only_enabled?
+    $READ_ONLY_PORTAL && !current_user_admin?
+  end
+
   def portal_name_from_uri(uri)
     URI.parse(uri).hostname.split('.').first
   end
@@ -365,6 +369,10 @@ module ApplicationHelper
     # Reconstruct the cleaned URL
     "#{protocol}://#{cleaned_path}"
   end
+  
+  def categories_browse_url(category)
+    ontologies_path(categories: category)
+  end
 
   def prefix_property_url(key_string, key = nil)
     namespace_key, _ = RESOLVE_NAMESPACE.find { |_, value| key_string.include?(value) }
@@ -406,11 +414,8 @@ module ApplicationHelper
     end
   end
 
-  def empty_state(text = t('no_result_was_found'))
-    content_tag(:div, class:'browse-empty-illustration') do
-      inline_svg_tag('empty-box.svg') +
-      content_tag(:p, text)
-    end
+  def empty_state(text: t('no_result_was_found'))
+    render Display::EmptyStateComponent.new(text: text)
   end
 
   def ontologies_selector(id:, label: nil, name: nil, selected: nil, placeholder: nil, multiple: true, ontologies: onts_for_select)
@@ -459,6 +464,33 @@ module ApplicationHelper
       parent_error_message = "#{parent_error_message} #{c}"
     end
     [is_parent,parent_error_message]
+  end
+
+  def categories_with_children(categories)
+    parent_to_children = Hash.new { |hash, key| hash[key] = [] }
+    categories.each do |category|
+      next unless category.parentCategory
+      category.parentCategory.each do |parent_id|
+        parent_acronym = id_to_acronym(parent_id)
+        child_acronym = id_to_acronym(category.id)
+        parent_to_children[parent_acronym] << child_acronym
+      end
+    end
+    parent_to_children
+  end
+
+  def categories_with_parents(categories_children)
+    categories_parents = Hash.new { |hash, key| hash[key] = [] }
+    categories_children.each do |child, parents|
+      parents.each do |parent|
+        categories_parents[parent] << child
+      end
+    end
+    categories_parents
+  end
+
+  def id_to_acronym(id)
+    id.split('/').last
   end
 
 end

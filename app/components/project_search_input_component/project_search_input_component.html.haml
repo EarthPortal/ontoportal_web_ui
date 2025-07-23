@@ -1,0 +1,2 @@
+= hidden_field_tag @name.to_s.gsub(/\[\]$/, '') + "[]", "", id: nil
+= render Input::SelectComponent.new(id: @id, name: @name, value: projects_for_select, selected: @selected, multiple: @multiple, open_to_add_values: @open_to_add_values, placeholder: @placeholder, data: { 'select-input-ajax-url-value': @ajax_url, 'controller': 'select-input' })
