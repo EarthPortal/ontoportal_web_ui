@@ -1809,6 +1809,9 @@ fr:
     no_submissions_for_ontology: 'Aucune soumission pour l''ontologie : %{ontology}'
     save_button: Sauvegarder
     submission_updated_successfully: Soumission mise à jour
+    project_updates:
+      add_failed_with_projects: "Les projets %{projects} nécessitent l'approbation de l'administrateur pour ajouter cette ontologie. Les administrateurs ont été notifiés."
+      remove_failed_with_projects: "Les projets %{projects} nécessitent l'approbation de l'administrateur pour retirer cette ontologie. Les administrateurs ont été notifiés."
     submitted: Soumis
     by: par
     creation_date: Date de création %{date}

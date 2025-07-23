@@ -90,15 +90,30 @@ class SubmissionsController < ApplicationController
     acronym = params[:ontology_id]
     submission_id = params[:id]
     if params[:ontology]
-      @ontology, response = update_existent_ontology(acronym)
+      @ontology, response, project_messages = update_existent_ontology(acronym)
 
       if response.nil? || response_error?(response)
         show_new_errors(response, partial: 'submissions/form_content', id: 'test')
         return
+      else
+        if project_messages && project_messages[:warning].any?
+          all_warnings = Array(flash[:alert]) + Array(project_messages[:warning])
+          flash[:alert] = all_warnings.uniq.join(' ')
+        elsif project_messages && project_messages[:success].any?
+          project_messages[:success].each { |msg| flash[:notice] = [flash[:notice], msg].compact.join(' ') }
+        end
       end
     end
 
     if params[:submission].nil?
+      if defined?(project_messages) && project_messages
+        if project_messages[:warning].any?
+          all_warnings = Array(flash[:alert]) + Array(project_messages[:warning])
+          flash[:alert] = all_warnings.uniq.join(' ')
+        elsif project_messages[:success].any?
+          project_messages[:success].each { |msg| flash[:notice] = [flash[:notice], msg].compact.join(' ') }
+        end
+      end
       return redirect_to "/ontologies/#{acronym}",
                          notice: t('submissions.submission_updated_successfully')
     end
@@ -108,6 +123,14 @@ class SubmissionsController < ApplicationController
       if response_error?(response)
         show_new_errors(response, partial: 'submissions/form_content', id: 'test')
       else
+        if defined?(project_messages) && project_messages
+          if project_messages[:warning].any?
+            all_warnings = Array(flash[:alert]) + Array(project_messages[:warning])
+            flash[:alert] = all_warnings.uniq.join(' ')
+          elsif project_messages[:success].any?
+            project_messages[:success].each { |msg| flash[:notice] = [flash[:notice], msg].compact.join(' ') }
+          end
+        end
         redirect_to "/ontologies/#{acronym}",
                     notice: t('submissions.submission_updated_successfully'), status: :see_other
       end

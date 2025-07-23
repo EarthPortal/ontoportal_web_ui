@@ -1732,6 +1732,9 @@ en:
     no_submissions_for_ontology: 'No submissions for ontology: %{ontology}'
     save_button: Save
     submission_updated_successfully: Submission updated successfully
+    project_updates:
+      add_failed_with_projects: "Projects %{projects} require admin approval to add this ontology. Administrators have been notified."
+      remove_failed_with_projects: "Projects %{projects} require admin approval to remove this ontology. Administrators have been notified."
     submitted: Submitted
     download: Download
     toggle_dropdown: Toggle Dropdown
