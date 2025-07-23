@@ -21,6 +21,7 @@ module FairScoreHelper
         time = Benchmark.realtime do
           conn = Faraday.new do |conn|
             conn.options.timeout = 30
+            conn.response :follow_redirects
           end
           response = conn.get(get_fairness_service_url(apikey) + "&ontologies=#{ontologies_acronyms}&combined")
           if response.status.eql?(200)

@@ -1,4 +1,3 @@
----
 en:
   activaterecord:
     errors:
@@ -1346,7 +1345,6 @@ en:
     funder: Funder
     selector_placeholder: Search a project .
     copy_grant_number: Copy grant number
-
     filters: Filters
     filter:
       show_funded_only: Show funded projects only
@@ -1785,3 +1783,4 @@ en:
     name: name
     ontology_visits: Ontology visits
     visits: visits
+
