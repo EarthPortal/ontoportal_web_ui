@@ -301,17 +301,6 @@ fr:
     include_score: Inclure le score
     input_hint: Entrez ou collez un texte à annoter...
     insert_sample_text: Insérer un texte d'exemple
-    sample_text: Il y a eu de nombreuses études récentes sur l'utilisation d'antagonistes microbiens pour contrôler les maladies causées par des bactéries phytopathogènes telluriques
-    select_ontologies: Sélectionner des ontologies
-      et aériennes, dans le but de remplacer les méthodes actuelles de contrôle chimique et d'éviter l'utilisation extensive de fongicides, qui conduisent souvent à une résistance chez les pathogènes des plantes.
-      En agriculture, les microorganismes promoteurs de croissance des plantes et de biocontrôle ont émergé comme des alternatives sûres aux pesticides chimiques. Les espèces de Streptomyces et leurs
-      métabolites peuvent avoir un grand potentiel en tant qu'agents excellents pour contrôler divers phytopathogènes fongiques et bactériens.
-
-  concepts:
-    error_valid_concept: "Erreur : Vous devez fournir un identifiant de concept valide"
-    missing_roots: Racines manquantes
-    date_sorted_list_error: Les Classes/Concepts n'ont pas défini de dates de <strong>création</strong> ou de <strong>modifications</strong> avec dcterms
-    list_error: La Collection n'a défini aucun membre
     lemmatize: Lématiser
     match_longest_only: Mot le le plus long uniquement
     negation: Négation
@@ -472,24 +461,6 @@ fr:
     new_term_requests: Nouvelles demandes de termes
     notes: Notes
     permanent_link_class: Obtenir un lien permanent vers cette classe
-    cancel: Annuler
-    confirm: Confirmer
-
-
-  home:
-    ontoportal_instances: "Autres installations d’OntoPortal"
-    bug: Bug
-    proposition: Proposition
-    question: Question
-    ontology_submissions_request: Demande de soumissions d'ontologie
-    include_name: Veuillez inclure votre nom
-    include_email: Veuillez inclure votre email
-    include_comment: Veuillez inclure votre commentaire
-    include_slice_name: Veuillez fournir un nom pour la slice
-    include_ontologies: Veuillez sélectionner au moins une ontologie
-    fill_text: Veuillez remplir le texte approprié à partir de l'image fournie
-    notice_feedback: Le retour a été envoyé
-    notice_slice: La slice a été demandée
     request_new_term: Proposer une nouvelle classe ou classe
     request_term:
       new_term_instructions: |-
@@ -553,7 +524,7 @@ fr:
     see_possible_credits: Voir les crédits possibles
     see_the_used_properties: voir les propriétés utilisées
     view_fair_scores_definitions: 'Vous voyez le score d''évaluation de l''adéquation
-      avec les principes FAIR pour cette ontologie dans AgroPortal. Les scores FAIR
+      avec les principes FAIR pour cette ontologie dans EarthPortal. Les scores FAIR
       sont calculés avec la méthodologie O''FAIRe. Plus de détails ici : https://github.com/agroportal/fairness'
   federation:
     check_status: Vérification de la disponibilité de %{portal}
@@ -616,66 +587,41 @@ fr:
     include_email: Veuillez inclure votre email
     include_name: Veuillez inclure votre nom
     index:
-      tagline: Le foyer des ontologies et des artefacts sémantiques du système Terre.
+      tagline: Le foyer des ontologies et des artefacts sémantiques dans l'agroalimentaire
+        et les domaines connexes.
       title: Bienvenue sur %{site}
       welcome: Bienvenue sur %{site},
-    ontology_upload: Vous souhaitez partager une ontologie ?
-    ontology_upload_benefits: 'En téléchargeant et partageant votre ontologie sur %{site}, vous pourrez:'
-    ontology_upload_button: Soumettre une ontologie
-    discover_ontologies_button: Découvrir des ontologies
-    ontology_upload_desc: Télécharger une ontologie ou un autre type d'artefact sémantique (vocabulaire, terminologie, thésaurus, ...) est un moyen de partager vos connaissances avec les autres.
-    paste_text_prompt: Entrez un paragraphe de texte ou quelques mots-clés...
-    recommender_annotator: Recommandeur et Annotateur
-    support_and_collaborations: Support & Collaborations
-    see_details: Voir les détails
-    info_tooltip_text: "Vous voyez les scores moyens pour toutes les ontologies publiques dans %{site}. Les scores FAIR sont calculés avec la méthodologie O'FAIRe. Plus de détails ici : https://github.com/agroportal/fairness"
-    average: Moyenne
-    min: Min
-    max: Max
-    ontologies: Ontologies
-    classes: Classes
     individuals: Individus
     info_tooltip_text: 'Vous voyez les scores moyens pour toutes les ontologies publiques
-      dans AgroPortal. Les scores FAIR sont calculés avec la méthodologie O''FAIRe.
+      dans EarthPortal. Les scores FAIR sont calculés avec la méthodologie O''FAIRe.
       Plus de détails ici : https://github.com/agroportal/fairness'
     mappings: Alignements
-    users: Utilisateurs
-    twitter_news: Nouvelles
-    feedback:
-      error_on_form: Erreurs sur le formulaire
-      leave_your_feedback: Laissez votre retour
-      feedback_hi_text: Salut
-      feedback_info_text: Vous pouvez utiliser le formulaire ci-dessous, nous envoyer un email directement à
-      feedback_info_text_rest: ou nous laisser une github issue ici
-      email: Email
-      name: Nom
-      proposition_url_page: URL de la page Erreur/Proposition
-      feedback: Retour
-      tags: Tags
-      bug: Bug
-      proposition: Proposition
-      question: Question
-      ontology_submissions_request: Demande de soumissions d'ontologie
-      optional: (optionnel)
-      send: Envoyer
-      feedback_complete:
-        title: Retour envoyé avec succès
-        message: Merci d'avoir pris le temps de partager votre retour avec nous. Notre équipe de support examinera votre message et vous répondra dès que possible. Nous apprécions votre opinion et sommes reconnaissants de votre aide pour améliorer nos services. Merci de votre soutien !
-    slice:
-      suggest_a_slice: Demander une Slice
-      error_on_form: "Veuillez corriger les erreurs suivantes :"
-      email: Adresse Email
-      name: Votre Nom
-      slice_name: Nom de la slice
-      reason_usage: Pour quelle raison / utilisation souhaitez-vous créer cette slice
-      send: Envoyer
-      login_required: "Veuillez vous connecter pour demander une slice"
-      login: "Se connecter"
-
-    suggest_slice: Proposer une nouvelle slice
-    slices_description: Les "slices" permettent aux utilisateurs d'interagir (à la fois via l'API ou l'interface utilisateur) uniquement avec un sous-ensemble d'ontologies dans EarthPortal. Si vous parcourez une slice, toutes les fonctionnalités du portail seront limitées au sous-ensemble choisi; cela permet aux utilisateurs de se concentrer sur leurs cas d'utilisation spécifiques.
+    max: Max
+    min: Min
+    notice_feedback: Le retour d'expéreince a été envoyé
+    ontologies: Ontologies
+    ontology_submissions_request: Demande de soumissions d'ontologie
+    ontology_upload: Vous souhaitez partager une ontologie ?
+    ontology_upload_benefits: 'En téléchargeant et partageant votre ontologie sur
+      %{site}, vous pourrez :'
+    ontology_upload_button: Soumettre une ontologie
+    ontology_upload_desc: Déposer une ontologie ou un autre artefact sémantique (vocabulaire,
+      terminologie, thésaurus, ...) est un moyen de partager vos connaissances avec
+      les autres.
     ontoportal_description: "L'<a href=%{ontoportal_link}>Alliance Ontoportal</a> est un consortium d'équipes de recherche et d'infrastructure dédiées à promouvoir le développement de portails d'ontologies et de catalogues d'artefacts sémantiques basés sur le logiciel <a href=%{github_link}>OntoPortal</a> ouvert et collaboratif. Ci-dessous se trouvent les portails publics et ouverts actuels construits avec la technologie maintenue par l'Alliance."
-    viewing_slice: "Affichage de la slice:"
+    ontoportal_instances: Autres installations d’OntoPortal
+    paste_text_prompt: Entrez un court texte ou quelques mots-clés...
+    projects: Projets
+    properties: Propriétés
+    proposition: Proposition
+    question: Question
+    recommender_annotator: Recommandeur et Annotateur
+    see_details: Voir les détails
+    slices_description: Les "slices" permettent aux utilisateurs d'interagir (à la fois via l'API ou l'interface utilisateur) uniquement avec un sous-ensemble d'ontologies dans EarthPortal. Si vous parcourez une slice, toutes les fonctionnalités du portail seront limitées au sous-ensemble choisi; cela permet aux utilisateurs de se concentrer sur leurs cas d'utilisation spécifiques.
+    suggest_slice: Proposer un nouveau groupe/slice
+    support_and_collaborations: Support & Collaborations
+    twitter_news: Nouvelles
+    users: Utilisateurs
     view_full_site: Voir le site complet
     viewing_slice: 'Affichage de la slice:'
   instances:
@@ -788,25 +734,25 @@ fr:
       about_us: À propos de nous
       acknowledgments: Remerciements
       agreements: Légal
-      agro_documentation: Documentation d'AgroPortal
+      agro_documentation: Documentation d'EarthPortal
       api: API
       cite_us: Nous citer
       contact_us: Contactez-nous
       documentation: Documentation
       issues_and_requests: Problèmes et demandes
       legal_notices: Mentions légales
-      legal_notices_anchor: "#h-mentions-legales"
+      legal_notices_anchor: "#mentions-légales"
       ontoportal: OntoPortal
       privacy_policy: Politique de confidentialité
-      privacy_policy_anchor: "#h-vie-privee"
+      privacy_policy_anchor: "#données-à-caractère-personnel-des-contributeurs"
       products: Produits
-      projects: D2KAB
+      projects: FAIR-IMPACT
       release_notes: Notes de version
       sparql: SPARQL
       support: Support
       team: Équipe
       terms: Termes et conditions
-      terms_anchor: "#h-conditions-generales-dutilisation-dagroportal-francais"
+      terms_anchor: "#conditions-générales-dutilisation-dearthportal-francais"
       tools: Outils
       wiki: Wiki
     header:
@@ -816,8 +762,7 @@ fr:
       cite_us: Nous citer
       documentation: Documentation
       help: Aide
-      landscape: Paysage
-      projects: Projets
+      landscape: Panorama
       login: Connexion
       logout: Déconnexion
       mappings: Alignements
@@ -825,38 +770,10 @@ fr:
       recommender: Recommandeur
       release_notes: Notes de version
       search_prompt: Rechercher dans %{portal_name} ...
-      submit_feedback: Envoyer un retour
-      support: Aides
-      cite_us: Citez-nous
-    footer:
-      products: Produits
-      ontoportal: OntoPortal
-      release_notes: Notes de version
-      api: API
-      tools: Outils
-      sparql: SPARQL
-      support: Aides
-      contact_us: Contactez-nous
-      wiki: Wiki
-      documentation: Documentation
-      agro_documentation: Documentation d'%{site}
-      issues_and_requests: Problèmes et demandes
-      agreements: Légal
-      terms: Termes et conditions
-      terms_anchor: "#h-conditions-generales-dutilisation-dagroportal-francais"
-      privacy_policy: Politique de confidentialité
-      privacy_policy_anchor: "#h-vie-privee"
-      legal_notices: Mentions légales
-      legal_notices_anchor: "#h-mentions-legales"
-      cite_us: Citez-nous
-      acknowledgments: Remerciements
-      about: À propos
-      about_us: À propos de nous
-      projects: D2KAB
-      team: Équipe
       submit_feedback: Soumettre un retour d'expérience
       support: Support
       agents : Agents
+      projects: Projets
     notices:
       at: à
       slice: Slice
@@ -1117,7 +1034,7 @@ fr:
         'rewrite' est activé en exécutant la commande `sudo a2enmod rewrite`
     htaccess_redirection_description: Nous proposons une solution transparente pour
       rendre les URI de votre ontologie résolubles et le contenu négociable en autorisant
-      la redirection d'URL de vos URI d'ontologie vers nos URI d'Agroportal. Pour
+      la redirection d'URL de vos URI d'ontologie vers nos URI d'EarthPortal. Pour
       faciliter ce processus, nous vous avons fourni un ensemble de règles de réécriture
       .htaccess. En suivant les instructions simples ci-dessous, vous serez en mesure
       de mettre en œuvre ces règles rapidement et efficacement, garantissant ainsi
@@ -1437,58 +1354,32 @@ fr:
     web_user_interface: Interface utilisateur web de BioPortal (incluant la visualisation
       d'ontologies, widgets et UI d'Annotateur)
   projects:
-    page_description: "Parcourez, filtrez et découvrez des projets qui utilisent ou contribuent aux ontologies dans %{portal}."
+    page_description: Parcourez, filtrez et découvrez des projets qui utilisent ou contribuent aux ontologies dans %{portal}.
     not_funded: Non financé
     not_funded_tooltip: Ce projet n'est pas financé
     grant_id: Grant ID
-    project_not_found: "Projet non trouvé : %{id}"
+    project_not_found: 'Projet non trouvé : %{id}'
     project_successfully_created: Projet créé avec succès
     error_unique_acronym: Le projet avec l'acronyme %{acronym} existe déjà. Veuillez entrer un acronyme unique.
     project_successfully_updated: Projet mis à jour avec succès
-    error_delete_project: "Échec de la suppression du projet : %{errors}"
+    error_delete_project: 'Échec de la suppression du projet : %{errors}'
     project_successfully_deleted: Projet supprimé avec succès
     contacts: Contacts
     create_new_project: Créer un nouveau projet
     created: Créé
     creator: Utilisateur
-    delete_admin_only: Supprimer (administrateur seulement)
+    delete_admin_only: Supprimer (admin seulement)
     delete_confirm: Êtes-vous sûr ?
     description: Description
     description_text: Texte de la description
-    edit:
-      cancel: Annuler
-      editing_project: Édition du projet
-      title: Édition du projet %{name}
-      update_project: Mettre à jour le Projet
     edit_text: Éditer
-    error_delete_project: 'Échec de la suppression du projet : %{errors}'
-    error_unique_acronym: Le projet avec l'acronyme %{acronym} existe déjà. Veuillez
-      entrer un acronyme différent.
-    form:
-      acronym: 'Acronyme : *'
-      administrators: 'Administrateurs : *'
-      description: Description :*
-      errors_on_form: Erreurs dans le formulaire
-      example: 'Exemple :'
-      home_page: 'Page d''accueil : *'
-      name: 'Nom : *'
-      select_administrators: Sélectionner les administrateurs
-      select_ontologies: Sélectionner les ontologies utilisées
     home_page: Page d'accueil
     search_projects: Rechercher par nom, acronyme ou organisation
     index:
       intro: Parcourez une sélection de projets utilisant les ontologies de %{site}
     institutions: Institutions
-    new:
-      create_project: Créer le un nouveau Projet projet
-      new_project: Nouveau projet
-      title: Ajouter un projet
     ontologies: Ontologies
     project_description: Description du Projet
-    project_not_found: 'Projet non trouvé : %{id}'
-    project_successfully_created: Projet créé
-    project_successfully_deleted: Projet supprimé
-    project_successfully_updated: Projet mis à jour
     self: Projets
     title: Projets
     view_projects_help: Voir l'aide des projets
@@ -1504,126 +1395,141 @@ fr:
     funder: Financeur
     selector_placeholder: Rechercher un projet ...
     copy_grant_number: Copier le grant number
-
-    filters: "Filtres"
+    filters: Filtres
     filter:
-      show_funded_only: "Afficher uniquement les projets financés"
-      show_active_only: "Afficher uniquement les projets actifs"
-      all_funders: "Tous les financeurs"
-      not_funded: "Non financés"
-      funder: "Financeur"
-      categories: "Catégories"
+      show_funded_only: Afficher uniquement les projets financés
+      show_active_only: Afficher uniquement les projets actifs
+      all_funders: Tous les financeurs
+      not_funded: Non financés
+      funder: Financeur
+      categories: Catégories
     sort:
-      name: "Trier par nom"
-      acronym: "Trier par acronyme" 
-      start_date: "Trier par date de début"
-      end_date: "Trier par date de fin"
-      ontologies: "Trier par nombre d'ontologies"
+      name: Trier par nom
+      acronym: Trier par acronyme
+      start_date: Trier par date de début
+      end_date: Trier par date de fin
+      ontologies: Trier par nombre d'ontologies
     showing_projects_count:
-      zero: "Aucun projet trouvé"
-      one: "Affichage d'un projet"
-      other: "Affichage de %{count} projets"
+      zero: Aucun projet trouvé
+      one: Affichage d'un projet
+      other: Affichage de %{count} projets
 
     show:
-      contacts: 'Contacts :'
+      title: Projet %{name}
+      edit_project: Éditer le Projet
       description: 'Description :'
-      edit_project: Éditer le projet
-      home_page: 'Page d''accueil :'
       institution: 'Institution :'
-      no_ontologies_associated: Aucune ontologie n'est actuellement associée à ce
-        projet
-      ontologies_used: Ontologies utilisées
-      no_ontologies_associated: Aucune ontologie n'est actuellement associée à ce projet
+      contacts: 'Contacts :'
+      home_page: 'Page d''accueil :'
+      ontologies_used: 'Ontologies utilisées'
+      no_ontologies_associated: 'Aucune ontologie n''est actuellement associée à ce projet'
+
     form:
       errors_on_form: Erreurs sur le formulaire
-      name: "Nom : *"
-      acronym: "Acronyme : *"
-      administrators: "Administrateurs : *"
-      home_page: "Page d'accueil : *"
-      example: "Exemple :"
-      description: "Description :*"
+      name: 'Nom : *'
+      acronym: 'Acronyme : *'
+      administrators: 'Administrateurs : *'
+      home_page: 'Page d''accueil : *'
+      example: 'Exemple :'
+      description: 'Description : *'
       select_ontologies: Sélectionner les ontologies utilisées
       select_administrators: Sélectionner les administrateurs
-      title: "Titre"
-      acronym: "Acronyme"
-      description: "Description"
-      start_date: "Date de début"
-      end_date: "Date de fin"
-      institution: "Institution"
-      coordinator: "Coordinateur"
-      homepage: "Homepage"
-      keywords: "Mots-clés"
-      organization: "Coordinateur"
-      contact: "Contact"
-      ontologies: "Ontologies"
-      funding_details: "Détails du financement"
-      funding_program: "Programme de financement"
-      grant_number: "Grant number"
-      funder: "Financeur"
-      logo_url: "URL du logo"
-      summary_confirmation: "Veuillez vérifier les détails de votre projet avant de soumettre."
-      summary_title: "Résumé du projet"
-      organization_tooltip: "C'est l'organisation coordinatrice du projet."
-      error-submission-message: "Veuillez remplir tous les champs obligatoires avant de soumettre"
-      field_required: "%{field} est requis"
-      selection_required: "Au moins un %{field} doit être sélectionné"
-      date_range_error: "La date de fin doit être postérieure à la date de début"
-      homepage_uri_error: "Homepage doit être une URL valide (ex: https://example.com)"
+      title: Titre
+      acronym: Acronyme
+      description: Description
+      start_date: Date de début
+      end_date: Date de fin
+      institution: Institution
+      coordinator: Coordinateur
+      homepage: Homepage
+      keywords: Mots-clés
+      organization: Coordinateur
+      contact: Contact
+      ontologies: Ontologies
+      funding_details: Détails du financement
+      funding_program: Programme de financement
+      grant_number: Grant number
+      funder: Financeur
+      logo_url: URL du logo
+      summary_confirmation: Veuillez vérifier les détails de votre projet avant de soumettre.
+      summary_title: Résumé du projet
+      organization_tooltip: C'est l'organisation coordinatrice du projet.
+      error-submission-message: Veuillez remplir tous les champs obligatoires avant de soumettre
+      field_required: '%{field} est requis'
+      selection_required: Au moins un %{field} doit être sélectionné
+      date_range_error: La date de fin doit être postérieure à la date de début
+      homepage_uri_error: 'Homepage doit être une URL valide (ex: https://example.com)'
       acronym_validation:
-        start_letter: "L'acronyme doit commencer par une lettre"
-        capital_letters: "L'acronyme doit être entièrement en majuscules"
-        special_chars: "L'acronyme ne doit contenir que des lettres, des chiffres, des tirets et des traits de soulignement"
-        length: "L'acronyme ne doit pas dépasser seize caractères"
+        start_letter: L'acronyme doit commencer par une lettre
+        capital_letters: L'acronyme doit être entièrement en majuscules
+        special_chars: L'acronyme ne doit contenir que des lettres, des chiffres, des tirets et des traits de soulignement
+        length: L'acronyme ne doit pas dépasser seize caractères
+
     search:
-      missing_parameters: "Paramètres requis manquants"
+      missing_parameters: Paramètres requis manquants
       found_projects:
-        one: "1 projet trouvé"
-        other: "%{count} projets trouvés"
-      no_projects_found: "Aucun projet trouvé"
-      invalid_response_format: "Format de réponse invalide de l'API"
-      no_projects_found_criteria: "Aucun projet trouvé correspondant aux critères de recherche"
-      connection_failed: "Échec de la connexion à l'API"
-      error_occurred: "Une erreur s'est produite"
+        one: 1 projet trouvé
+        other: '%{count} projets trouvés'
+      no_projects_found: Aucun projet trouvé
+      invalid_response_format: Format de réponse invalide de l'API
+      no_projects_found_criteria: Aucun projet trouvé correspondant aux critères de recherche
+      connection_failed: Échec de la connexion à l'API
+      error_occurred: Une erreur s'est produite
+
     edit:
       title: Éditer le projet %{name}
       editing_project: Éditer le projet
       cancel: Annuler
       not_authorized: Vous n'êtes pas autorisé à modifier ce projet.
+
     new:
       title: Ajoutez votre projet
       new_project: Nouveau projet
       create_project: Créer le projet
-    project_type_selection:
-      title: "Type de projet"
-      description: "Sélectionnez le type de projet que vous souhaitez créer."
-      select_type: "Sélectionner le type de projet"
-      funded: "Projet financé"
-      not_funded: "Projet non financé"
-    funding_search:
-      title: "Source de financement"
-      description: "Recherchez la source de financement de votre projet."
-      source: "Source de financement"
-      datasets: "Jeu de données"
-      search_button: "Rechercher"
-    project_search:
-      anr_title: "Recherche de projet ANR"
-      cordis_title: "Recherche de projet CORDIS"
-      search_by_id: "Rechercher par ID"
-      search_by_term: "Rechercher par acronyme"
-      project_id: "ID du Projet"
-      id_placeholder: "Entrez l'ID du projet"
-      term_placeholder: "Entrez l'acronyme"
-      results: "Résultats de recherche"
-      api_error: "Erreur de connexion au service de recherche"
-      no_results: "Aucun résultat trouvé"
-      enter_valid_id: "Veuillez entrer un ID de projet valide"
-      enter_valid_term: "Veuillez entrer au moins 3 caractères"
-    create:
-      success: "Projet créé avec succès"
-      error: "Un problème est survenu lors de la création du projet"
-    call_annotator: "Annoter"
-    details: "Détails du projet"
 
+    project_type_selection:
+      title: Type de projet
+      description: Sélectionnez le type de projet que vous souhaitez créer.
+      select_type: Sélectionner le type de projet
+      funded: Projet financé
+      not_funded: Projet non financé
+
+    funding_search:
+      title: Source de financement
+      description: Recherchez la source de financement de votre projet.
+      source: Source de financement
+      datasets: Jeu de données
+      search_button: Rechercher
+
+    project_search:
+      anr_title: Recherche de projet ANR
+      cordis_title: Recherche de projet CORDIS
+      search_by_id: Rechercher par ID
+      search_by_term: Rechercher par acronyme
+      project_id: ID du Projet
+      id_placeholder: Entrez l'ID du projet
+      term_placeholder: Entrez l'acronyme
+      results: Résultats de recherche
+      api_error: Erreur de connexion au service de recherche
+      no_results: Aucun résultat trouvé
+      enter_valid_id: Veuillez entrer un ID de projet valide
+      enter_valid_term: Veuillez entrer au moins 3 caractères
+
+    create:
+      success: Projet créé avec succès
+      error: Un problème est survenu lors de la création du projet
+
+    call_annotator: Annoter
+    details: Détails du projet
+  properties:
+    definitions: Définitions
+    domain: Domaine
+    id: ID
+    no_properties_alert: "%{acronym} ne contient pas de propriétés"
+    parent: Parent
+    preferred_name: Nom préféré
+    range: Étendue
+    type: Type
   recommender:
     acceptance: Acceptation
     call_annotator: Appeler l'Annotateur avec la même entrée
@@ -1809,120 +1715,12 @@ fr:
     no_submissions_for_ontology: 'Aucune soumission pour l''ontologie : %{ontology}'
     save_button: Sauvegarder
     submission_updated_successfully: Soumission mise à jour
-    project_updates:
-      add_failed_with_projects: "Les projets %{projects} nécessitent l'approbation de l'administrateur pour ajouter cette ontologie. Les administrateurs ont été notifiés."
-      remove_failed_with_projects: "Les projets %{projects} nécessitent l'approbation de l'administrateur pour retirer cette ontologie. Les administrateurs ont été notifiés."
     submitted: Soumis
-    by: par
-    creation_date: Date de création %{date}
-    view_of_the_ontology: "Vue de l'ontologie %{ontology}"
-    view: Vue
-    debug: Débogage
-    loading: Chargement
-    unwatch: Ne plus surveiller
-    watch: Surveiller
-    resource: "%{sub_text} cette ressource"
-    notified_of_all_updates: Soyez le premier à surveiller cette ressource et soyez informé de toutes ses mises à jour
-    join_the_count: Rejoignez les %{count} utilisateurs surveillant cette ressource et soyez informé de toutes ses mises à jour
-    see_more: Voir plus...
-    see_less: Voir moins...
-    tree_view_empty: Pas de résultat
-    copy_original_uri: Copier l'URI d'origine
-    copy_portal_uri: Copier l'URI de %{portal_name}
-
-  properties:
-    id: ID
-    type: Type
-    preferred_name: Nom préféré
-    definitions: Définitions
-    parent: Parent
-    domain: Domaine
-    range: Étendue
-    no_properties_alert: "%{acronym} ne contient pas de propriétés"
-
-  visits:
-    ontology_visits: Visites de l'ontologie
-    name: nom
-    visits: visites
-    count: concepts
-
-  ontologies_selector:
-    clear_selection: Effacer la sélection
-    ontologies_advanced_selection: Sélection avancée des ontologies
-    search_hint: Filtrer les ontologies...
-    show_ontology_view: Afficher les vues d'ontologie
-    hide_retired_ontologies: Masquer les ontologies abandonnées
-    tabs_title:
-      categories: Catégories
-      groups: Groupes
-      format: Format
-      natural_languages: Langues naturelles
-      formality_levels: Niveaux de formalité
-      ontology_types: Types d'ontologie
-    select_all: Tout sélectionner
-    cancel: Annuler
-    apply: Appliquer
-    unselect_all: Tout désélectionner
-
-  tools:
-    search:
-      title: "Rechercher du contenu (à venir)"
-      description: >
-        Cet outil/service permet aux utilisateurs de rechercher n'importe quel élément Resource Description Framework (RDF) dans le portail.
-        Les utilisateurs peuvent rechercher soit par l'identifiant unique (URI) associé à l'élément RDF, soit par son libellé.
-        Il facilite la navigation efficace et la récupération d'éléments RDF spécifiques, améliorant ainsi l'expérience utilisateur et la productivité au sein du portail.
-
-    converter:
-      title: "Convertisseur de contenu (à venir)"
-      description: >
-        L'outil/service de conversion de contenu offre la possibilité de convertir n'importe quel élément RDF en divers formats tels que RDF/XML, Turtle, Ntriples ou JSON.
-        Cette fonctionnalité permet aux utilisateurs de transformer les données RDF en formats adaptés à différents usages ou compatibles avec divers systèmes et applications.
-        Il favorise l'interopérabilité et la flexibilité dans la manipulation des données RDF au sein de l'écosystème du portail.
-
-    url_checker:
-      title: "Vérificateur de résolvabilité d'URI"
-      description: >
-        Cet outil/service vérifie la résolvabilité des Identifiants Uniformes de Ressource (URI) et leur négociabilité de contenu.
-        Il vérifie si un URI donné est accessible et si le contenu associé peut être négocié en fonction des préférences du client.
-        Cette fonctionnalité garantit la fiabilité et l'accessibilité des ressources liées dans l'écosystème RDF, aidant ainsi à maintenir l'intégrité des données et facilitant l'intégration transparente avec des ressources externes.
-
-  feedback_mail:
-    name: "Nom: %{name}"
-    email: "E-mail: %{email}"
-    location: "Emplacement: %{location}"
-    tags: Tags
-    feedback: Feedback
-  slice_mail:
-    name: "Nom : %{name}"
-    email: "Email : %{email}"
-    slice_name: "Nom de la Slice : %{slice_name}"
-    ontologies: "Ontologies demandées :"
-    comment: "Motif de la demande / Utilisation prévue :"
-
-  federation:
-    results_from_external_portals: Résultats provenant de portails externes
-    not_responding: ne répond pas.
-    check_status: Vérification de la disponibilité de %{portal}
-  cookies_modal:
-    title: "Gérer le consentement des cookies"
-    paragraph1: "%{portal} utilise des cookies pour vous aider à naviguer efficacement et pour mesurer l'audience. Vous trouverez des informations détaillées sur tous les cookies dans le lien \"Vie privé\""
-    paragraph2: "Les cookies sont fonctionnels et non facultatifs. En restant sur %{portal}, vous reconnaissez que les informations vous ont été transmises."
-    accept_button: "Accepter"
-    privacy_link: "Vie privé"
     toggle_dropdown: Basculer le menu déroulant
     version: Version
   taxonomy:
-    description: Dans %{portal}, les ontologies sont organisées en groupes et étiquetées
-      avec des catégories. Typiquement, les groupes associent des ontologies provenant
-      du même projet ou de la même organisation pour une meilleure identification
-      de la provenance. Tandis que les catégories concernent des sujets/thématiques
-      et permettent de classifier les ontologies. En 2016, les catégories d'%{portal}
-      ont été établies en coopération avec FAO AIMS. En 2024, nous sommes passés au
-      Thésaurus de l'UNESCO (https://vocabularies.unesco.org). Les groupes et les
-      catégories, ainsi que d'autres métadonnées, peuvent être utilisés sur la page
-      “Parcourir” d'%{portal} pour filtrer la liste des ontologies.
+    description: "Dans EarthPortal, les ontologies sont organisées en groupes et étiquetées avec des catégories. Typiquement, les groupes associent des ontologies provenant du même projet ou de la même organisation pour une meilleure identification de la provenance. Tandis que les catégories concernent des sujets/thématiques et permettent de classifier les ontologies. En 2024, les catégories d'EarthPortal ont été établies en utilisant le Thésaurus de l'UNESCO (https://vocabularies.unesco.org). Les groupes et les catégories, ainsi que d'autres métadonnées, peuvent être utilisés sur la page “Parcourir” d'EarthPortal pour filtrer la liste des ontologies."
     groups_and_categories: Groupes et Catégories
-    description: "Dans EarthPortal, les ontologies sont organisées en groupes et étiquetées avec des catégories. Typiquement, les groupes associent des ontologies provenant du même projet ou de la même organisation pour une meilleure identification de la provenance. Tandis que les catégories concernent des sujets/thématiques et permettent de classifier les ontologies. En 2016, les catégories d'EarthPortal ont été établies en coopération avec FAO AIMS. En 2024, nous sommes passés au Thésaurus de l'UNESCO (https://vocabularies.unesco.org). Les groupes et les catégories, ainsi que d'autres métadonnées, peuvent être utilisés sur la page “Parcourir” d'EarthPortal pour filtrer la liste des ontologies."
     no_taxonomy_created: Aucun %{type} n'a encore été créé
     show_sub_categories: Afficher les sous-catégories
   tools:
