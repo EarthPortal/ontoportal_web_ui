@@ -100,7 +100,7 @@ gem 'iso-639', '~> 0.3.6'
 gem 'countries', '~> 5.7'
 
 # Custom API client
-gem 'ontologies_api_client', git: 'https://github.com/earthportal/ontologies_api_ruby_client.git', branch: 'development'
+gem 'ontologies_api_client', git: 'https://github.com/earthportal/ontologies_api_ruby_client.git', branch: 'master'
 # Ruby 2.7.8 pinned gems (to remove when migrating to Ruby >= 3.0)
 
 gem 'ffi', '~> 1.16.3'
