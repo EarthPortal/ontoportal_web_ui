@@ -306,14 +306,7 @@ fr:
     negation: Négation
     ontology: Ontologie
     options: Options
-    sample_text: There has been many recent studies on the use of microbial antagonists
-      to control diseases incited by soilborne and airborne plant pathogenic bacteria
-      and fungi, in an attempt to replace existing methods of chemical control and
-      avoid extensive use of fungicides, which often lead to resistance in plant pathogens.
-      In agriculture, plant growth-promoting and biocontrol microorganisms have emerged
-      as safe alternatives to chemical pesticides. Streptomyces spp. and their metabolites
-      may have great potential as excellent agents for controlling various fungal
-      and bacterial phytopathogens.
+    sample_text: As the access to Solid Earth data is not facilitated for now, current activities are focused on the development of a new portal/service to evaluate automatically SO2 flux emissions by volcanoes by analysis of satellite observations from the Sentinel-5P/TROPOMI sensor together with ECMWF wind fields. Several publications are also in preparation for 1- the presentation of the new service (SO2 flux calculator) and its theoretical framework, 2- the scientific applications of these new services, in particular the analysis of specific eruptions and their impacts on the atmosphere (air quality, climate) using the VOLCPLUME webportal (under further development).
     score: Score
     score_threshold: Filtrer par seuil de score
     select_ontologies: Sélectionner des ontologies
@@ -587,8 +580,7 @@ fr:
     include_email: Veuillez inclure votre email
     include_name: Veuillez inclure votre nom
     index:
-      tagline: Le foyer des ontologies et des artefacts sémantiques dans l'agroalimentaire
-        et les domaines connexes.
+      tagline: Le foyer des ontologies et des artefacts sémantiques du système Terre.
       title: Bienvenue sur %{site}
       welcome: Bienvenue sur %{site},
     individuals: Individus
@@ -973,7 +965,7 @@ fr:
     browser:
       admin_welcome: Bienvenue admin, cette couleur indique les fonctionnalités réservées
         aux administrateurs
-      search_placeholder: Filtrer les ontologies, e.g., AGROVOC, plante
+      search_placeholder: Filtrer les ontologies, e.g., GCMD, oxygen, etc...
       show_ontology_views: Afficher les vues de l'ontologie
       show_private_ontology: Afficher seulement les ontologies privées
       show_retired_ontologies: Afficher les ontologies retirées
