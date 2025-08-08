@@ -565,7 +565,7 @@ en:
     include_email: Please include your email
     include_name: Please include your name
     index:
-      tagline: The home of ontologies and semantic artefacts for Earth sciences.
+      tagline: The home of ontologies and semantic artefacts in Earth System, environment and related domains.
       title: Welcome to %{site}
       welcome: Welcome to %{site},
     individuals: Individuals

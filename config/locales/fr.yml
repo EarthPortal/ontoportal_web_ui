@@ -580,7 +580,7 @@ fr:
     include_email: Veuillez inclure votre email
     include_name: Veuillez inclure votre nom
     index:
-      tagline: Le foyer des ontologies et des artefacts sémantiques du système Terre.
+      tagline: Le catalogue des ontologies et des artefacts sémantiques du système Terre, de l'environnement et des domaines connexes.
       title: Bienvenue sur %{site}
       welcome: Bienvenue sur %{site},
     individuals: Individus
