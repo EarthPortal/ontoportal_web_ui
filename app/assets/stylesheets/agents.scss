@@ -33,6 +33,11 @@
   flex-direction: column;
   justify-content: center;
 }
+
+a[href] .agent-remove-icon path {
+  fill: var(--primary-color);
+}
+
 .agent-input-with-icon{
   padding: 8px;
   margin-bottom: 0px;

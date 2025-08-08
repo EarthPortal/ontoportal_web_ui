@@ -55,7 +55,7 @@ module AgentHelper
 
   def link_to_search_agent(id, parent_id , name_prefix, agent_type, editable, deletable)
     link_to("/agents/show_search?id=#{id}&parent_id=#{parent_id}&agent_type=#{agent_type}&editable=#{editable}&deletable=#{deletable}&name_prefix=#{name_prefix}", class: 'btn btn-sm btn-light') do
-      inline_svg_tag "x.svg", width: "25", height: "25"
+      inline_svg_tag "x.svg", width: "25", height: "25", class: "agent-remove-icon"
     end
   end
 

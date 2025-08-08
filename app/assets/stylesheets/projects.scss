@@ -720,11 +720,6 @@ button:disabled,
   line-height: 1.3;
 }
 
-// Homepage icon styling (matching ontology icons)
-a[href] svg path {
-  fill: var(--primary-color);
-}
-
 .disabled-icon svg path {
   fill: #888;
 }
