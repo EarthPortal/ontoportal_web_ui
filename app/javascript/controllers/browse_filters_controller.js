@@ -55,7 +55,7 @@ export default class extends Controller {
                 checks = event.target.checked ?  ['true'] : []
                 filter = "active_only"
                 break;
-            case "funder":  // Handle funder dropdown
+            case "funder": 
                 checks = event.target.value === '' ? [] : [event.target.value]
                 filter = "funder"
                 break;
@@ -63,6 +63,9 @@ export default class extends Controller {
                 const selectedInputs = this.#getSelectedChecks(event)
                 checks = selectedInputs.map(x => x.value)
                 filter = "categories"
+            case "user_ontologies_only":
+                checks = event.target.checked ?  ['true'] : []
+                filter = "user_ontologies_only"
                 break;
             default:
                 checks = this.#getSelectedChecks(event).map(x => x.value)

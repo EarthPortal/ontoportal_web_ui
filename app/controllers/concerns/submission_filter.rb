@@ -3,13 +3,14 @@ module SubmissionFilter
 
   include FederationHelper
 
-  BROWSE_ATTRIBUTES = ['ontology', 'submissionStatus', 'description', 'pullLocation', 'creationDate',
-                       'contact', 'released', 'naturalLanguage', 'hasOntologyLanguage',
-                       'hasFormalityLevel', 'isOfType', 'deprecated', 'status', 'metrics']
+  BROWSE_ATTRIBUTES = %w[ontology submissionStatus description pullLocation creationDate
+                         contact released naturalLanguage hasOntologyLanguage
+                         hasFormalityLevel isOfType deprecated status metrics]
 
   def init_filters(params)
     @show_views = params[:show_views]&.eql?('true')
     @show_private_only = params[:private_only]&.eql?('true')
+    @user_ontologies_only = params[:user_ontologies_only]&.eql?('true')
     @show_retired = params[:show_retired]&.eql?('true')
     @selected_format = params[:format]
     @sort_by = params[:sort_by].blank? ? 'visits' : params[:sort_by]
@@ -25,7 +26,8 @@ module SubmissionFilter
       helpers.ontologies_analytics
     end
 
-    @ontologies = LinkedData::Client::Models::Ontology.all(include: 'all', also_include_views: true, display_links: false, display_context: false)
+    @ontologies = LinkedData::Client::Models::Ontology.all(include: 'all', also_include_views: true,
+                                                           display_links: false, display_context: false)
 
     @ontologies, @errors = @ontologies.partition { |x| !x.errors }
 
@@ -38,19 +40,18 @@ module SubmissionFilter
                status: request_params[:status],
                show_views: @show_views,
                private_only: @show_private_only,
+               user_ontologies_only: @user_ontologies_only,
                languages: request_params[:naturalLanguage],
                page_size: @total_ontologies,
                formality_level: request_params[:hasFormalityLevel],
                is_of_type: request_params[:isOfType],
                groups: request_params[:group], categories: request_params[:hasDomain],
                formats: request_params[:hasOntologyLanguage],
-               projects: request_params[:projects]
-              }
+               projects: request_params[:projects] }
 
     submissions = filter_submissions(@ontologies, **params)
 
     submissions = merge_by_acronym(submissions) if federation_enabled?
-
 
     submissions = sort_submission_by(submissions, @sort_by, @search)
 
@@ -80,31 +81,44 @@ module SubmissionFilter
     merged_submissions
   end
 
-
-  def filter_submissions(ontologies, query:, status:, show_views:, private_only:, languages:, page_size:, formality_level:, is_of_type:, groups:, categories:, formats:, projects:)
-    submissions = LinkedData::Client::Models::OntologySubmission.all(include: BROWSE_ATTRIBUTES.join(','), also_include_views: true, display_links: false, display_context: false)
+  def filter_submissions(ontologies, query:, status:, show_views:, private_only:, user_ontologies_only:, languages:,
+                         page_size:, formality_level:, is_of_type:, groups:, categories:, formats:, projects:)
+    submissions = LinkedData::Client::Models::OntologySubmission.all(include: BROWSE_ATTRIBUTES.join(','),
+                                                                     also_include_views: true, display_links: false, display_context: false)
 
     submissions = submissions.map { |x| x[:ontology] ? [x[:ontology][:id], x] : nil }.compact.to_h
 
     submissions = ontologies.map { |ont| ontology_hash(ont, submissions) }
 
     submissions.map do |s|
-      out = ((s[:ontology].viewingRestriction.eql?('public') && !private_only) || private_only && s[:ontology].viewingRestriction.eql?('private'))
-      out = out && (groups.blank? || (s[:ontology].group.map { |x| helpers.link_last_part(x) } & groups.split(',')).any?)
-      out = out && (categories.blank? || (s[:ontology].hasDomain.map { |x| helpers.link_last_part(x) } & categories.split(',')).any?)
-      out = out && (status.blank? || status.eql?('alpha,beta,production,retired') || status.split(',').include?(s[:status]))
-      out = out && (formats.blank? || formats.split(',').any? { |f| s[:hasOntologyLanguage].eql?(f) })
-      out = out && (is_of_type.blank? || is_of_type.split(',').any? { |f| helpers.link_last_part(s[:isOfType]).eql?(f) })
-      out = out && (formality_level.blank? || formality_level.split(',').any? { |f| helpers.link_last_part(s[:hasFormalityLevel]).eql?(f) })
-      out = out && (languages.blank? || languages.split(',').any? { |f| Array(s[:naturalLanguage]).any? { |n| helpers.link_last_part(n).eql?(f) } })
-      out = out && (s[:ontology].viewOf.blank? || (show_views && !s[:ontology].viewOf.blank?))
+      out = true
+      out &&= s[:ontology].viewingRestriction.eql?('private') if private_only
+      out &&= s[:ontology].administeredBy.include?(current_user.id) if user_ontologies_only
+      out &&= groups.blank? || (s[:ontology].group.map { |x| helpers.link_last_part(x) } & groups.split(',')).any?
+      out &&= categories.blank? || (s[:ontology].hasDomain.map do |x|
+        helpers.link_last_part(x)
+      end & categories.split(',')).any?
+      out &&= status.blank? || status.eql?('alpha,beta,production,retired') || status.split(',').include?(s[:status])
+      out &&= formats.blank? || formats.split(',').any? { |f| s[:hasOntologyLanguage].eql?(f) }
+      out &&= is_of_type.blank? || is_of_type.split(',').any? { |f| helpers.link_last_part(s[:isOfType]).eql?(f) }
+      out &&= formality_level.blank? || formality_level.split(',').any? do |f|
+        helpers.link_last_part(s[:hasFormalityLevel]).eql?(f)
+      end
+      out &&= languages.blank? || languages.split(',').any? do |f|
+        Array(s[:naturalLanguage]).any? do |n|
+          helpers.link_last_part(n).eql?(f)
+        end
+      end
+      out &&= s[:ontology].viewOf.blank? || (show_views && !s[:ontology].viewOf.blank?)
 
-      out = out && (query.blank? || [s[:description], s[:ontology].name, s[:ontology].acronym].any? { |x| (x || '').downcase.include?(query.downcase) })
+      out &&= query.blank? || [s[:description], s[:ontology].name, s[:ontology].acronym].any? do |x|
+        (x || '').downcase.include?(query.downcase)
+      end
 
       if projects.present?
         project_acronyms = projects.split(',').map(&:strip)
         ontology_projects = Array(s[:ontology].projects).map { |p| helpers.link_last_part(p) }
-        out = out && (ontology_projects & project_acronyms).any?
+        out &&= (ontology_projects & project_acronyms).any?
       end
 
       if out
@@ -122,7 +136,6 @@ module SubmissionFilter
       else
         nil
       end
-
     end.compact
   end
 
@@ -209,17 +222,11 @@ module SubmissionFilter
       end
     end
 
-    unless params[:sort_by].blank?
-      @filters[:sort_by] = params[:sort_by]
-    end
+    @filters[:sort_by] = params[:sort_by] unless params[:sort_by].blank?
 
-    unless params[:search].blank?
-      @filters[:search] = params[:search]
-    end
+    @filters[:search] = params[:search] unless params[:search].blank?
 
-    unless params[:portals].blank?
-      @filters[:portals] = params[:portals]
-    end
+    @filters[:portals] = params[:portals] unless params[:portals].blank?
 
     request_params.delete(:order_by) if %w[visits fair].include?(request_params[:sort_by].to_s)
     request_params
@@ -270,8 +277,12 @@ module SubmissionFilter
     ont_hash[:hasFormalityLevel] = sub.hasFormalityLevel
     ont_hash[:isOfType] = sub.isOfType
     ont_hash[:submissionStatusFormatted] = submission_status2string(sub).gsub(/\(|\)/, '')
-    ont_hash[:format] = sub.hasOntologyLanguage&.split('/').last
-    ont_hash[:contact] = sub.contact.map { |c| c.is_a?(String) ? c.split('|').first : c.name }.first unless sub.contact.nil?
+    ont_hash[:format] = sub.hasOntologyLanguage&.split('/')&.last
+    return if sub.contact.nil?
+
+    ont_hash[:contact] = sub.contact.map do |c|
+      c.is_a?(String) ? c.split('|').first : c.name
+    end.first
   end
 
   def add_ontology_attributes(ont_hash, ont)
@@ -279,7 +290,7 @@ module SubmissionFilter
 
     ont_hash[:id] = ont.id
     ont_hash[:type] = ont.viewOf.nil? ? 'ontology' : 'ontology_view'
-    ont_hash[:show] = ont.viewOf.nil? ? true : false # show ontologies only by default
+    ont_hash[:show] = ont.viewOf.nil? || false # show ontologies only by default
     ont_hash[:groups] = ont.group || []
     ont_hash[:categories] = ont.hasDomain || []
     ont_hash[:private] = ont.private?
@@ -303,11 +314,15 @@ module SubmissionFilter
   end
 
   def ontology_filters_init(categories, groups)
-    @languages = submission_metadata.select { |x| x['@id']['naturalLanguage'] }.first['enforcedValues'].map do |id, name|
+    @languages = submission_metadata.select do |x|
+      x['@id']['naturalLanguage']
+    end.first['enforcedValues'].map do |id, name|
       { 'id' => id, 'name' => name, 'value' => id.split('/').last, 'acronym' => name }
     end
 
-    @formalityLevel = submission_metadata.select { |x| x['@id']['hasFormalityLevel'] }.first['enforcedValues'].map do |id, name|
+    @formalityLevel = submission_metadata.select do |x|
+      x['@id']['hasFormalityLevel']
+    end.first['enforcedValues'].map do |id, name|
       { 'id' => id, 'name' => helpers.link_last_part(id), 'acronym' => name, 'value' => helpers.link_last_part(id) }
     end
 
@@ -315,17 +330,17 @@ module SubmissionFilter
       { 'id' => id, 'name' => helpers.link_last_part(id), 'acronym' => name, 'value' => helpers.link_last_part(id) }
     end
 
-    @formats = [[t("submissions.filter.all_formats"), ''], 'OBO', 'OWL', 'SKOS', 'UMLS']
+    @formats = [[t('submissions.filter.all_formats'), ''], 'OBO', 'OWL', 'SKOS', 'UMLS']
     @sorts_options = [
-      [t("submissions.filter.sort_by_name"), 'ontology_name'],
-      [t("submissions.filter.sort_by_classes"), 'metrics_classes'],
-      [t("submissions.filter.sort_by_instances_concepts"), 'metrics_individuals'],
-      [t("submissions.filter.sort_by_submitted_date"), 'creationDate'],
-      [t("submissions.filter.sort_by_creation_date"), 'released'],
-      [t("submissions.filter.sort_by_fair_score"), 'fair'],
-      [t("submissions.filter.sort_by_popularity"), 'visits'],
-      [t("submissions.filter.sort_by_notes"), 'notes'],
-      [t("submissions.filter.sort_by_projects"), 'projects'],
+      [t('submissions.filter.sort_by_name'), 'ontology_name'],
+      [t('submissions.filter.sort_by_classes'), 'metrics_classes'],
+      [t('submissions.filter.sort_by_instances_concepts'), 'metrics_individuals'],
+      [t('submissions.filter.sort_by_submitted_date'), 'creationDate'],
+      [t('submissions.filter.sort_by_creation_date'), 'released'],
+      [t('submissions.filter.sort_by_fair_score'), 'fair'],
+      [t('submissions.filter.sort_by_popularity'), 'visits'],
+      [t('submissions.filter.sort_by_notes'), 'notes'],
+      [t('submissions.filter.sort_by_projects'), 'projects']
     ]
 
     init_filters(params)
@@ -344,19 +359,20 @@ module SubmissionFilter
     {
       categories: object_filter(categories, :categories),
       groups: object_filter(groups, :groups),
-      projects: object_filter(projects, :projects, "acronym"), 
-      naturalLanguage: object_filter(@languages, :naturalLanguage, "value"),
+      projects: object_filter(projects, :projects, 'acronym'),
+      naturalLanguage: object_filter(@languages, :naturalLanguage, 'value'),
       hasFormalityLevel: object_filter(@formalityLevel, :hasFormalityLevel),
-      isOfType: object_filter(@isOfType, :isOfType, "value"),
+      isOfType: object_filter(@isOfType, :isOfType, 'value')
       # missingStatus: object_filter(@missingStatus, :missingStatus)
     }
   end
 
   def check_id(name_value, objects, name_key)
-    selected_category = objects.select { |x| x[name_key].parameterize.underscore.eql?(name_value.parameterize.underscore) }
+    selected_category = objects.select do |x|
+      x[name_key].parameterize.underscore.eql?(name_value.parameterize.underscore)
+    end
     selected_category.first && selected_category.first['id']
   end
-
 
   def object_filter(objects, object_name, name_key = 'acronym')
     checks = params[object_name]&.split(',') || []
@@ -395,5 +411,4 @@ module SubmissionFilter
     end
     objects_count
   end
-
 end
