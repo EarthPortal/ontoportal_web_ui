@@ -4,8 +4,8 @@ module SubmissionsHelper
       html = content_tag(:div) do
         content_tag(:div, t('submission_inputs.edit_metadata_instruction',
                             portal_name: portal_name,
-                            link: link_to(t('submission_inputs.edit_metadata_instruction_link'), Rails.configuration.settings.links[:metadata_help], target: '_blank')).html_safe
-        )
+                            link: link_to(t('submission_inputs.edit_metadata_instruction_link'),
+                                          Rails.configuration.settings.links[:metadata_help], target: '_blank')).html_safe)
       end
 
       html.html_safe
@@ -16,8 +16,8 @@ module SubmissionsHelper
     content_tag(:div, class: 'edit-ontology-desc') do
       html = content_tag(:div, t('submission_inputs.license_help',
                                  portal_name: portal_name,
-                                 link: link_to(t('submission_inputs.license_help_link'), "https://rdflicense.linkeddata.es/", target: '_blank')).html_safe
-      )
+                                 link: link_to(t('submission_inputs.license_help_link'),
+                                               'https://rdflicense.linkeddata.es/', target: '_blank')).html_safe)
       html.html_safe
     end
   end
@@ -34,7 +34,10 @@ module SubmissionsHelper
   def metadata_knownUsage_help
     content_tag(:div, class: 'edit-ontology-desc') do
       html = content_tag(:div) do
-        content_tag(:span, t('submission_inputs.known_usage_help', metadata_knownUsage_help: link_to(t('submission_inputs.known_usage_help_link'), "/projects/new", target: "_blank")).html_safe)
+        content_tag(:span,
+                    t('submission_inputs.known_usage_help',
+                      metadata_knownUsage_help: link_to(t('submission_inputs.known_usage_help_link'), '/projects/new',
+                                                        target: '_blank')).html_safe)
       end
       html.html_safe
     end
@@ -52,7 +55,10 @@ module SubmissionsHelper
 
   def metadata_version_help
     content_tag(:div, class: 'edit-ontology-desc') do
-      content_tag(:div , t('submission_inputs.version_help' , link: link_to(t('submission_inputs.version_helper_link'), "https://hal.science/hal-04094847", target: "_blank")).html_safe).html_safe
+      content_tag(:div,
+                  t('submission_inputs.version_help',
+                    link: link_to(t('submission_inputs.version_helper_link'), 'https://hal.science/hal-04094847',
+                                  target: '_blank')).html_safe).html_safe
     end
   end
 
@@ -60,7 +66,8 @@ module SubmissionsHelper
     [acronym, submission_id].join('#')
   end
 
-  def submission_metadata_selector(id: 'search_metadata', name: 'search[metadata]', label: t('submission_inputs.metadata_selector_label'))
+  def submission_metadata_selector(id: 'search_metadata', name: 'search[metadata]',
+                                   label: t('submission_inputs.metadata_selector_label'))
     select_input(id: id, name: name, label: label, values: submission_editable_properties.sort, multiple: true,
                  data: { placeholder: t('submission_inputs.metadata_selector_placeholder') })
   end
@@ -70,7 +77,8 @@ module SubmissionsHelper
   end
 
   def render_submission_attribute(attribute, submission = @submission, ontology = @ontology)
-    render partial: 'ontologies_metadata_curator/attribute_inline_editable', locals: { attribute: attribute, submission: submission, ontology: ontology }
+    render partial: 'ontologies_metadata_curator/attribute_inline_editable',
+           locals: { attribute: attribute, submission: submission, ontology: ontology }
   end
 
   def attribute_input_frame_id(acronym, submission_id, attribute)
@@ -79,11 +87,11 @@ module SubmissionsHelper
 
   def edit_submission_property_link(acronym, submission_id, attribute, container_id = nil, &block)
     link = "/ontologies/#{acronym}/submissions/#{submission_id}/edit_properties?properties=#{attribute}&inline_save=true"
-    if container_id
-      link += "&container_id=#{container_id}"
-    else
-      link += "&container_id=#{attribute_input_frame_id(acronym, submission_id, attribute)}"
-    end
+    link += if container_id
+              "&container_id=#{container_id}"
+            else
+              "&container_id=#{attribute_input_frame_id(acronym, submission_id, attribute)}"
+            end
     link_to link, data: { turbo: true }, class: 'btn btn-sm btn-light' do
       capture(&block)
     end
@@ -94,17 +102,17 @@ module SubmissionsHelper
     @selected_attributes = attributes
     @inline_save = inline_save
 
-    if @selected_attributes && !@selected_attributes.empty?
-      display_properties = (equivalent_properties(@selected_attributes) + [:ontology, :submissionId]).join(',')
-    else
-      display_properties = 'all'
-    end
+    display_properties = if @selected_attributes && !@selected_attributes.empty?
+                           (equivalent_properties(@selected_attributes) + %i[ontology submissionId]).join(',')
+                         else
+                           'all'
+                         end
 
-    if submissionId
-      @submission = @ontology.explore.submissions({ display: display_properties }, submissionId)
-    else
-      @submission = @ontology.explore.latest_submission({ display: display_properties })
-    end
+    @submission = if submissionId
+                    @ontology.explore.submissions({ display: display_properties }, submissionId)
+                  else
+                    @ontology.explore.latest_submission({ display: display_properties })
+                  end
   end
 
   def inline_save?
@@ -121,20 +129,21 @@ module SubmissionsHelper
   def save_button
     content_tag :div do
       button_tag({ data: { controller: 'tooltip' }, title: 'Save', class: 'btn btn-sm btn-light mx-1' }) do
-        content_tag(:i, "", class: 'fas fa-check')
+        content_tag(:i, '', class: 'fas fa-check')
       end
     end
-
   end
 
-  def cancel_link(acronym: @ontology.acronym, submission_id: @submission.submissionId, attribute:)
+  def cancel_link(attribute:, acronym: @ontology.acronym, submission_id: @submission.submissionId)
     "/ontologies_metadata_curator/#{acronym}/submissions/#{submission_id}/attributes/#{attribute}"
   end
 
   def cancel_button(href)
     content_tag :div do
-      link_to(href, { data: { turbo: true, controller: 'tooltip', turbo_frame: '_self' }, title: 'Cancel', class: 'btn btn-sm btn-light mx-1' }) do
-        content_tag(:i, "", class: 'fas fa-times')
+      link_to(href,
+              { data: { turbo: true, controller: 'tooltip', turbo_frame: '_self' }, title: 'Cancel',
+                class: 'btn btn-sm btn-light mx-1' }) do
+        content_tag(:i, '', class: 'fas fa-times')
       end
     end
   end
@@ -165,7 +174,8 @@ module SubmissionsHelper
   end
 
   def format_equivalent
-    %w[hasOntologyLanguage prefLabelProperty synonymProperty definitionProperty authorProperty obsoleteProperty obsoleteParent]
+    %w[hasOntologyLanguage prefLabelProperty synonymProperty definitionProperty authorProperty obsoleteProperty
+       obsoleteParent]
   end
 
   def location_equivalent
@@ -181,7 +191,7 @@ module SubmissionsHelper
 
   def equivalent_properties(attr_labels)
     labels = Array(attr_labels)
-    labels.map { |x| equivalent_property(x) }.flatten
+    labels.map { |x| equivalent_property(x) }.compact.flatten
   end
 
   def submission_properties
@@ -194,9 +204,26 @@ module SubmissionsHelper
 
     out
   end
+
+  def equivalent_ontology_property(attr)
+    equivalents = ontology_properties
+    found = equivalents.select { |x| x.is_a?(Array) ? x[1].eql?(attr.to_sym) : x.eql?(attr) }
+
+    if found.empty?
+      nil
+    else
+      found.first.is_a?(Array) ? found.first[1] : found.first
+    end
+  end
+
+  def equivalent_ontology_properties(attr_labels)
+    labels = Array(attr_labels)
+    labels.map { |x| equivalent_ontology_property(x) }.compact.flatten
+  end
+
   def ontology_properties
-    ['acronym', 'name', [t('submission_inputs.visibility'), :viewingRestriction], 'viewOf', 'groups', 'categories',
-     [t('submission_inputs.administrators'), 'administeredBy'],'projects']
+    ['acronym', 'name', [t('submission_inputs.visibility'), :viewingRestriction], 'viewOf', ['Groups', :group],
+     ['Categories', :hasDomain], [t('submission_inputs.administrators'), :administeredBy], 'projects']
   end
 
   def submission_editable_properties
@@ -216,7 +243,7 @@ module SubmissionsHelper
   end
 
   def attribute_infos(attr_label)
-    submission_metadata.select { |attr_hash| attr_hash["attribute"].to_s.eql?(attr_label) }.first
+    submission_metadata.select { |attr_hash| attr_hash['attribute'].to_s.eql?(attr_label) }.first
   end
 
   def object_name(acronym = @ontology.acronym, submissionId = @submission.submissionId)
@@ -225,16 +252,14 @@ module SubmissionsHelper
   end
 
   def agent_attributes
-    submission_metadata.select { |x| x["enforce"].include?('Agent') }.map { |x| x["attribute"] }
+    submission_metadata.select { |x| x['enforce'].include?('Agent') }.map { |x| x['attribute'] }
   end
 
   def render_submission_inputs(frame_id, submission)
-    output = ""
+    output = ''
     @submission = submission
 
-    if selected_attribute?('acronym')
-      output += ontology_acronym_input(update: true)
-    end
+    output += ontology_acronym_input(update: true) if selected_attribute?('acronym')
 
     if selected_attribute?('projects')
       output += attribute_form_group_container('projects') do
@@ -242,25 +267,15 @@ module SubmissionsHelper
       end
     end
 
-    if selected_attribute?('name')
-      output += ontology_name_input
-    end
+    output += ontology_name_input if selected_attribute?('name')
 
-    if selected_attribute?('hasOntologyLanguage')
-      output += has_ontology_language_input
-    end
+    output += has_ontology_language_input if selected_attribute?('hasOntologyLanguage')
 
-    if selected_attribute?('categories')
-      output += ontology_categories_input
-    end
+    output += ontology_categories_input if selected_attribute?('categories')
 
-    if selected_attribute?('groups')
-      output += ontology_groups_input
-    end
+    output += ontology_groups_input if selected_attribute?('groups')
 
-    if selected_attribute?('administeredBy')
-      output += ontology_administered_by_input
-    end
+    output += ontology_administered_by_input if selected_attribute?('administeredBy')
 
     if selected_attribute?('location')
       output += attribute_form_group_container('location') do
@@ -288,7 +303,8 @@ module SubmissionsHelper
       end
     end
 
-    reject_metadata = %w[abstract description uploadFilePath contact pullLocation hasOntologyLanguage hasLicense bugDatabase knownUsage version notes deprecated status]
+    reject_metadata = %w[abstract description uploadFilePath contact pullLocation hasOntologyLanguage hasLicense
+                         bugDatabase knownUsage version notes deprecated status]
     label = inline_save? ? '' : nil
 
     if selected_attribute?('abstract')
@@ -311,7 +327,8 @@ module SubmissionsHelper
 
     if selected_attribute?('bugDatabase')
       output += attribute_form_group_container('bugDatabase') do
-        raw attribute_input('bugDatabase', help: 'Some ontology feedback and notes features are only possible if a GitHub repository is informed.')
+        raw attribute_input('bugDatabase',
+                            help: 'Some ontology feedback and notes features are only possible if a GitHub repository is informed.')
       end
     end
 
@@ -345,7 +362,9 @@ module SubmissionsHelper
       end
     end
 
-    submission_metadata.reject { |attr| reject_metadata.include?(attr['attribute']) || !selected_attribute?(attr['attribute']) }.each do |attr|
+    submission_metadata.reject do |attr|
+      reject_metadata.include?(attr['attribute']) || !selected_attribute?(attr['attribute'])
+    end.each do |attr|
       output += attribute_form_group_container(attr['attribute']) do
         raw attribute_input(attr['attribute'], label: label)
       end
