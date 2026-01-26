@@ -22,10 +22,14 @@
     %div.d-flex.justify-content-around.flew-wrap
       - omniauth_providers_info.each do |provider, config|
         - if config[:enable]
+          - is_svg = config[:icon]&.end_with?('.svg')
           = button_to  "/auth/#{config[:name] || config[:strategy] || provider}",
-                      class: 'btn btn-lg',disabled: !config[:enable] ,style:'width: 70px', title: t('login.login_with_provider', provider: provider.to_s.humanize), 'data-turbo': false do; 
+                      class: 'btn btn-lg', style: "width: #{is_svg ? '70px' : '120px'}", title: t('login.login_with_provider', provider: provider.to_s.humanize), 'data-turbo': false do
             - if config[:icon]
-              = inline_svg "icons/#{config[:icon]}", class: 'login-active-sso'
+              - if is_svg
+                = inline_svg "icons/#{config[:icon]}", class: 'login-active-sso'
+              - else
+                = image_tag "icons/#{config[:icon]}", style: 'height: 40px; width: auto;'
             - else
               = provider.to_s.humanize
         - else
