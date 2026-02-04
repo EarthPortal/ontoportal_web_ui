@@ -21,7 +21,6 @@
 
       if (this.sortcolumnValue || this.searchingValue || this.pagingValue || this.serverSideValue) {
 
-        // Remove any existing DataTable wrapper elements left from Turbo cache
         const existingWrapper = document.getElementById(`${table.id}_wrapper`)
         if (existingWrapper) {
           existingWrapper.parentNode.insertBefore(table, existingWrapper)
