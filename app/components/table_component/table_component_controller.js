@@ -20,7 +20,14 @@
       const defaultSortColumn = parseInt(this.sortcolumnValue, 10)
 
       if (this.sortcolumnValue || this.searchingValue || this.pagingValue || this.serverSideValue) {
-      
+
+        // Remove any existing DataTable wrapper elements left from Turbo cache
+        const existingWrapper = document.getElementById(`${table.id}_wrapper`)
+        if (existingWrapper) {
+          existingWrapper.parentNode.insertBefore(table, existingWrapper)
+          existingWrapper.remove()
+        }
+
         this.table = new DataTable(`#${table.id}`, {
           paging: this.pagingValue,
           ...(this.columnsValue?.length > 0 && { columns: this.columnsValue.map(name => ({ data: name })) }),
