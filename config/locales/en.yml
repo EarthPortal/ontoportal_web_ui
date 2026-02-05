@@ -437,6 +437,7 @@ en:
   concepts:
     cancel: Cancel
     close: Close
+    confirm: Confirm
     date_sorted_list_error: Classes or concepts do not provide <strong>creation</strong>
       (dc:created) or <strong>modification</strong> (dc:modified) dates.
     details: Details
@@ -571,6 +572,8 @@ en:
     include_comment: Please include your comment
     include_email: Please include your email
     include_name: Please include your name
+    include_ontologies: Please include at least one ontology
+    include_slice_name: Please include the slice name
     index:
       tagline: The home of ontologies and semantic artefacts in agri-food and related
         domains.
@@ -584,6 +587,7 @@ en:
     max: Max
     min: Min
     notice_feedback: Feedback has been sent
+    notice_slice: Your slice suggestion has been sent successfully
     ontologies: Ontologies
     ontology_submissions_request: Ontology submissions request
     ontology_upload: Do you want to share an ontology?
@@ -601,6 +605,16 @@ en:
     question: Question
     recommender_annotator: Recommender and Annotator
     see_details: See details
+    slice:
+      email: Email
+      error_on_form: Errors on the form
+      login: Login
+      login_required: You must be logged in to suggest a slice
+      name: Name
+      reason_usage: Reason for usage
+      send: Send
+      slice_name: Slice name
+      suggest_a_slice: Suggest a slice
     slices_description: Slices allow users to interact (both via API or UI) only with a subset of ontologies in EarthPortal. If browsing the slice, all the portal features will be restricted to the chosen subset, enabling users to focus on their specific use cases.
     suggest_slice: Suggest a new slice
     support_and_collaborations: Support & Collaborations
@@ -934,6 +948,8 @@ en:
   ontologies:
     access_rights_information: Additional license and access rights information
     add_new_submission: Add new submission
+    confirm_submission_title: Confirm submission
+    confirm_submission_message: Are you sure you want to submit this ontology? This action will create a new submission.
     admin_links: Administration links
     administrator: 'Administrator:'
     allow_users: Allow users to view the metadata of your ontology (Summary) only.
