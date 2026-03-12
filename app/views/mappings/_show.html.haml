@@ -13,7 +13,7 @@
             %th #{@target_ontology_name}
             %th Source
           - for map in @mappings
-            %tr{'data-source' => map.source, 'data-auto-mapping-filter-target' => 'row'}
+            %tr{'data-source' => map.source, 'data-auto-mapping-filter-target': 'row'}
               - map.classes.each do |cls|
                 %td
                   - if internal_mapping?(cls)
@@ -22,7 +22,7 @@
                     = ajax_to_external_cls(cls)
               %td
                 #{map.source} #{(map.process || {})[:source_name]}
-          %tr{'data-auto-mapping-filter-target' => 'emptyMessage', style: 'display: none'}
+          %tr{'data-auto-mapping-filter-target': 'emptyMessage', style: 'display: none'}
             %td.text-center{:colspan => "3"}= t("mappings.mapping_table.no_manual_mappings")
       .mappings-table-pagination
         = will_paginate @page_results, :update => 'mappings', :params => { :target => params[:target] }
