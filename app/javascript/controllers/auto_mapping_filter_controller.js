@@ -2,18 +2,17 @@ import { Controller } from "@hotwired/stimulus"
 // Connects to data-controller="auto-mapping-filter"
 
 export default class extends Controller {
+  static targets = ["row"]
 
   toggle(event) {
-    const status_hide = event.target.checked 
+    const hide = event.target.checked 
 
     const autoSources = ['LOOM','CUI', 'SAME_URI']
 
-    this.element.querySelectorAll('tr').forEach((row) => {
-      const isAutomatic = autoSources.some((type) =>
-        row.classList.contains(type)
-      )
+    this.rowTargets.forEach((row) => {
+      const isAutomatic = autoSources.includes(row.dataset.source)   
 
-      row.style.display = status_hide && isAutomatic ? 'none' : ''
+      row.style.display = hide && isAutomatic ? 'none' : ''
     })
   }
 }

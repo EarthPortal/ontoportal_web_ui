@@ -13,7 +13,7 @@
                     data: { show_modal_title_value: "Create a new mapping for #{@concept.prefLabel}" },
                     ) do
             = render Buttons::RegularButtonComponent.new(id:'new_mapping_btn' , value:t('mappings.create_new_mapping'), variant: 'secondary', size: 'slim', state: 'no-anim')
-      = switch_input(id: 'hide_automatic_mappings', name: 'hide_automatic_mappings', label: t('mappings.mapping_table.hide_automatic_mappings'), data: {action: 'change->auto-mapping-filter#toggle'})
+      = switch_input(id: 'hide_automatic_mappings', name: 'hide_automatic_mappings', label: t('mappings.mapping_table.hide_automatic_mappings'), data: {auto_mapping_filter_target: 'toggle' , action: 'change->auto-mapping-filter#toggle'})
     #mapping_details
       = render :partial => '/mappings/mapping_table'
 
