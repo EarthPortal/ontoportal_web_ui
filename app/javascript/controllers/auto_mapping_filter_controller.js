@@ -17,7 +17,10 @@ export default class extends Controller {
     })
 
     if(this.hasEmptyMessageTarget) {
-      this.emptyMessageTarget.style.display = count === this.rowTargets.length ? '' : 'none'
+      const hasRows = this.rowTargets.length > 0
+      const allHidden = count === this.rowTargets.length //number of hidden rows == to the total number of rows??
+
+      this.emptyMessageTarget.style.display = hasRows && allHidden ? '' : 'none'
     }
   }
 }
