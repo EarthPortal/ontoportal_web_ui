@@ -889,6 +889,7 @@ fr:
       source: Source
       type: Type
       hide_automatic_mappings: Masquer les mappings automatiques
+      no_manual_mappings: Aucun mapping manuel trouvé
     mapping_type_selector:
       class: Classe
       class_uri_placeholder: Entrez l'URI de la classe
