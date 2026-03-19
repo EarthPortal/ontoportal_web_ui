@@ -859,6 +859,8 @@ en:
       relations: Relations
       source: Source
       type: Type
+      hide_generated_mappings: Hide generated mappings
+      no_manual_mappings: No manual mappings found
     mapping_type_selector:
       class: Class
       class_uri_placeholder: Enter the class URI

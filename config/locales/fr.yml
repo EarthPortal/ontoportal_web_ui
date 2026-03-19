@@ -888,6 +888,8 @@ fr:
       relations: Relations
       source: Source
       type: Type
+      hide_generated_mappings: Masquer les mappings générés
+      no_manual_mappings: Aucun mapping manuel trouvé
     mapping_type_selector:
       class: Classe
       class_uri_placeholder: Entrez l'URI de la classe
