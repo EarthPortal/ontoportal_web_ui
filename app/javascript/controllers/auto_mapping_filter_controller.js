@@ -6,7 +6,7 @@ export default class extends Controller {
 
   toggle(event) {
     const hide = event.target.checked 
-    const autoSources = ['LOOM','CUI', 'SAME_URI']
+    const autoSources = ['LOOM','CUI']
     let count = 0
 
     this.rowTargets.forEach((row) => {

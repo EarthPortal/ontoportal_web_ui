@@ -888,7 +888,7 @@ fr:
       relations: Relations
       source: Source
       type: Type
-      hide_automatic_mappings: Masquer les mappings automatiques
+      hide_generated_mappings: Masquer les mappings générés
       no_manual_mappings: Aucun mapping manuel trouvé
     mapping_type_selector:
       class: Classe

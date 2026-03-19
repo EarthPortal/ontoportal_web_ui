@@ -3,7 +3,7 @@
     #mapping_results{data: {controller: 'auto-mapping-filter'}}
       .mappings-table-pagination.d-flex.justify-content-between.align-items-center.pr-3
         = will_paginate @page_results, :update => 'mappings', :params => { :target => params[:target] }
-        = switch_input(id: 'hide_automatic_mappings_modal', name: 'hide_automatic_mappings_modal', label: t('mappings.mapping_table.hide_automatic_mappings'), data: {auto_mapping_filter_target: 'toggle', action: 'change->auto-mapping-filter#toggle'})
+        = switch_input(id: 'hide_generated_mappings_modal', name: 'hide_generated_mappings_modal', label: t('mappings.mapping_table.hide_generated_mappings'), data: {auto_mapping_filter_target: 'toggle', action: 'change->auto-mapping-filter#toggle'})
       - if @mappings.nil? or @mappings.empty?
         = t("mappings.show.no_mappings_found")
       - else            
