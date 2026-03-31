@@ -44,7 +44,7 @@ module MetricsHelper
 
   def projects_count(ontologies_acronym = [])
     projects = LinkedData::Client::Models::Project.all
-    projects.select! { |p| ontologies_acronym.intersection(p.ontologyUsed.map{|x| x.split('/').last}).any? } unless ontologies_acronym.empty?
+    projects.select! { |p| ontologies_acronym.intersection(Array(p.ontologyUsed).map{|x| x.split('/').last}).any? } unless ontologies_acronym.empty?
     projects.size
   end
 
