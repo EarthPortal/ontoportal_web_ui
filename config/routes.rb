@@ -6,6 +6,7 @@ Rails.application.routes.draw do
 
   get'/tools', to: 'home#tools'
   get 'auth/:provider/callback', to: 'login#create_omniauth'
+  get 'auth/failure', to: 'login#omniauth_failure'
   get 'locale/:language', to: 'language#set_locale_language'
   get 'metadata_export/index'
   get '/config', to: 'home#portal_config'

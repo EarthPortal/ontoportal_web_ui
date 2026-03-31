@@ -39,6 +39,11 @@ class LoginController < ApplicationController
     end
   end
 
+  def omniauth_failure
+    @errors = [t('login.authentication_failed', provider: params[:strategy])]
+    render :index
+  end
+
   def create_omniauth
     auth_data = request.env['omniauth.auth']
     auth_code = auth_data.credentials.token
