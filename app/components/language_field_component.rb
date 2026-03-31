@@ -30,6 +30,8 @@ class LanguageFieldComponent < ViewComponent::Base
       @lang_code =  'cn'
     when 'ja'
       @lang_code = 'jp'
+    when 'el'
+      @lang_code = 'gr'
     end
     @lang_code
   end

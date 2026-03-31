@@ -270,7 +270,7 @@ en:
       no_contributions: This agent has no contributions in %{portalName} 
       keywords : Keywords
       tags : Related themes
-      identifier: identifier
+      identifier: Identifier
     save: Save
     see_usages_count: Usages (%{count})
     turbo_confirm: Are you sure?
@@ -430,6 +430,7 @@ en:
   concepts:
     cancel: Cancel
     close: Close
+    confirm: Confirm
     date_sorted_list_error: Classes or concepts do not provide <strong>creation</strong>
       (dc:created) or <strong>modification</strong> (dc:modified) dates.
     details: Details
@@ -521,7 +522,7 @@ en:
     agroportal_figures: "%{site} in figures"
     average: Average
     benefit1: Discover new insights and knowledge by exploring other ontologies or
-      semantic resources in the repository.
+      semantic artefacts in the repository.
     benefit2: Contribute to knowledge sharing and semantic interoperability in your
       domain.
     benefit3: Map your ontology to other relevant ones in the domain and collaborate
@@ -564,6 +565,8 @@ en:
     include_comment: Please include your comment
     include_email: Please include your email
     include_name: Please include your name
+    include_ontologies: Please include at least one ontology
+    include_slice_name: Please include the slice name
     index:
       tagline: The home of ontologies and semantic artefacts in Earth System, environment and related domains.
       title: Welcome to %{site}
@@ -576,6 +579,7 @@ en:
     max: Max
     min: Min
     notice_feedback: Feedback has been sent
+    notice_slice: Your slice suggestion has been sent successfully
     ontologies: Ontologies
     ontology_submissions_request: Ontology submissions request
     ontology_upload: Do you want to share an ontology?
@@ -593,6 +597,16 @@ en:
     question: Question
     recommender_annotator: Recommender and Annotator
     see_details: See details
+    slice:
+      email: Email
+      error_on_form: Errors on the form
+      login: Login
+      login_required: You must be logged in to suggest a slice
+      name: Name
+      reason_usage: Reason for usage
+      send: Send
+      slice_name: Slice name
+      suggest_a_slice: Suggest a slice
     slices_description: Slices allow users to interact (both via API or UI) only with a subset of ontologies in EarthPortal. If browsing the slice, all the portal features will be restricted to the chosen subset, enabling users to focus on their specific use cases.
     suggest_slice: Suggest a new slice
     support_and_collaborations: Support & Collaborations
@@ -926,12 +940,15 @@ en:
   ontologies:
     access_rights_information: Additional license and access rights information
     add_new_submission: Add new submission
+    confirm_submission_title: Confirm submission
+    confirm_submission_message: Are you sure you want to submit this ontology? This action will create a new submission.
     admin_links: Administration links
     administrator: 'Administrator:'
     allow_users: Allow users to view the metadata of your ontology (Summary) only.
     browser:
       admin_welcome: Welcome admin,this coloring indicates admin-only features
       search_placeholder: Filter ontologies, e.g., GCMD, oxygen, etc...
+      show_my_ontologies: Show my ontologies only
       show_ontology_views: Show ontology views
       show_private_ontology: Show private ontology only
       show_retired_ontologies: Show retired ontologies

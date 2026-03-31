@@ -443,6 +443,7 @@ fr:
   concepts:
     cancel: Annuler
     close: Fermer
+    confirm: Confirmer
     date_sorted_list_error: Les classes ou concepts ne fournissent pas de dates de
       <strong>création</strong> (dc:created) ou de <strong>modification</strong> (cd:modified).
     details: Détails
@@ -535,7 +536,7 @@ fr:
     agroportal_figures: "%{site} en chiffres"
     average: Moyenne
     benefit1: Découvrir de nouvelles connaissances en explorant d'autres ontologies
-      ou ressources sémantiques dans le portail.
+      ou artefacts sémantiques dans le portail.
     benefit2: Contribuez au partage de connaissances et à l'interopérabilité sémantique
       dans votre domaine.
     benefit3: Aliogner votre ontologie avec d'autres ontologies pertinentes dans le
@@ -579,6 +580,8 @@ fr:
     include_comment: Veuillez inclure votre commentaire
     include_email: Veuillez inclure votre email
     include_name: Veuillez inclure votre nom
+    include_ontologies: Veuillez inclure au moins une ontologie
+    include_slice_name: Veuillez inclure le nom de la slice
     index:
       tagline: Le catalogue des ontologies et des artefacts sémantiques du système Terre, de l'environnement et des domaines connexes.
       title: Bienvenue sur %{site}
@@ -591,6 +594,7 @@ fr:
     max: Max
     min: Min
     notice_feedback: Le retour d'expéreince a été envoyé
+    notice_slice: Votre suggestion de slice a été envoyée avec succès
     ontologies: Ontologies
     ontology_submissions_request: Demande de soumissions d'ontologie
     ontology_upload: Vous souhaitez partager une ontologie ?
@@ -609,6 +613,16 @@ fr:
     question: Question
     recommender_annotator: Recommandeur et Annotateur
     see_details: Voir les détails
+    slice:
+      email: Email
+      error_on_form: Erreurs dans le formulaire
+      login: Se connecter
+      login_required: Vous devez être connecté pour proposer une slice
+      name: Nom
+      reason_usage: Raison d'utilisation
+      send: Envoyer
+      slice_name: Nom de la slice
+      suggest_a_slice: Proposer une slice
     slices_description: Les "slices" permettent aux utilisateurs d'interagir (à la fois via l'API ou l'interface utilisateur) uniquement avec un sous-ensemble d'ontologies dans EarthPortal. Si vous parcourez une slice, toutes les fonctionnalités du portail seront limitées au sous-ensemble choisi; cela permet aux utilisateurs de se concentrer sur leurs cas d'utilisation spécifiques.
     suggest_slice: Proposer un nouveau groupe/slice
     support_and_collaborations: Support & Collaborations
@@ -958,6 +972,8 @@ fr:
     access_rights_information: Informations supplémentaires sur la licence et les
       droits d'accès
     add_new_submission: Ajouter une nouvelle soumission
+    confirm_submission_title: Confirmer la soumission
+    confirm_submission_message: Êtes-vous sûr de vouloir soumettre cette ontologie ? Cette action créera une nouvelle soumission.
     admin_links: Liens d'administratiion
     administrator: 'Administrateur :'
     allow_users: Permettre aux utilisateurs de voir uniquement le résumé de la métadonnée
@@ -966,6 +982,7 @@ fr:
       admin_welcome: Bienvenue admin, cette couleur indique les fonctionnalités réservées
         aux administrateurs
       search_placeholder: Filtrer les ontologies, e.g., GCMD, oxygen, etc...
+      show_my_ontologies: Afficher mes ontologies seulement
       show_ontology_views: Afficher les vues de l'ontologie
       show_private_ontology: Afficher seulement les ontologies privées
       show_retired_ontologies: Afficher les ontologies retirées
