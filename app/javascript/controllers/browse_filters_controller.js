@@ -63,6 +63,7 @@ export default class extends Controller {
                 const selectedInputs = this.#getSelectedChecks(event)
                 checks = selectedInputs.map(x => x.value)
                 filter = "categories"
+                break;
             case "user_ontologies_only":
                 checks = event.target.checked ?  ['true'] : []
                 filter = "user_ontologies_only"
