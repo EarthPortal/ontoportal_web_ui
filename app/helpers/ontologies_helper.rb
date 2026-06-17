@@ -695,12 +695,12 @@ module OntologiesHelper
   # no logic yet
   def edit_with_button
     return unless @ontology.admin?(session[:user])
+    return unless @submission_latest
+
     content_tag(:div, style: 'margin-left: 10px;', data: { controller: 'tooltip' }, title: t('application.edit_with_tooltip')) do
       render PillButtonComponent.new do
-        content_tag(:a, class: 'd-flex align-items-center', href: 'javascript:void(0);') do
-          (inline_svg_tag('edit.svg') +
-            content_tag(:span, t('application.edit_with'), class: 'ml-1')).html_safe
-        end
+        (inline_svg_tag('edit.svg') +
+          content_tag(:span, t('application.edit_with'), class: 'ml-1')).html_safe
       end
     end
   end
