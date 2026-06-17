@@ -342,6 +342,8 @@ en:
     search_for_class: Please search for a class using the Jump To field above
     try_again: There was an error, please try again
     watching: Watch
+    edit_with: Edit With
+    edit_with_tooltip: Edit content
   change_requests:
     change_request_success_message: Your change request was successfully submitted!
       View the %{url} on GitHub.

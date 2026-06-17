@@ -351,6 +351,8 @@ fr:
     search_for_class: Veuillez rechercher une classe à l'aide du champ Jump To ci-dessus
     try_again: Une erreur s'est produite, veuillez réessayer
     watching: Surveiller
+    edit_with: Éditer avec
+    edit_with_tooltip: Éditer le contenu
   change_requests:
     change_request_success_message: Votre demande de modification a été soumise! Voir
       le %{url} sur GitHub.
