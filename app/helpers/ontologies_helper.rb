@@ -680,12 +680,13 @@ module OntologiesHelper
   end
 
   def new_submission_button
-    
+    return unless @ontology.admin?(session[:user])
     render RoundedButtonComponent.new(link: new_ontology_submission_path(@ontology.acronym), icon: 'icons/plus.svg',
                                       size: 'medium', title: t('ontologies.add_new_submission'))
   end
 
   def ontology_edit_button
+    return unless @ontology.admin?(session[:user])
     render RoundedButtonComponent.new(link: edit_ontology_submission_path(ontology_id: @ontology.acronym, id: @submission_latest.id.split('/').last), icon: 'edit.svg',
                                       size: 'medium',
                                       title: t('ontologies.edit_metadata'))
@@ -693,6 +694,7 @@ module OntologiesHelper
 
   # no logic yet
   def edit_with_button
+    return unless @ontology.admin?(session[:user])
     content_tag(:div, style: 'margin-left: 10px;', data: { controller: 'tooltip' }, title: t('application.edit_with_tooltip')) do
       render PillButtonComponent.new do
         content_tag(:a, class: 'd-flex align-items-center', href: 'javascript:void(0);') do
