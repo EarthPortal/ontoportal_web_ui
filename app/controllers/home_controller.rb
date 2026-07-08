@@ -6,7 +6,7 @@ class HomeController < ApplicationController
   include FairScoreHelper, FederationHelper,MetricsHelper
 
   def index
-    @analytics = Rails.cache.fetch("ontologies_analytics-#{Time.now.year}-#{Time.now.month}", expires_in: 2.hours) do
+    @analytics = Rails.cache.fetch("ontologies_analytics-#{@subdomain_filter[:acronym].presence || 'all'}-#{Time.now.year}-#{Time.now.month}", expires_in: 2.hours) do
       helpers.ontologies_analytics
     end
 
@@ -24,7 +24,7 @@ class HomeController < ApplicationController
 
   # Add a new action for the metrics frame
   def metrics
-    @analytics = Rails.cache.fetch("ontologies_analytics-#{Time.now.year}-#{Time.now.month}", expires_in: 2.hours) do
+    @analytics = Rails.cache.fetch("ontologies_analytics-#{@subdomain_filter[:acronym].presence || 'all'}-#{Time.now.year}-#{Time.now.month}", expires_in: 2.hours) do
       helpers.ontologies_analytics
     end
     @metrics = portal_metrics(@analytics)
