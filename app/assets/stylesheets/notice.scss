@@ -15,7 +15,7 @@ div#notice_message {
 }
 
 .slice-notice-bar-container{
-  background-color: var(--warning-color);
+  background-color: #3f9486;
   display: flex;
   justify-content: center;
 }
@@ -35,5 +35,5 @@ div#notice_message {
   font-weight: 600;
 }
 .slice-notice-bar .warning-button.primary-button{
-  background-color: #efb300 !important;
+  background-color: #2e6d62 !important;
 }
