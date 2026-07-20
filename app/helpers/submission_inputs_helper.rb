@@ -58,7 +58,9 @@ module SubmissionInputsHelper
     attr = SubmissionMetadataInput.new(attribute_key: attr_key, submission: @submission, label: label,
                                        attr_metadata: attr_metadata(attr_key))
 
-    if attr.type?('Agent')
+    if attr_key.eql?('editWith')
+      generate_external_tools_select_input(attr, help_text: help)
+    elsif attr.type?('Agent')
       if attr.type?('list')
         generate_list_agent_input(attr, helper_text: help)
       else
@@ -389,6 +391,23 @@ module SubmissionInputsHelper
   def generate_textarea_input(attr)
     text_input(name: attr.name,
                value: attr.values, helper_text: nil)
+  end
+
+  # editWith: select fed by the portal external tools registry (GET /external_tools),
+  # the stored value is the tool homepage URL
+  def generate_external_tools_select_input(attr, help_text: nil)
+    name = attr.name
+    label = attr_header_label(attr)
+    select_values = external_tools_list.map { |tool| [tool[:label], tool[:url]] }
+    selected = attr.values.to_s
+
+    unless attr.required?
+      select_values << ['', '']
+      selected = '' if selected.empty?
+    end
+
+    select_input(name: name, label: label, values: select_values,
+                 selected: selected, required: attr.required?, help: help_text)
   end
 
   def generate_select_input(attr, multiple: false, help_text: nil)
