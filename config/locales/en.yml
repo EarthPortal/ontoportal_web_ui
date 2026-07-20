@@ -950,6 +950,12 @@ en:
   ontologies:
     access_rights_information: Additional license and access rights information
     add_new_submission: Add new submission
+    external_tool_not_defined: No external editor is defined for this ontology. Please fill in the "Edit with" metadata.
+    external_tool_edit_metadata: Edit the metadata
+    external_tool_not_recognized: The editor defined for this ontology is not recognized by the portal.
+    external_tool_no_apikey: Please save your %{tool} API key in your account first.
+    external_tool_go_to_account: Go to my account
+    external_tool_resolve_failed: No matching %{tool} thesaurus found for this ontology.
     confirm_submission_title: Confirm submission
     confirm_submission_message: Are you sure you want to submit this ontology? This action will create a new submission.
     admin_links: Administration links
@@ -1731,6 +1737,9 @@ en:
       user_to_admin: Are you sure you want to make this user an admin?
       username: Username
     error_saving_custom_ontologies: Error saving Custom Ontologies, please try again
+    error_saving_external_tools: Error saving the API key, please try again
+    external_tools_apikey_required: Please enter an API key before saving
+    external_tools_saved: API key saved successfully
     error_subscribe: Something went wrong ...
     first_name_required: First name field is required
     index:
@@ -1774,6 +1783,11 @@ en:
       not_subscribed: Not subscribed to any ontology
       note_feature_logged_in: 'Note: this feature works only when you are logged in.'
       notes: Notes
+      external_tools: External tools
+      external_tools_description: Connect your external editors — click a tool and enter your API key.
+      external_tool_connected: Connected
+      external_tool_apikey_placeholder: Your API key...
+      external_tool_apikey_save: Save
       orcid_id: 'ORCID:'
       please: Please
       projects_created: Projects created

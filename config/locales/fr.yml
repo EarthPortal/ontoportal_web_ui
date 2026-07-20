@@ -982,6 +982,12 @@ fr:
     access_rights_information: Informations supplémentaires sur la licence et les
       droits d'accès
     add_new_submission: Ajouter une nouvelle soumission
+    external_tool_not_defined: Aucun éditeur externe n'est défini pour cette ontologie. Renseignez la métadonnée « Edit with ».
+    external_tool_edit_metadata: Modifier les métadonnées
+    external_tool_not_recognized: L'éditeur défini pour cette ontologie n'est pas reconnu par le portail.
+    external_tool_no_apikey: Veuillez d'abord enregistrer votre clé API %{tool} dans votre compte.
+    external_tool_go_to_account: Aller à mon compte
+    external_tool_resolve_failed: Aucun thésaurus %{tool} ne correspond à cette ontologie.
     confirm_submission_title: Confirmer la soumission
     confirm_submission_message: Êtes-vous sûr de vouloir soumettre cette ontologie ? Cette action créera une nouvelle soumission.
     admin_links: Liens d'administratiion
@@ -1785,7 +1791,10 @@ fr:
       username: Nom d'utilisateur
     error_saving_custom_ontologies: Erreur lors de l'enregistrement de l'ensemble
       personnalisé d'ontologies, veuillez réessayer
+    error_saving_external_tools: Erreur lors de l'enregistrement de la clé API, veuillez réessayer
     error_subscribe: Quelque chose s'est mal passé ...
+    external_tools_apikey_required: Veuillez saisir une clé API avant de sauvegarder
+    external_tools_saved: Clé API enregistrée avec succès
     first_name_required: Le champ Prénom est requis
     index:
       actions: Actions
@@ -1833,6 +1842,11 @@ fr:
       note_feature_logged_in: 'Note : cette fonctionnalité ne fonctionne que lorsque
         vous êtes connecté.'
       notes: Notes
+      external_tools: Outils externes
+      external_tools_description: Connectez vos éditeurs externes — cliquez sur un outil et saisissez votre clé API.
+      external_tool_connected: Connecté
+      external_tool_apikey_placeholder: Votre clé API...
+      external_tool_apikey_save: Sauvegarder
       orcid_id: 'ORCID :'
       please: S'il vous plait
       projects_created: Projets créés

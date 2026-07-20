@@ -170,6 +170,27 @@ class UsersController < ApplicationController
     redirect_to user_path(@user.username)
   end
 
+  def update_external_tools
+    @user = find_user
+    tool_name = params.dig(:user, :tool_name)
+    apikey = params.dig(:user, :apikey)
+
+    if tool_name.blank? || apikey.blank?
+      flash[:notice] = t('users.external_tools_apikey_required')
+    else
+      external_tools = Array(@user.externalTools).reject { |tool| tool.toolName.eql?(tool_name) }
+                                                 .map { |tool| { toolName: tool.toolName, apikey: tool.apikey } }
+      external_tools << { toolName: tool_name, apikey: apikey }
+      error_response = @user.update(values: { externalTools: external_tools })
+
+      if response_error?(error_response)
+        flash[:notice] = t('users.error_saving_external_tools')
+      else
+        flash[:notice] = t('users.external_tools_saved')
+      end
+    end
+    redirect_to user_path(@user.username)
+  end
 
   def subscribe
     @user = find_user
