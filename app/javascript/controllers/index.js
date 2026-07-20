@@ -105,3 +105,6 @@ application.register('concepts-json', ConceptsJsonButtonController)
 
 import ParentCategoriesSelectorController from "./parent_categories_selector_controller.js"
 application.register('parent-categories-selector', ParentCategoriesSelectorController)
+
+import ExternalToolController from "./external_tool_controller"
+application.register('external-tool', ExternalToolController)

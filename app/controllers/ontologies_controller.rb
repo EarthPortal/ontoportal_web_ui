@@ -458,6 +458,54 @@ class OntologiesController < ApplicationController
     render partial: 'ontologies/sections/metadata/metrics_evolution_graph', locals: { data: data }
   end
 
+  def external_tool_connect
+    return render json: { error: 'Unauthorized' }, status: :unauthorized unless session[:user]
+
+    acronym = params[:ontology_id].to_s
+    ontology = LinkedData::Client::Models::Ontology.find_by_acronym(acronym).first
+    submission = ontology&.explore&.latest_submission({ display: 'editWith,submissionId' })
+
+    # 1 is an external editor defined for this ontology (editWith metadata)
+    edit_with = submission&.editWith.to_s
+    if edit_with.blank?
+      return render json: { error: t('ontologies.external_tool_not_defined'),
+                            link: "/ontologies/#{acronym}/submissions/#{submission&.submissionId}/edit",
+                            link_label: t('ontologies.external_tool_edit_metadata') },
+                    status: :unprocessable_entity
+    end
+
+    # 2 does the editWith value match a tool of the portal registry
+    tool = helpers.external_tools_list.find { |candidate| candidate[:url].to_s.chomp('/').eql?(edit_with.chomp('/')) }
+    if tool.nil?
+      return render json: { error: t('ontologies.external_tool_not_recognized') }, status: :unprocessable_entity
+    end
+
+    # 3 has the current user saved an API key for this tool
+    user = LinkedData::Client::Models::User.find(session[:user].username, { include: 'externalTools' })
+    api_key = helpers.user_external_tool_apikey(user, tool[:name])
+    if api_key.blank?
+      return render json: { error: t('ontologies.external_tool_no_apikey', tool: tool[:label]),
+                            link: '/account',
+                            link_label: t('ontologies.external_tool_go_to_account') },
+                    status: :unprocessable_entity
+    end
+
+    # 4 elegate the connection to the connector matching the tool type
+    connector = ExternalTools.connector_for(tool)
+    if connector.nil?
+      return render json: { error: t('ontologies.external_tool_not_recognized') }, status: :unprocessable_entity
+    end
+
+    result = connector.connect(api_key: api_key, acronym: acronym, concept_id: params[:idc])
+    if result[:redirect_url]
+      render json: { redirectUrl: result[:redirect_url] }
+    else
+      render json: { error: result[:error] }, status: result[:status] || :unprocessable_entity
+    end
+  rescue StandardError => e
+    render json: { error: e.message }, status: :internal_server_error
+  end
+
   def ontologies_selector
     @categories = LinkedData::Client::Models::Category.all(display_links: false, display_context: false)
     @groups = LinkedData::Client::Models::Group.all(display_links: false, display_context: false)
