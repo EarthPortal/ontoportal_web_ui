@@ -58,24 +58,19 @@
               = t('users.show.api_documentation')
               = render partial: "shared/svgs/external_link_icon"
         .account-page-card{'data-controller': 'reveal-component'}
-          .account-page-card-container
-            .account-page-card-sub-container
-              %h4.account-page-card-title= t('users.show.external_tools')
-              %p.account-page-card-desc= t('users.show.external_tools_description')
-              - external_tools_list.each do |tool|
-                - saved_key = user_external_tool_apikey(@user, tool[:name])
-                .account-page-subscription
-                  %a{'data-action': 'click->reveal-component#toggle', 'data-id': "external_tool_form_#{tool[:name]}", style: 'cursor: pointer;'}
-                    = tool[:label]
-                  %div
-                    - if saved_key.present?
-                      = render ChipButtonComponent.new(text: t('users.show.external_tool_connected'), type: 'static')
-                .d-none{id: "external_tool_form_#{tool[:name]}"}
-                  = form_tag user_external_tools_path(url_encode(@user.username)) do
-                    = hidden_field_tag 'user[tool_name]', tool[:name]
-                    = text_field_tag 'user[apikey]', saved_key, class: 'register-input-long', placeholder: t('users.show.external_tool_apikey_placeholder')
-                    .mt-2
-                      = render Buttons::RegularButtonComponent.new(id: "save_#{tool[:name]}_apikey", variant: 'secondary', size: 'slim', type: 'submit', value: t('users.show.external_tool_apikey_save'))
+          %h4.account-page-card-title= t('users.show.external_tools')
+          %p.account-page-card-desc= t('users.show.external_tools_description')
+          - external_tools_list.each do |tool|
+            - saved_key = user_external_tool_apikey(@user, tool[:name])
+            .account-page-subscription
+              %a{'data-action': 'click->reveal-component#toggle', 'data-id': "external_tool_form_#{tool[:name]}", style: 'cursor: pointer;'}
+                = tool[:label]
+            .d-none.mt-3{id: "external_tool_form_#{tool[:name]}"}
+              = form_tag user_external_tools_path(url_encode(@user.username)) do
+                = hidden_field_tag 'user[tool_name]', tool[:name]
+                = render Input::TextInputComponent.new(name: 'user[apikey]', value: saved_key, placeholder: t('users.show.external_tool_apikey_placeholder'))
+                .mt-3
+                  = render Buttons::RegularButtonComponent.new(id: "save_#{tool[:name]}_apikey", variant: 'secondary', size: 'slim', type: 'submit', value: t('users.show.external_tool_apikey_save'))
         .account-page-card{'data-controller': 'reveal-component'}
           %h4.account-page-card-title
             = t('users.show.custom_semantic_resource')

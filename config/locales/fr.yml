@@ -988,6 +988,8 @@ fr:
     external_tool_no_apikey: Veuillez d'abord enregistrer votre clé API %{tool} dans votre compte.
     external_tool_go_to_account: Aller à mon compte
     external_tool_resolve_failed: Aucun thésaurus %{tool} ne correspond à cette ontologie.
+    external_tool_invalid_apikey: Votre clé API %{tool} semble invalide. Veuillez la vérifier dans votre compte.
+    external_tool_connection_failed: Impossible de se connecter à %{tool}, veuillez réessayer plus tard.
     confirm_submission_title: Confirmer la soumission
     confirm_submission_message: Êtes-vous sûr de vouloir soumettre cette ontologie ? Cette action créera une nouvelle soumission.
     admin_links: Liens d'administratiion
@@ -1795,6 +1797,7 @@ fr:
     error_subscribe: Quelque chose s'est mal passé ...
     external_tools_apikey_required: Veuillez saisir une clé API avant de sauvegarder
     external_tools_saved: Clé API enregistrée avec succès
+    external_tools_removed: Clé API supprimée avec succès
     first_name_required: Le champ Prénom est requis
     index:
       actions: Actions
