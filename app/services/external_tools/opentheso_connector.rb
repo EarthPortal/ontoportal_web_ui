@@ -9,13 +9,13 @@ module ExternalTools
       @base_url = tool[:url].to_s.chomp('/')
     end
 
-    def connect(api_key:, acronym:, concept_id: nil)
+    def connect(api_key:, acronym:)
       idt = resolve_thesaurus(acronym)
       if idt.blank?
         return { error: I18n.t('ontologies.external_tool_resolve_failed', tool: @tool[:label]), status: :not_found }
       end
 
-      data = request_sso_token(api_key, idt, concept_id)
+      data = request_sso_token(api_key, idt)
       if data && data['redirectUrl']
         { redirect_url: "#{@base_url}#{data['redirectUrl']}" }
       else
@@ -42,7 +42,7 @@ module ExternalTools
       JSON.parse(response.body)['idTheso']
     end
 
-    def request_sso_token(api_key, idt, idc)
+    def request_sso_token(api_key, idt)
       uri = URI("#{@base_url}/api/v2/auth/token")
       http = Net::HTTP.new(uri.host, uri.port)
       http.use_ssl = uri.scheme == 'https'
@@ -50,7 +50,7 @@ module ExternalTools
       request = Net::HTTP::Post.new(uri)
       request['X-API-Key'] = api_key
       request['Content-Type'] = 'application/json'
-      request.body = { idc: idc.to_s, idt: idt }.to_json
+      request.body = { idc: '', idt: idt }.to_json
 
       response = http.request(request)
       JSON.parse(response.body)

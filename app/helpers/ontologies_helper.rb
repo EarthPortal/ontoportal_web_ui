@@ -697,15 +697,11 @@ module OntologiesHelper
     return unless @submission_latest
 
     connect_url = ontology_external_tool_connect_path(@ontology.acronym)
-    idt = ''
-    idc = ''
 
     button = content_tag(:div, style: 'margin-left: 10px;', data: { controller: 'tooltip' }, title: t('application.edit_with_tooltip')) do
       link_to('#', class: 'pill-button',
                    data: { controller: 'external-tool', action: 'click->external-tool#connect',
-                           external_tool_url_value: connect_url,
-                           external_tool_idt_value: idt,
-                           external_tool_idc_value: idc }) do
+                           external_tool_url_value: connect_url }) do
         (inline_svg_tag('edit.svg') +
           content_tag(:span, t('application.edit_with'), class: 'ml-1')).html_safe
       end

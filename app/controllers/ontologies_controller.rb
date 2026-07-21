@@ -496,7 +496,7 @@ class OntologiesController < ApplicationController
       return render json: { error: t('ontologies.external_tool_not_recognized') }, status: :unprocessable_entity
     end
 
-    result = connector.connect(api_key: api_key, acronym: acronym, concept_id: params[:idc])
+    result = connector.connect(api_key: api_key, acronym: acronym)
     if result[:redirect_url]
       render json: { redirectUrl: result[:redirect_url] }
     else

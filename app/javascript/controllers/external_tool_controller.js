@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static values = { url: String, idt: String, idc: String }
+  static values = { url: String }
 
   async connect(event) {
     event.preventDefault()
@@ -17,11 +17,7 @@ export default class extends Controller {
         headers: {
           'Content-Type': 'application/json',
           'X-CSRF-Token': csrfToken
-        },
-        body: JSON.stringify({
-          idt: this.idtValue,
-          idc: this.idcValue
-        })
+        }
       })
 
       const data = await response.json()
