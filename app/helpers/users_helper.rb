@@ -2,7 +2,7 @@ module UsersHelper
   def external_tools_list
     tools = Rails.cache.fetch('external_tools_list', expires_in: 1.hour) do
       Array(LinkedData::Client::HTTP.get('/external_tools')).map do |tool|
-        { name: tool.name, label: tool.title, url: tool.homepage.to_s, type: tool.toolType }
+        { name: tool.name, label: tool.title, url: tool.homepage.to_s }
       end
     end
     tools || []
