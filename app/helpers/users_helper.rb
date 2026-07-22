@@ -11,8 +11,4 @@ module UsersHelper
   def external_tool(tool_name)
     external_tools_list.find { |tool| tool[:name].eql?(tool_name.to_s) }
   end
-
-  def user_external_tool_apikey(user, tool_name)
-    Array(user.externalTools).find { |tool| tool.toolName.eql?(tool_name) }&.apikey
-  end
 end

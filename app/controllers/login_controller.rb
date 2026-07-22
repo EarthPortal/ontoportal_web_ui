@@ -136,6 +136,7 @@ class LoginController < ApplicationController
   def login(user)
     return unless user
     session[:user] = user
+    session[:external_tool_apikeys] = Array(user.externalTools).each_with_object({}) { |t, h| h[t.toolName] = t.apikey }
     custom_ontologies_text = session[:user].customOntology && !session[:user].customOntology.empty? ? t('login.custom_ontology_set') : ""
     notice = t('login.welcome') + user.username.to_s + "</b>! " + custom_ontologies_text
     flash[:success] = notice.html_safe

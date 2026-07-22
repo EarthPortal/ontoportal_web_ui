@@ -178,9 +178,14 @@ class UsersController < ApplicationController
     if tool_name.blank?
       flash[:notice] = t('users.external_tools_apikey_required')
     else
-      external_tools = Array(@user.externalTools).reject { |tool| tool.toolName.eql?(tool_name) }
-                                                 .map { |tool| { toolName: tool.toolName, apikey: tool.apikey } }
-      external_tools << { toolName: tool_name, apikey: apikey } if apikey.present?
+      session[:external_tool_apikeys] ||= {}
+      if apikey.present?
+        session[:external_tool_apikeys][tool_name] = apikey
+      else
+        session[:external_tool_apikeys].delete(tool_name)
+      end
+
+      external_tools = session[:external_tool_apikeys].map { |name, key| { toolName: name, apikey: key } }
       error_response = @user.update(values: { externalTools: external_tools })
 
       if response_error?(error_response)

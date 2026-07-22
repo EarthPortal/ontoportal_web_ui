@@ -61,7 +61,7 @@
           %h4.account-page-card-title= t('users.show.external_tools')
           %p.account-page-card-desc= t('users.show.external_tools_description')
           - external_tools_list.each do |tool|
-            - saved_key = user_external_tool_apikey(@user, tool[:name])
+            - saved_key = @user.username.eql?(session[:user].username) ? session[:external_tool_apikeys]&.[](tool[:name]) : nil
             .account-page-subscription
               %a{'data-action': 'click->reveal-component#toggle', 'data-id': "external_tool_form_#{tool[:name]}", style: 'cursor: pointer;'}
                 = tool[:label]

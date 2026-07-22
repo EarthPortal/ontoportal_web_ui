@@ -481,8 +481,7 @@ class OntologiesController < ApplicationController
     end
 
     # 3 has the current user saved an API key for this tool
-    user = LinkedData::Client::Models::User.find(session[:user].username, { include: 'externalTools' })
-    api_key = helpers.user_external_tool_apikey(user, tool[:name])
+    api_key = session[:external_tool_apikeys]&.[](tool[:name])
     if api_key.blank?
       return render json: { error: t('ontologies.external_tool_no_apikey', tool: tool[:label]),
                             link: '/account',
