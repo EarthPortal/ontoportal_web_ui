@@ -1,9 +1,9 @@
 module UsersHelper
   def external_tools_list
     tools = Rails.cache.fetch('external_tools_list', expires_in: 1.hour) do
-      Array(LinkedData::Client::HTTP.get('/external_tools'))
+      LinkedData::Client::Models::ExternalTool.all
         .sort_by { |tool| tool.created.to_s }
-        .map { |tool| { name: tool.name, label: tool.title, url: tool.homepage.to_s } }
+        .map { |tool| { id: tool.id.to_s, name: tool.name, label: tool.title, url: tool.homepage.to_s } }
     end
     tools || []
   end

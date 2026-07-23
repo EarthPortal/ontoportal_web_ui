@@ -175,8 +175,12 @@ class UsersController < ApplicationController
     tool_name = params.dig(:user, :tool_name)
     apikey = params.dig(:user, :apikey)
 
+    tool = helpers.external_tool(tool_name)
+
     if tool_name.blank?
       flash[:notice] = t('users.external_tools_apikey_required')
+    elsif tool.nil?
+      flash[:notice] = t('users.error_saving_external_tools')
     else
       session[:external_tool_apikeys] ||= {}
       if apikey.present?
@@ -185,7 +189,10 @@ class UsersController < ApplicationController
         session[:external_tool_apikeys].delete(tool_name)
       end
 
-      external_tools = session[:external_tool_apikeys].map { |name, key| { toolName: name, apikey: key } }
+      external_tools = session[:external_tool_apikeys].filter_map do |name, key|
+        saved_tool = helpers.external_tool(name)
+        { externalTool: saved_tool[:id], apikey: key } if saved_tool
+      end
       error_response = @user.update(values: { externalTools: external_tools })
 
       if response_error?(error_response)
