@@ -1711,6 +1711,7 @@ fr:
     accounts_allowed: Ajouter ou supprimer des comptes autorisés à voir cette ontologie
       dans %{portal_name}.
     administrators: Administrateurs
+    projects: Projets
     contact: contact
     contact_email: Email de %{name}
     contact_name: Nom du %{name}

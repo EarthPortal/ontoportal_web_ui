@@ -1657,6 +1657,7 @@ en:
     accounts_allowed: Add or remove accounts that are allowed to see this ontology
       in %{portal_name}.
     administrators: Administrators
+    projects: Projects
     contact: Contact
     contact_email: "%{name} email"
     contact_name: "%{name} name"
