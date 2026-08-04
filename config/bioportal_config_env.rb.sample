@@ -1,10 +1,12 @@
 $DEBUG_API_CLIENT = false
 $API_CLIENT_INVALIDATE_CACHE = false
 $READ_ONLY_PORTAL = ENV["READ_ONLY_PORTAL"].to_s.downcase == "true"
+$AGENTS_ENABLED = ENV["AGENTS_ENABLED"].to_s.downcase == "true"
 
 # Organization info
 $ORG = ENV['ORG']
 $ORG_URL = ENV['ORG_URL']
+$SPARQL_ENDPOINT_URL = ENV['SPARQL_ENDPOINT_URL'] || nil
 
 # Site name (required)
 $SITE = ENV['SITE']
@@ -43,6 +45,9 @@ $NCBO_API_KEY = ENV['NCBO_API_KEY']
 # Fairness Assessment.
 $FAIRNESS_DISABLED = ENV['FAIRNESS_DISABLED']
 $FAIRNESS_URL = ENV['FAIRNESS_URL']
+
+# FOOPS! FAIR assessment endpoint.
+$FOOPS_URL = ENV['FOOPS_URL'] || 'https://foops.linkeddata.es/assessOntology'
 
 # Used to define other bioportal that can be mapped to
 # Example to map to ncbo bioportal : {"ncbo" => {"api" => "http://data.bioontology.org", "ui" => "http://bioportal.bioontology.org", "apikey" => ""}
@@ -162,7 +167,7 @@ $FRONT_NOTICE = ''
 # EX: $SITE_NOTICE = { :unique_key => 'Put your message here (can include <a href="/link">html</a> if you use single quotes).' }
 $SITE_NOTICE = {}
 
-$TERMS_AND_CONDITIONS_LINK = 'https://doc.jonquetlab.lirmm.fr/share/e6158eda-c109-4385-852c-51a42de9a412/doc/terms-conditions-naDsDo2Zxq'
+$TERMS_AND_CONDITIONS_LINK = 'https://wiki.agroportal.eu/share/e6158eda-c109-4385-852c-51a42de9a412/doc/terms-conditions-naDsDo2Zxq'
 $CITE_ANNOTATOR = 'https://hal.science/hal-00492024'
 $ANNOTATOR_API_DOC = 'https://data.agroportal.lirmm.fr/documentation#nav_annotator'
 $CITE_RECOMMENDER = 'https://doi.org/10.1186/s13326-017-0128-y' 
@@ -215,8 +220,8 @@ $HOME_PAGE_LOGOS = [
 $PORTALS_INSTANCES = [
   {
     name: 'AgroPortal',
-    api: 'https://data.agroportal.lirmm.fr',
-    ui: 'https://agroportal.lirmm.fr/',
+    api: 'https://data.agroportal.eu',
+    ui: 'https://agroportal.eu/',
     color: '#3CB371',
     apikey: '1de0a270-29c5-4dda-b043-7c3580628cd5',
     'light-color': '#F1F6FA',
@@ -272,13 +277,6 @@ $PORTALS_INSTANCES = [
     'light-color': '#F0F5F6'
   },
   {
-    name: 'TestPortal',
-    ui: 'https://testportal.lirmm.fr/',
-    api: 'https://data.testportal.lirmm.fr/',
-    color: '#74a9cb',
-    apikey: '1de0a270-29c5-4dda-b043-7c3580628cd5',
-  },
-  {
     name: 'BiodivPortal',
     ui: 'https://biodivportal.gfbio.org/',
     api: 'https://data.biodivportal.gfbio.org/',
@@ -306,7 +304,7 @@ $FOOTER_LINKS = {
   ],
   sections: {
     products: {
-      release_notes: "https://doc.jonquetlab.lirmm.fr/share/e6158eda-c109-4385-852c-51a42de9a412/doc/release-notes-btKjZk5tU2",
+      release_notes: "https://wiki.agroportal.eu/share/e6158eda-c109-4385-852c-51a42de9a412/doc/release-notes-btKjZk5tU2",
       api: "https://data.agroportal.lirmm.fr/",
       tools: "/tools",
       sparql: "https://sparql.agroportal.lirmm.fr/test/",
@@ -315,19 +313,19 @@ $FOOTER_LINKS = {
     support: {
       contact_us: "https://#{$SITE}.lirmm.fr/feedback",
       documentation: "https://ontoportal.github.io/documentation/",
-      agro_documentation: "https://doc.jonquetlab.lirmm.fr/share/e6158eda-c109-4385-852c-51a42de9a412/doc/public-documentation-QMpsC9aVBb",
+      agro_documentation: "https://wiki.agroportal.eu/share/e6158eda-c109-4385-852c-51a42de9a412/doc/public-documentation-QMpsC9aVBb",
       issues_and_requests: $GITHUB_ISSUES 
     },
     agreements: {
       terms: $TERMS_AND_CONDITIONS_LINK,
-      privacy_policy: "https://doc.jonquetlab.lirmm.fr/share/e6158eda-c109-4385-852c-51a42de9a412/doc/terms-conditions-naDsDo2Zxq",
-      legal_notices: "https://doc.jonquetlab.lirmm.fr/share/e6158eda-c109-4385-852c-51a42de9a412/doc/terms-conditions-naDsDo2Zxq"
+      privacy_policy: "https://wiki.agroportal.eu/share/e6158eda-c109-4385-852c-51a42de9a412/doc/terms-conditions-naDsDo2Zxq",
+      legal_notices: "https://wiki.agroportal.eu/share/e6158eda-c109-4385-852c-51a42de9a412/doc/terms-conditions-naDsDo2Zxq"
     },
     about: {
       about_us: "https://github.com/agroportal/project-management",
       team: "https://github.com/orgs/agroportal/people",
-      cite_us: "https://doc.jonquetlab.lirmm.fr/share/e6158eda-c109-4385-852c-51a42de9a412/doc/publications-and-references-87tEoeoGKy",
-      acknowledgments: "https://doc.jonquetlab.lirmm.fr/share/e6158eda-c109-4385-852c-51a42de9a412/doc/acknowledgments-15GdRXLQdm"
+      cite_us: "https://wiki.agroportal.eu/share/e6158eda-c109-4385-852c-51a42de9a412/doc/publications-and-references-87tEoeoGKy",
+      acknowledgments: "https://wiki.agroportal.eu/share/e6158eda-c109-4385-852c-51a42de9a412/doc/acknowledgments-15GdRXLQdm"
     }
   }
 }

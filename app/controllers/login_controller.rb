@@ -8,10 +8,13 @@ class LoginController < ApplicationController
       # Get the original, encoded redirect
       uri = URI.parse(request.url)
       orig_params = Hash[uri.query.split("&").map {|e| e.split("=",2)}].symbolize_keys
-      session[:redirect] = orig_params[:redirect]
+      @redirect_url = orig_params[:redirect]
     else
-      session[:redirect] = request.referer
+      referer = request.referer
+      path = URI(referer).path rescue "/" if referer
+      @redirect_url = referer
     end
+    session[:redirect] = @redirect_url
   end
 
   # logs in a user
@@ -26,15 +29,21 @@ class LoginController < ApplicationController
 
     @errors << t("login.invalid_account_combination") if username.nil?
 
-    return render :action => 'index' if @errors.any?
+    if @errors.any?
+      @redirect_url = params[:redirect]
+      return render :action => 'index'
+    end
 
     logged_in_user = LinkedData::Client::Models::User.authenticate(username, params[:user][:password])
     if logged_in_user && !logged_in_user.errors
       login(logged_in_user)
-      redirect = session[:redirect] ? CGI.unescape(session[:redirect]) : "/"
+      raw_redirect = params[:redirect] || session[:redirect]
+      redirect = raw_redirect ? CGI.unescape(raw_redirect) : "/"
+      redirect = append_apikey_if_rest_url(redirect, logged_in_user)
       redirect_to redirect, allow_other_host: true
     else
       @errors << t('login.invalid_account_combination')
+      @redirect_url = params[:redirect] || session[:redirect]
       render :action => 'index'
     end
   end
@@ -58,7 +67,8 @@ class LoginController < ApplicationController
         redirect = CGI.unescape(session[:redirect])
       end
 
-      redirect_to redirect
+      redirect = append_apikey_if_rest_url(redirect, logged_in_user)
+      redirect_to redirect, allow_other_host: true
     else
       @errors =  [t('login.authentication_failed', provider: params[:provider])]
       render :action => 'index'
@@ -137,6 +147,28 @@ class LoginController < ApplicationController
   end
 
   private
+
+  def append_apikey_if_rest_url(redirect_url, user)
+    return redirect_url if redirect_url.blank?
+
+    rest_url = LinkedData::Client.settings.rest_url
+    fairness_url = $FAIRNESS_URL
+    # Basic check to see if the URL is a REST API URL or Fairness URL
+    if redirect_url.include?(rest_url) || (fairness_url.present? && redirect_url.include?(fairness_url))
+      uri = URI.parse(redirect_url) rescue nil
+      return redirect_url unless uri
+      
+      params = URI.decode_www_form(uri.query || "")
+      # Remove existing apikey if any, then add the user's apikey
+      params.reject! { |k, v| k == "apikey" }
+      params << ["apikey", user.apikey]
+      uri.query = URI.encode_www_form(params)
+      redirect_url = uri.to_s
+    end
+    redirect_url
+  rescue
+    redirect_url
+  end
 
   def login(user)
     return unless user

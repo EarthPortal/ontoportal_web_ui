@@ -24,10 +24,11 @@ class OntologiesController < ApplicationController
 
   layout 'ontology'
 
-  before_action :authorize_and_redirect, :only => [:edit, :update, :create, :new]
+  before_action :authorize_and_redirect, :only => [:create, :new]
   before_action :submission_metadata, only: [:show]
   before_action :set_federated_portals, only: [:index, :ontologies_filter]
-  before_action :authorize_read_only, :only => [:new, :create, :edit, :update]
+  before_action :authorize_read_only, :only => [:new, :create, :edit, :update, :destroy]
+  before_action :authorize_ontology_admin, only: [:edit]
 
   KNOWN_PAGES = Set.new(["terms", "classes", "mappings", "notes", "widgets", "summary", "properties", "instances", "schemes", "collections", "sparql"])
   EXTERNAL_MAPPINGS_GRAPH = "http://data.bioontology.org/metadata/ExternalMappings"
@@ -145,9 +146,6 @@ class OntologiesController < ApplicationController
   end
 
   def edit
-    @ontology = LinkedData::Client::Models::Ontology.find_by_acronym(params[:id]).first
-    redirect_to_home unless session[:user] && @ontology.administeredBy.include?(session[:user].id) || session[:user].admin?
-
     submission = @ontology.explore.latest_submission(include: 'submissionId')
     if submission
       redirect_to edit_ontology_submission_path(@ontology.acronym, submission.submissionId)
@@ -223,6 +221,7 @@ class OntologiesController < ApplicationController
   end
 
   def sparql
+    @sparql_submission = latest_rdf_submission(@ontology) || @submission_latest
     if request.xhr?
       render partial: 'ontologies/sections/sparql', layout: false
     else
@@ -286,8 +285,8 @@ class OntologiesController < ApplicationController
 
 
     unless helpers.submission_ready?(@submission_latest)
-      submissions = @ontology.explore.submissions(include: 'submissionId,submissionStatus')
-      if submissions.any?{|x| helpers.submission_ready?(x)}
+      @ontology_submissions = @ontology.explore.submissions(include: 'submissionId,submissionStatus')
+      if @ontology_submissions.any?{|x| helpers.submission_ready?(x)}
         @old_submission_ready = true
       elsif !params[:p].blank?
         params[:p] = "summary"
@@ -341,9 +340,12 @@ class OntologiesController < ApplicationController
     @projects = @ontology.explore.projects.sort { |a, b| a.name.downcase <=> b.name.downcase } || []
     @analytics = LinkedData::Client::HTTP.get(@ontology.links['analytics'])
 
-    # Call to fairness assessment service
+    # O'FAIRe (declarative) fairness score
     tmp = fairness_service_enabled? ? get_fair_score(@ontology.acronym) : nil
     @fair_scores_data = create_fair_scores_data(tmp.values.first) unless tmp.nil?
+
+    # FOOPS! (technical) fairness score — loaded asynchronously by foops_score_summary_controller.js
+    # No synchronous call here to avoid blocking the page
 
     @views = get_views(@ontology)
     @view_decorators = @views.map { |view| ViewDecorator.new(view, view_context) }
@@ -359,7 +361,7 @@ class OntologiesController < ApplicationController
 
     @config_properties = properties_hash_values(category_attributes["object description properties"])
     @methodology_properties = properties_hash_values(category_attributes["methodology"])
-    @agents_properties = properties_hash_values(category_attributes["persons and organizations"])
+    @agents_properties = properties_hash_values(category_attributes['agents'])
     @dates_properties = properties_hash_values(category_attributes["dates"])
     @links_properties = properties_hash_values([:isFormatOf, :hasFormat, :source, :includedInDataCatalog])
     @content_properties = properties_hash_values(category_attributes["content"])
@@ -510,6 +512,13 @@ class OntologiesController < ApplicationController
     render 'ontologies/ontologies_selector/ontologies_selector_results'
   end
 
+  # app/controllers/ontologies_controller.rb
+  def subject_chips
+    @subjects = Array(params[:subjects])
+    render  partial: 'ontologies/sections/metadata/subject_chips', layout: false
+  end
+
+
   private
 
   def get_views(ontology)
@@ -569,6 +578,17 @@ class OntologiesController < ApplicationController
     properties.map { |x| [x.to_s, [sub.send(x.to_s), custom_labels[x.to_sym]]] }.to_h
   end
 
+  def latest_rdf_submission(ontology)
+    return @submission_latest if helpers.submission_ready?(@submission_latest)
+
+    submissions = @ontology_submissions || ontology.explore.submissions(include: 'submissionId,submissionStatus') || []
+    submissions
+      .select { |s| Array(s.submissionStatus).include?('RDF') }
+      .max_by { |s| s.submissionId.to_i }
+  rescue StandardError
+    nil
+  end
+
 
   def determine_layout
     case action_name
@@ -595,5 +615,10 @@ class OntologiesController < ApplicationController
       next unless category.id
       category.id.start_with?(rest_url) || category.parentCategory.blank?
     end
+  end
+
+  def authorize_ontology_admin
+    @ontology = LinkedData::Client::Models::Ontology.find_by_acronym(params[:id]).first
+    redirect_to_home unless session[:user] && (@ontology.administeredBy.include?(session[:user].id) || session[:user].admin?)
   end
 end

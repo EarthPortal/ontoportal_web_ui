@@ -27,13 +27,27 @@ module ApplicationHelper
 
   def search_json_link(link = @json_url, style: '')
     custom_style = "font-size: 50px; line-height: 0.5; margin-left: 6px; #{style}".strip
-    render IconWithTooltipComponent.new(icon: "json.svg",link: link, target: '_blank', title: t('fair_score.go_to_api'), size:'small', style: custom_style)
+    link, target = api_button_link_and_target(link)
+    render IconWithTooltipComponent.new(icon: "json.svg",link: link, target: target, title: t('fair_score.go_to_api'), size:'small', style: custom_style)
   end
 
   def read_only_enabled?
     $READ_ONLY_PORTAL && !current_user_admin?
   end
+  
+  def agents_enabled?
+    user = current_user rescue nil
+    Flipper.enabled?('Agents', user)
+  end
 
+  def sparql_enabled?
+    user = current_user rescue nil
+    Flipper.enabled?('SPARQL', user) && $SPARQL_ENDPOINT_URL
+  end
+  def sidekiq_enabled?
+    user = current_user rescue nil
+    Flipper.enabled?('SIDEKIQ_UI', user) && $SIDEKIQ_UI_URL
+  end
   def portal_name_from_uri(uri)
     URI.parse(uri).hostname.split('.').first
   end
@@ -59,6 +73,15 @@ module ApplicationHelper
     end
   end
 
+  def api_button_link_and_target(link, allow_annonymous = false)
+    if current_user.nil? && !allow_annonymous
+      ["/login?redirect=#{escape(link)}", '_top']
+    else
+      link = append_apikey_if_rest_url(link, current_user)
+      [link, '_blank']
+    end
+  end
+
   def omniauth_providers_info
     $OMNIAUTH_PROVIDERS
   end
@@ -72,6 +95,8 @@ module ApplicationHelper
   end
 
   def current_user
+    # Safely return session[:user] or nil if no session context
+    return nil unless respond_to?(:session) && session
     session[:user]
   end
 
@@ -369,6 +394,10 @@ module ApplicationHelper
     # Reconstruct the cleaned URL
     "#{protocol}://#{cleaned_path}"
   end
+
+  def sidekiq_ui_url
+    sidekiq_ui_url = $SIDEKIQ_UI_URL
+  end
   
   def categories_browse_url(category)
     ontologies_path(categories: category)
@@ -418,12 +447,12 @@ module ApplicationHelper
     render Display::EmptyStateComponent.new(text: text)
   end
 
-  def ontologies_selector(id:, label: nil, name: nil, selected: nil, placeholder: nil, multiple: true, ontologies: onts_for_select)
+  def ontologies_selector(id:, label: nil, name: nil, selected: nil, placeholder: nil, multiple: true, ontologies: onts_for_select, show_advanced_options: true)
     content_tag(:div) do
       render(Input::SelectComponent.new(id: id, label: label, name: name, value: ontologies, multiple: multiple, selected: selected, placeholder: placeholder)) +
       content_tag(:div, class: 'ontologies-selector-button', 'data-controller': 'ontologies-selector', 'data-ontologies-selector-id-value': id) do      
         content_tag(:div, t('ontologies_selector.clear_selection'), class: 'clear-selection', 'data-action': 'click->ontologies-selector#clear') +
-        link_to_modal(t('ontologies_selector.ontologies_advanced_selection'), "/ontologies_selector?id=#{id}", data: { show_modal_title_value: t('ontologies_selector.ontologies_advanced_selection')})
+        (show_advanced_options ? link_to_modal(t('ontologies_selector.ontologies_advanced_selection'), "/ontologies_selector?id=#{id}", data: { show_modal_title_value: t('ontologies_selector.ontologies_advanced_selection') }) : ''.html_safe)
       end
     end
   end
@@ -458,6 +487,9 @@ module ApplicationHelper
   end
 
   def category_is_parent?(parents_list, category)
+    # Handle nil or empty parents_list
+    return [false, ''] unless parents_list.respond_to?(:keys)
+
     is_parent = parents_list.keys.include?(category.id)
     parent_error_message = t('admin.categories.category_used_parent')
     parents_list[category.id].each do |c|
@@ -491,6 +523,24 @@ module ApplicationHelper
 
   def id_to_acronym(id)
     id.split('/').last
+  end
+
+  private
+
+  def append_apikey_if_rest_url(link, user = current_user)
+    return link if link.blank? 
+    rest_url = LinkedData::Client.settings.rest_url
+    fairness_url = $FAIRNESS_URL
+    if link.include?(rest_url) || (fairness_url.present? && link.include?(fairness_url))
+      uri = URI.parse(link) rescue nil
+      return link unless uri
+      params = URI.decode_www_form(uri.query || "")
+      params.reject! { |k, v| k == "apikey" }
+      params << ["apikey", get_apikey]
+      uri.query = URI.encode_www_form(params)
+      link = uri.to_s
+    end
+    link
   end
 
 end

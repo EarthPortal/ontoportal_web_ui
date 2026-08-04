@@ -3,7 +3,7 @@
 class HomeController < ApplicationController
   layout :determine_layout
 
-  include FairScoreHelper, FederationHelper,MetricsHelper
+  include FairScoreHelper, FederationHelper, MetricsHelper, AgentHelper
 
   def index
     @analytics = Rails.cache.fetch("ontologies_analytics-#{@subdomain_filter[:acronym].presence || 'all'}-#{Time.now.year}-#{Time.now.month}", expires_in: 2.hours) do
@@ -11,7 +11,6 @@ class HomeController < ApplicationController
     end
 
     @slices = LinkedData::Client::Models::Slice.all
-
     @anal_ont_names = []
     @anal_ont_numbers = []
     unless @analytics.empty?
@@ -30,6 +29,32 @@ class HomeController < ApplicationController
     @metrics = portal_metrics(@analytics)
     respond_to do |format|
       format.html { render partial: 'metrics', layout: false }
+    end
+  end
+
+  # Add a new action for the agents section
+  def agents
+    require 'net/http'
+    require 'json'
+
+    @agents_data = Rails.cache.fetch("agents_data_home_page", expires_in: 1.hour) do
+      api_url = agents_rest_url(page=1, pagesize=2222, display='name,agentType,usages')  + "&apikey=#{get_apikey}"
+      uri = URI(api_url)
+      http = Net::HTTP.new(uri.host, uri.port)
+      http.use_ssl = true if uri.scheme == 'https'
+
+      request = Net::HTTP::Get.new(uri.request_uri)
+      response = http.request(request)
+
+      if response.is_a?(Net::HTTPSuccess)
+        JSON.parse(response.body)
+      else
+        { "collection" => [] }
+      end
+    end
+
+    respond_to do |format|
+      format.html { render partial: 'agents', layout: false }
     end
   end
 

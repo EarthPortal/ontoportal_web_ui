@@ -81,8 +81,8 @@ module OntologiesHelper
     end
   end
 
-  def ontologies_with_filters_url(filters, page: 1, count: false)
-    url = '/ontologies_filter?'
+  def ontologies_with_filters_url(filters, page: 1, count: false, user: false)
+    url = user ? "/user_ontologies_filter?" : '/ontologies_filter?'
     url += "page=#{page}" if page
     url += "count=#{page}" if count
     if filters
@@ -175,17 +175,23 @@ module OntologiesHelper
         links << { href: uri, label: t('ontologies.home_page') }
       end
     else
-      uri = submission.id + "/download?apikey=#{get_apikey}"
-      links << { href: uri, label: submission.pretty_format }
+      uri = submission.id + "/download"
+      href, target = api_button_link_and_target(uri, allow_annonymous = true)
+      links << { href: href, label: submission.pretty_format, target: target }
       if submission_ready?(submission)
-        links << { href: "#{ontology.id}/download?apikey=#{get_apikey}&download_format=csv", label: "CSV" }
+        uri = "#{ontology.id}/download?download_format=csv"
+        href, target = api_button_link_and_target(uri, allow_annonymous = true)
+        links << { href: href, label: "CSV", target: target }
         unless submission.hasOntologyLanguage.eql?('UMLS')
-          links << { href: "#{ontology.id}/download?apikey=#{get_apikey}&download_format=rdf", label: "RDF/XML" }
+          uri = "#{ontology.id}/download?download_format=rdf"
+          href, target = api_button_link_and_target(uri, allow_annonymous = true)
+          links << { href: href, label: "RDF/XML", target: target }
         end
       end
       unless submission.diffFilePath.nil?
-        uri = submission.id + "/download_diff?apikey=#{get_apikey}"
-        links << { href: uri, label: "DIFF" }
+        uri = submission.id + "/download_diff"
+        href, target = api_button_link_and_target(uri, allow_annonymous = true)
+        links << { href: href, label: "DIFF", target: target }
       end
     end
     links
@@ -320,38 +326,20 @@ module OntologiesHelper
     end
   end
 
-  def subject_chip(subject)
-    begin
-      agroportal_uri = "https://data.agroportal.lirmm.fr/ontologies/AGROVOC/classes/#{CGI.escape(subject.strip)}"
-      response = LinkedData::Client::HTTP.get(
-        agroportal_uri,
-        params = {
-          lang: "en",
-          display_context: false,
-          display_links: false,
-          include: "prefLabel"
-        }
-      )
+  def subject_chip(subject, theme_taxonomy_ontologies)
+    resolved = resolve_subject_uri(subject, theme_taxonomy_ontologies)
+    return unless resolved
 
-      if response.prefLabel
-        text = response.prefLabel
-        url = agroportal_uri.sub('data.', '')
-      else
-        text = subject.split('/').last.strip
-        url = subject
-      end
-
-      render ChipButtonComponent.new(
-        text: text.titleize,
-        tooltip: subject,
-        url: url,
-        type: "clickable",
-        target: "_blank"
-      )
-    rescue => e
-      Rails.logger.warn("Failed to fetch prefLabel from AGROVOC for '#{subject}': #{e.message}")
-      nil
-    end
+    render ChipButtonComponent.new(
+      text: resolved[:text].titleize,
+      tooltip: subject,
+      url: resolved[:url],
+      type: "clickable",
+      target: "_blank"
+    )
+  rescue => e
+    Rails.logger.warn("Failed to fetch prefLabel from ontology for '#{subject}': #{e.message}")
+    nil
   end
 
   def keyword_chip(keyword)
@@ -490,7 +478,8 @@ module OntologiesHelper
       sections += %w[properties]
       sections += %w[schemes collections] if skos?
       sections += %w[instances] unless skos?
-      sections += %w[notes mappings widgets sparql]
+      sections += %w[notes mappings widgets]
+      sections << 'sparql' if sparql_enabled?
     end
     sections
   end
@@ -554,7 +543,7 @@ module OntologiesHelper
   end
 
   def ontology_object_json_link(ontology_acronym, object_type, id)
-    "#{rest_url}/ontologies/#{ontology_acronym}/#{object_type}/#{escape(id)}?display=all&apikey=#{get_apikey}"
+    "#{rest_url}/ontologies/#{ontology_acronym}/#{object_type}/#{escape(id)}?display=all"
   end
 
   def render_permalink_link
@@ -566,8 +555,9 @@ module OntologiesHelper
   end
 
   def render_concepts_json_button(link)
+    link, target = api_button_link_and_target(link)
     content_tag(:div, class: 'concepts_json_button') do
-      render RoundedButtonComponent.new(link: link, target: '_blank')
+      render RoundedButtonComponent.new(link: link, target: target)
     end
   end
 
@@ -639,36 +629,40 @@ module OntologiesHelper
   def ontology_icon_links(links, submission_latest)
     links.map do |icon, attr, label|
       value = submission_latest.nil? ? nil : submission_latest.send(attr)
+      link = Array(value).first || ''
 
       link_options = {
         style: "text-decoration: none; width: 30px; height: 30px"
       }
 
-      if Array(value).empty?
+      if link.blank?
         link_options[:class] = 'disabled-icon'
         link_options[:disabled] = 'disabled'
         title = label
       else
-        title = label + '<br>' + link_to(Array(value).first, target: '_blank')
+        title = label + '<br>' + link_to(link, target: '_blank')
       end
 
-      url = Array(value).first || ''
-      if url.include?(rest_hostname)
-        url = url['?'] ? "#{url}&apikey=#{get_apikey}" : "#{url}?apikey=#{get_apikey}"
-      end
-
+      url, target_attr = api_button_link_and_target(link || '', allow_annonymous = true)
       content_tag(:span, data: {controller: "tooltip" }, title: title) do
-        link_to(inline_svg("#{icon}.svg", width: "32", height: '32'), url, link_options.merge(target: '_blank'))
+        link_to(inline_svg("#{icon}.svg", width: "32", height: '32'), url, link_options.merge(target: target_attr))
       end
     end.join.html_safe
   end
 
   def ontology_depiction_card
-    return if Array(@submission_latest&.depiction).empty?
+    depictions = Array(@submission_latest&.depiction)
+    return if depictions.empty?
 
     render Layout::CardComponent.new do
-      list_container(@submission_latest.depiction) do |depiction_url|
-        render Display::ImageComponent.new(src: depiction_url)
+      if depictions.size == 1
+        render Display::ImageComponent.new(src: depictions.first)
+      else
+        render CarouselComponent.new(images: true) do |c|
+          depictions.each do |url|
+            c.slide { render Display::ImageComponent.new(src: url) }
+          end
+        end
       end
     end
   end
@@ -683,6 +677,12 @@ module OntologiesHelper
     return unless @ontology.admin?(session[:user])
     render RoundedButtonComponent.new(link: new_ontology_submission_path(@ontology.acronym), icon: 'icons/plus.svg',
                                       size: 'medium', title: t('ontologies.add_new_submission'))
+  end
+
+  def ontology_admin_button
+    return unless @ontology.admin?(session[:user])
+    render RoundedButtonComponent.new(link: ontology_administration_path(@ontology.acronym), icon: 'icons/settings.svg',
+                                      size: 'medium', title: t('ontologies.admin.title'))
   end
 
   def ontology_edit_button
@@ -715,8 +715,10 @@ module OntologiesHelper
     end
 
   def submission_json_button
-    render RoundedButtonComponent.new(link: "#{(@submission_latest || @ontology).id}?display=all&apikey=#{get_apikey}",
-                                      target: '_blank',
+    link = "#{(@submission_latest || @ontology).id}?display=all"
+    link, target = api_button_link_and_target(link)
+    render RoundedButtonComponent.new(link: link,
+                                      target: target,
                                       size: 'medium',
                                       title: t('ontologies.go_to_api'))
   end
@@ -793,7 +795,8 @@ module OntologiesHelper
   end
 
   def service_button(link:, title: )
-    render IconWithTooltipComponent.new(icon: "json.svg",link: link, target: '_blank', title: title)
+    link, target = api_button_link_and_target(link)
+    render IconWithTooltipComponent.new(icon: "json.svg",link: link, target: target, title: title)
   end
 
   def n_triples_to_table(n_triples_string)

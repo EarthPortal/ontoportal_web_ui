@@ -83,7 +83,7 @@ module AgentHelper
   end
 
 
-  def agent_identifier_input(index, name_prefix, value = '', is_organization: true)
+  def agent_identifier_input(index, name_prefix, value = '', is_organization: true, input_data: nil)
 
     content_tag :div, id: index, class: 'd-flex' do
       content_tag(:div, class: 'w-100') do
@@ -94,7 +94,9 @@ module AgentHelper
         else
           concat inline_svg_tag('orcid.svg', class: 'agent-input-icon')
         end
-        concat text_field_tag(agent_identifier_name(index, :notation, name_prefix), value, class: 'agent-input-with-icon')
+        notation_options = { class: 'agent-input-with-icon' }
+        notation_options[:data] = input_data if input_data
+        concat text_field_tag(agent_identifier_name(index, :notation, name_prefix), value, notation_options)
       end
     end
   end
@@ -145,8 +147,8 @@ module AgentHelper
     render_to_string(partial: partial, locals: { agent: agent })
   end
 
-  def agents_rest_url
-    rest_url + agents_path + "?page=1&pagesize=10" + "&apikey=#{get_apikey}"
+  def agents_rest_url(page = 1, pagesize = 10, display = nil)
+    rest_url + agents_path + "?page=#{page}&pagesize=#{pagesize}" + (display ? "&display=#{display}" : '')
   end
   
   def agent_field_name(name, name_prefix = '')
@@ -275,12 +277,13 @@ module AgentHelper
     if agent.is_a?(String)
       name = agent
       title = nil
+      agent_page_url = nil
     else
-      name = agent.agentType.eql?("organization") ? (agent.acronym || agent.name) : agent.name
+      name = agent.agentType.eql?("organization") ? (agent.acronym.presence || agent.name) : agent.name
       agent_icon = agent.agentType.eql?("organization") ? organization_icon : person_icon
       title = agent_tooltip(agent)
+      agent_page_url = agent.id.to_s.include?('/Agents/') ? agents_path + "/#{agent.id.split('/').last}" : nil
     end
-    agent_page_url = agent.id.include?('/Agents/') ? agents_path + "/#{agent.id.split('/').last}" : nil
     render_chip_component(title, agent_icon, name, agent_page_url, target)
   end
 
@@ -299,8 +302,9 @@ module AgentHelper
     ) do
       chip_content
     end
-  
-    url.present? ? link_to(chip, url, class: 'text-decoration-none', target: target, rel: 'noopener noreferrer') : chip
+
+    chip_is_clickable = url.present? && agents_enabled?
+    chip_is_clickable ? link_to(chip, url, class: 'text-decoration-none', target: target, rel: 'noopener noreferrer') : chip
   end
 
 
@@ -342,6 +346,12 @@ module AgentHelper
     return orcid.split("/").last
   end
 
+  def agents_homepage_link(style: '', ontology: nil)
+    custom_style = "font-size: 50px; line-height: 0.5; margin-left: 6px; margin-bottom: 6px; vertical-align: top; #{style}".strip
+    ontology = ontology || 'all'
+    link, target = api_button_link_and_target(agents_rest_url)
+    render IconWithTooltipComponent.new(icon: 'json.svg',link: link, target: target, title: t('home.go_to_api'), size:'small', style: custom_style)  
+  end
 
   def agents_create_button
     link_to_modal(

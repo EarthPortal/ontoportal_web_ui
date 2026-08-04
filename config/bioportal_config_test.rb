@@ -11,6 +11,11 @@ $BIOMIXER_URL = ENV['BIOMIXER_URL']
 $ANNOTATOR_URL = $PROXY_URL = ENV['ANNOTATOR_URL'].blank? ? "https://services.tesportal.lirmm.fr/annotator" : ENV['ANNOTATOR_URL']
 $FAIRNESS_URL = ENV['FAIRNESS_URL']
 
+# FOOPS! FAIR assessment endpoint.
+$FOOPS_URL = ENV['FOOPS_URL'] || 'https://foops.linkeddata.es/assessOntology'
+$AGENTS_ENABLED = ENV["AGENTS_ENABLED"].to_s.downcase == "true"
+$SPARQL_ENDPOINT_URL = ENV['SPARQL_ENDPOINT_URL'] || nil
+
 # Resource term
 $RESOURCE_TERM = ENV['RESOURCE_TERM'] || 'ontology'
 
@@ -99,31 +104,37 @@ $SITE_NOTICE = {}
 $ORG_SITE = $ORG.nil? || $ORG.empty? ? $SITE : "#{$ORG} #{$SITE}"
 
 $PORTALS_INSTANCES = [
-  {
+   {
     name: 'AgroPortal',
-    ui: 'https://agroportal.lirmm.fr/',
+    api: 'https://data.agroportal.eu',
+    ui: 'https://agroportal.eu/',
     color: '#3CB371',
-    api: 'https://data.agroportal.lirmm.fr/',
     apikey: '1de0a270-29c5-4dda-b043-7c3580628cd5',
-    'light-color': '#F1F6FA'
+    'light-color': '#F1F6FA',
   },
   {
     name: 'BioPortal',
     ui: 'https://bioportal.bioontology.org/',
-    color: '#234979'
+    api: 'https://data.bioontology.org/',
+    apikey: '8b5b7825-538d-40e0-9e9e-5ab9274a9aeb',
+    color: '#234979',
+    'light-color': '#E9F2FA',
   },
   {
     name: 'SIFR BioPortal',
+    ui: 'https://bioportal.lirmm.fr/',
+    api: 'https://data.bioportal.lirmm.fr/',
     apikey: '1de0a270-29c5-4dda-b043-7c3580628cd5',
-    color: '#74a9cb'
+    color: '#74a9cb',
+    'light-color': '#E9F2FA',
   },
   {
     name: 'EcoPortal',
     ui: 'https://ecoportal.lifewatch.eu/',
-    color: '#0F4E8A',
     api: 'https://data.ecoportal.lifewatch.eu/',
     apikey: "43a437ba-a437-4bf0-affd-ab520e584719",
-    'light-color': '#E9F2FA'
+    color: '#2076C9',
+    'light-color': '#E9F2FA',
   },
   {
     name: 'MedPortal',
@@ -138,26 +149,32 @@ $PORTALS_INSTANCES = [
   {
     name: 'IndustryPortal',
     ui: 'http://industryportal.enit.fr',
-    api: 'data.industryportale.test.enit.fr',
+    api: 'https://data.industryportal.enit.fr/',
     apikey: '019adb70-1d64-41b7-8f6e-8f7e5eb54942',
-    color: '#1c0f5d'
+    color: '#1c0f5d',
+    'light-color': '#F0F5F6',
   },
   {
     name: 'EarthPortal',
     ui: 'https://earthportal.eu/',
-    color: '#404696',
     api: 'https://data.earthportal.eu/',
     apikey: "c9147279-954f-41bd-b068-da9b0c441288",
+    color: '#404696',
     'light-color': '#F0F5F6'
   },
   {
     name: 'BiodivPortal',
     ui: 'https://biodivportal.gfbio.org/',
-    color: '#349696',
     api: 'https://data.biodivportal.gfbio.org/',
     apikey: "47a57aa3-7b54-4f34-b695-dbb5f5b7363e",
+    color: '#349696',
     'light-color': '#EBF5F5',
-
+  },
+  {
+    name: 'testportal-down',
+    ui: 'https://down.testportal.lirmm.fr/',
+    api: 'https://down.testportal.lirmm.fr/',
+    apikey: "47a57aa3-7b54-4f34-b695-dbb5f5b7363e",
   }
 ]
 
