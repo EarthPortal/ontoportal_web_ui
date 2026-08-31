@@ -1142,9 +1142,8 @@ fr:
       étapes de traitement ont échoué, voici les statuts actuels : %{status}'
     ontology_processing_failed: 'Le traitement de l''ontologie a échoué, avec les
       statuts suivants : %{status}'
-    ontology_search_prompt: Rechercher une ontologie ou un terme (e.g., hauteur de
-      plante)
-    class_search_prompt: Rechercher une classe (e.g., hauteur de plante)
+    ontology_search_prompt: Rechercher une ontologie ou un terme (e.g., température de surface de la mer)
+    class_search_prompt: Rechercher une classe (e.g., température de surface de la mer)
     ontology_submitted: Ontologie soumise avec succès !
     ontology_types: Types d'ontologies
     outside: extérieur
@@ -1689,7 +1688,7 @@ fr:
       more_from_ontology: de plus sur cette ontologie
       reuses_in: Réutilisé dans
       visualize: Visualiser
-    search_place_holder: Entrez un terme, e.g., hauteur de plante
+    search_place_holder: Entrez un terme, e.g., température de surface de la mer
     show_advanced_options: Afficher les options
   show_advanced_options: Afficher les options avancées
   statistics:

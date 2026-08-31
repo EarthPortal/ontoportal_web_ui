@@ -1107,8 +1107,8 @@ en:
       steps failed, here are the current statuses: %{status}'
     ontology_processing_failed: 'The ontology processing failed, with the current
       statuses: %{status}'
-    ontology_search_prompt: Search an ontology or a term (e.g., plant height)
-    class_search_prompt: Search a class (e.g., plant height)
+    ontology_search_prompt: Search an ontology or a term (e.g., sea surface temperature)
+    class_search_prompt: Search a class (e.g., sea surface temperature)
     ontology_submitted: Ontology submitted successfully!
     ontology_types: Ontology types
     outside: outside
@@ -1635,7 +1635,7 @@ en:
       more_from_ontology: more from this ontology
       reuses_in: Reuses in
       visualize: Vizualize
-    search_place_holder: Enter a term, e.g., plant height
+    search_place_holder: Enter a term, e.g., sea surface temperature
     show_advanced_options: Show options
   show_advanced_options: Show advanced options
   statistics:
