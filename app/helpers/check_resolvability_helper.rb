@@ -54,9 +54,10 @@ module CheckResolvabilityHelper
         http = Net::HTTP.new(uri.host, uri.port)
         http.use_ssl = (uri.scheme == 'https')
         http.open_timeout = timeout_seconds
+        http.read_timeout = timeout_seconds
         begin
-          response = Timeout.timeout(timeout_seconds) { http.request_head(uri, 'Accept' => format) }
-        rescue Timeout::Error, Net::OpenTimeout
+          response = http.request_head(uri, 'Accept' => format)
+        rescue Timeout::Error, Net::OpenTimeout, Net::ReadTimeout
           return resolvability_status('Timeout', [], redirections, result: 0, response_time: timeout_seconds)
         end
 
