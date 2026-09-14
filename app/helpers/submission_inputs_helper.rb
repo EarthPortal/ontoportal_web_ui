@@ -393,7 +393,7 @@ module SubmissionInputsHelper
                value: attr.values, helper_text: nil)
   end
 
-  # editWith: select fed by the portal external tools registry (GET /external_tools),
+  # editWith
   # the stored value is the tool homepage URL
   def generate_external_tools_select_input(attr, help_text: nil)
     name = attr.name

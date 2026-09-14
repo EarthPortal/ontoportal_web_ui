@@ -489,7 +489,7 @@ class OntologiesController < ApplicationController
                     status: :unprocessable_entity
     end
 
-    # 4 elegate the connection to the connector matching the tool type
+    # 4 redirect 
     connector = ExternalTools.connector_for(tool)
     if connector.nil?
       return render json: { error: t('ontologies.external_tool_not_recognized') }, status: :unprocessable_entity

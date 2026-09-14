@@ -1,7 +1,4 @@
 module ExternalTools
-  # Connection recipe for OpenTheso instances:
-  # 1. resolve the portal acronym to the thesaurus id (persistent name)
-  # 2. request a temporary SSO token with the user API key
   class OpenthesoConnector
 
     def initialize(tool)
