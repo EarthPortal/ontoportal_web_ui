@@ -398,7 +398,7 @@ module SubmissionInputsHelper
   def generate_external_tools_select_input(attr, help_text: nil)
     name = attr.name
     label = attr_header_label(attr)
-    select_values = external_tools_list.map { |tool| [tool[:label], tool[:url]] }
+    select_values = external_editors_list.map { |tool| [tool[:label], tool[:url]] }
     selected = attr.values.to_s
 
     unless attr.required?
