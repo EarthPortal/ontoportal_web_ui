@@ -80,6 +80,7 @@ Rails.application.routes.draw do
     get 'metrics'
     get 'metrics_evolution'
     get 'subscriptions'
+    post 'external_tool_connect'
   end
 
 
@@ -221,6 +222,7 @@ Rails.application.routes.draw do
   get '/lost_pass_success' => 'login#lost_password_success'
   get '/reset_password' => 'login#reset_password'
   post '/accounts/:id/custom_ontologies' => 'users#custom_ontologies', :as => :custom_ontologies
+  post '/accounts/:id/external_tools' => 'users#update_external_tools', :as => :user_external_tools
   get '/login_as/:login_as' => 'login#login_as', constraints: { login_as: /[\d\w\.\@\-\%\+ ]+/ }
   post '/login/send_pass', to: 'login#send_pass'
 
