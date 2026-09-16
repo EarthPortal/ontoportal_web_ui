@@ -18,8 +18,11 @@ log_requests true
 
 if %w[production staging appliance].include?(rails_env)
 
-  # Define Puma socket (for Nginx)
-  bind "unix:///opt/ontoportal/ontoportal_web_ui/shared/tmp/sockets/puma.sock"
+  # Define Puma socket (for Nginx). Derived from the release path instead of
+  # hardcoded, because deployments do not all use the repo name as directory
+  # (EarthPortal deploys into /opt/ontoportal/bioportal_web_ui). tmp/sockets is
+  # a Capistrano linked_dir, so this lands in <deploy_to>/shared/tmp/sockets.
+  bind ENV.fetch("PUMA_SOCKET") { "unix://#{File.expand_path('../tmp/sockets/puma.sock', __dir__)}" }
 
   # Specifies the number of `workers` to boot in clustered mode.
   # Workers are forked webserver processes. If using threads and workers together
