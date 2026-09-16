@@ -13,7 +13,9 @@ class SearchController < ApplicationController
     @advanced_options_open = false
     @search_results = []
     @json_url = json_link("#{rest_url}/search", {})
-    params[:portals] = params[:portals]&.join(',')
+    # portals arrives as an Array from the search form, but as a String from a
+    # hand-written or shared URL (?portals=AgroPortal) -- which used to 500.
+    params[:portals] = Array(params[:portals]).join(',').presence
 
     return if @search_query.empty?
 
