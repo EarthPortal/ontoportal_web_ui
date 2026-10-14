@@ -209,6 +209,24 @@ class HomeController < ApplicationController
     render inline: helpers.federation_chip_component(@key, @name, @acronym, @checked, @portal_up)
   end
 
+
+  def about
+    @title = t('about_page.title')
+  end
+
+  def team
+    @title = t('team_page.title')
+  end
+
+  def cite_us
+    @title = t('cite_us_page.title')
+  end
+
+  def acknowledgments
+    @title = t('acknowledgments_page.title')
+  end
+
+
   private
 
   # Dr. Musen wants 5 specific groups to appear first, sorted by order of importance.
