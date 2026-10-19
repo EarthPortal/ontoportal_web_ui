@@ -1,7 +1,7 @@
 GIT
   remote: https://github.com/earthportal/ontologies_api_ruby_client.git
   revision: d5b162b6b44f4e90856e83e47c9d78e855c4b252
-  branch: new-vm-deploy
+  branch: master
   specs:
     ontologies_api_client (2.2.0)
       activesupport (~> 7.0.4)
