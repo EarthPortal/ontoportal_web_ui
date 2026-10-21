@@ -734,7 +734,7 @@ en:
   acknowledgments_page:
     title: Acknowledgments
     description: >-
-      EarthPortal has been developed within the Horizon Europe FAIR-IMPACT project (GA 101057344). It is currently maintained with the EOSC LUMEN project (GA 101187940). EarthPortal is supported by the Data Terra Research Infrastructure and the CNRS.
+      EarthPortal has been developed within the Horizon Europe FAIR-IMPACT project (GA 101057344). It is currently maintained with the EOSC CONNECT CDIF4EOSC FLUID-AI FAIRSCOPE LUMEN project (GA 101187940). EarthPortal is supported by the Data Terra Research Infrastructure and the CNRS.
   layout:
     footer:
       about: About
