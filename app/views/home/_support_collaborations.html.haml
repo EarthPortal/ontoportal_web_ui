@@ -2,9 +2,6 @@
   .text= t('home.support_and_collaborations')
   %hr.home-section-line/
 .home-support-items
-  - [['logos/supports/cnrs.svg', 'CNRS'],
-     ['logos/supports/data-terra.png', 'Data Terra'],
-     ['logos/supports/eu.png', 'Union européenne'],
-     ['logos/supports/fair-impact.svg', 'EOSC'],
-     ['logos/collaboration/inrae.png', 'INRAE']].each do |src, alt|
-    %div= image_tag src, alt: alt
+  - $HOME_PAGE_LOGOS&.each do |logo|
+    %a{href: logo[:url], target: '_blank', rel: 'noopener noreferrer'}
+      %img{src: asset_path(logo[:img_src])}

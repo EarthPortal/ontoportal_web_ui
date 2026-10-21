@@ -315,10 +315,10 @@ $FOOTER_LINKS = {
       legal_notices: "https://wiki.agroportal.eu/share/e6158eda-c109-4385-852c-51a42de9a412/doc/terms-conditions-naDsDo2Zxq"
     },
     about: {
-      about_us: "/about",
-      team: "/team",
-      cite_us: "/cite_us",
-      acknowledgments: "/acknowledgments"
+      about_us: "https://github.com/agroportal/project-management",
+      team: "https://github.com/orgs/agroportal/people",
+      cite_us: "https://wiki.agroportal.eu/share/e6158eda-c109-4385-852c-51a42de9a412/doc/publications-and-references-87tEoeoGKy",
+      acknowledgments: "https://wiki.agroportal.eu/share/e6158eda-c109-4385-852c-51a42de9a412/doc/acknowledgments-15GdRXLQdm"
     }
   }
 }
