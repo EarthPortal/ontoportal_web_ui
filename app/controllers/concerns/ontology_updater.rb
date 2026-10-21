@@ -232,8 +232,8 @@ module OntologyUpdater
 
     p = params.require(:ontology).permit(
       :name, :acronym, { administeredBy: [] }, :viewingRestriction, { acl: [] },
-      { hasDomain: [] }, :viewOf, :isView, :subscribe_notifications, 
-      { group: [] }, { categories: [] }, { projects: [] }
+      { hasDomain: [] }, :viewOf, :isView, :subscribe_notifications,
+      { group: [] }, { categories: [] }, { projects: [] }, { sampleQueries: [] }
     )
 
     p[:administeredBy].reject!(&:blank?) if p[:administeredBy]
@@ -313,8 +313,8 @@ module OntologyUpdater
     return false if value.nil? || (value.respond_to?(:empty?) && value.empty?)
 
     attr_to_not_copy = [:versionIRI, :version, :deprecated, :valid, :curatedOn,
-                        :pullLocation, :metadataVoc, :hasPriorVersion, :creationDate,
-                        :submissionStatus]
+                        :pullLocation, :uploadFilePath, :metadataVoc, :hasPriorVersion,
+                        :creationDate, :submissionStatus]
 
     !attr_to_not_copy.include?(key.to_sym)
   end

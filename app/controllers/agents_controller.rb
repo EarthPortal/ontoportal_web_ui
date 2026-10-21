@@ -1,8 +1,14 @@
 class AgentsController < ApplicationController
-  include TurboHelper, AgentHelper
+  include TurboHelper, AgentHelper, ApplicationHelper
+  
+  before_action :check_agents_enabled
   before_action :authorize_and_redirect, :only => [:edit, :update, :create, :new]
-      layout :determine_layout, only: [:index, :details]
+  layout :determine_layout, only: [:index, :details]
+
   def index
+    # Deep link target for the "browse all agents" action of the site-wide
+    # search box; the table itself still filters through /ajax/agents/list.
+    @search = params[:search].to_s
   end
 
   def details
@@ -92,8 +98,11 @@ class AgentsController < ApplicationController
         id: agent.id,
         name: agent.name,
         type: agent.agentType,
+        # The agents Solr core is searchable on identifiers_texts but does not
+        # store identifiers, so this is always empty regardless of `include`.
+        # The key stays so the row template's placeholder still gets cleared.
         identifiers: agent.identifiers&.join(', '),
-        acronym: agent.acronym_text
+        acronym: agent.acronym
       }
     end
 
@@ -466,5 +475,11 @@ class AgentsController < ApplicationController
       end
     end
     return errors
+  end
+
+  def check_agents_enabled
+    unless helpers.agents_enabled? || current_user_admin?
+      redirect_to root_path, alert: 'Agents endpoint is not available'
+    end
   end
 end

@@ -1,6 +1,6 @@
 ---
 fr:
-  activaterecord:
+  activerecord:
     errors:
       models:
         license:
@@ -8,8 +8,7 @@ fr:
             encrypted_key:
               appliance_id_mismatch: ne correspond pas à l'ID de la machine virtuelle.
               invalid_license_key: est une clé de licence invalide.
-              no_appliance_id_for_comparison: n'a pas pu être validée. Impossible
-                de récupérer l'ID de la machine virtuelle.
+              no_appliance_id_for_comparison: n'a pas pu être validée. Impossible de récupérer l'ID de la machine virtuelle.
   admin:
     analytics:
       active_users: Utilisateurs actifs
@@ -115,7 +114,7 @@ fr:
       licensing: Licences
       metadata_administration: Administration des métadonnées
       ontology_administration: Administration des ontologies
-      persons_and_organizations: Personnes et Organisations
+      agents: Agents
       renew_license: Renouveler la licence
       report_generated_on: 'Rapport généré le :'
       search: Recherche et Indexation
@@ -132,7 +131,10 @@ fr:
         Elle est utilisée pour la fédération OntoPortal. Pour l'instant, ces valeurs de données complètent, sans les remplacer, les fichiers de configuration.
       edit_button: Éditer
       configuration_updated_successfully: Configuration de l'API mise à jour avec succès
-      configuration_update_error: Problème lors de la mise à jour de la configuration
+      configuration_update_error: 'Problème lors de la mise à jour de la configuration: %{error}'
+      federation_provide_apikey: Veuillez fournir une clé API pour l'utilisateur de fédération correspondant à chaque portail afin d'activer la fédération.
+      federation_not_allowed: Ce portail n'est pas autorisé à activer les fonctionnalités de fédération.
+      federation_invalid_apikeys: "Les portails suivants n'ont pas été ajoutés car leur clé API est invalide : %{portals}"
     licenses:
       create:
         success: Licence renouvelée
@@ -159,14 +161,6 @@ fr:
             provisoire, qui expirera dans %{count} jours.
           other: Cette installation de la machine virtuelle OntoPortal a une licence
             provisoire, qui expirera dans %{count} jours.
-    main:
-      cache_management: Gestion du cache
-      checking_for_updates: Vérification des mises à jour ...
-      clear_cache: Vider le cache de l'UI
-      clear_goo_cache: Vider le cache GOO
-      clear_http_cache: Vider le cache HTTP
-      reset_cache: 'Réinitialiser la connexion au cache de l''UI '
-      version_management: Gestion des versions
     memcache:
       title: Statistiques Memcache
     new_ontologies_created_title: 'Les ontologies suivantes : %{count} ont été créées
@@ -228,6 +222,30 @@ fr:
         multi_valued: Multivalué
         stored: Stocké
         type: Type
+    site_administration:
+      cache_management: Gestion du cache
+      cache_management_description:
+        Videz les caches sur lesquels %{portal_name} s'appuie pour servir ses pages, ou réinitialisez la connexion au serveur de cache.
+      checking_for_updates: Vérification des mises à jour ...
+      clear_cache: Vider le cache de l'UI
+      clear_goo_cache: Vider le cache GOO
+      clear_http_cache: Vider le cache HTTP
+      edit_federated_portals: Éditer les portails fédérés
+      federated_portals: Portails fédérés
+      federated_portals_description:
+        Choisissez les instances OntoPortal avec lesquelles %{portal_name} est fédéré, et fournissez la clé API de l'utilisateur de fédération de chacune d'elles.
+      flipper_description:
+        Utilisez Flipper pour contrôler la visibilité des fonctionnalités spécifiques de %{portal_name} dans l'interface utilisateur.
+      flipper_ui: Interface Flipper
+      no_federated_portal: Aucun portail fédéré pour le moment.
+      sidekiq_description:
+        Utilisez Sidekiq pour surveiller et gérer le traitement des tâches en arrière-plan, les files d'attente et les tâches cron.
+      sidekiq_ui: Interface Sidekiq
+      reset_cache: 'Réinitialiser la connexion au cache de l''UI '
+      settings: Paramètres
+      version_management: Gestion des versions
+      version_management_description:
+        La version d'OntoPortal utilisée par %{portal_name}, et les mises à jour disponibles.
     submission_deleted_successfully: Soumission %{id} pour l'ontologie %{ont} supprimée
     submission_not_found: Soumission %{id} pour l'ontologie %{ont} non trouvée
     turbo_confirm: Êtes-vous sûr de vouloir %{name} ?
@@ -253,13 +271,17 @@ fr:
       homepage: Page d'accueil
       identifiers: Identifiants
       name: Nom
+      name_placeholder: Recherchez dans le registre ROR ou créez une nouvelle organisation
       organization: Organisation
       person: Personne
       type: Type
     index:
       acronym: Acronyme
       actions: Actions
+      added: Ajouté
+      added_by: par %{user}
       create_new_agent: Créer un agent
+      date_unknown: date inconnue
       first_name: Prénom
       no_agents: Il n'y a actuellement aucun agent.
       usages: Utilisations
@@ -302,18 +324,11 @@ fr:
     input_hint: Entrez ou collez un texte à annoter...
     insert_sample_text: Insérer un texte d'exemple
     lemmatize: Lématiser
-    match_longest_only: Mot le le plus long uniquement
+    match_longest_only: Mot le plus long uniquement
     negation: Négation
     ontology: Ontologie
     options: Options
-    sample_text: There has been many recent studies on the use of microbial antagonists
-      to control diseases incited by soilborne and airborne plant pathogenic bacteria
-      and fungi, in an attempt to replace existing methods of chemical control and
-      avoid extensive use of fungicides, which often lead to resistance in plant pathogens.
-      In agriculture, plant growth-promoting and biocontrol microorganisms have emerged
-      as safe alternatives to chemical pesticides. Streptomyces spp. and their metabolites
-      may have great potential as excellent agents for controlling various fungal
-      and bacterial phytopathogens.
+    sample_text: As the access to Solid Earth data is not facilitated for now, current activities are focused on the development of a new portal/service to evaluate automatically SO2 flux emissions by volcanoes by analysis of satellite observations from the Sentinel-5P/TROPOMI sensor together with ECMWF wind fields. Several publications are also in preparation for 1- the presentation of the new service (SO2 flux calculator) and its theoretical framework, 2- the scientific applications of these new services, in particular the analysis of specific eruptions and their impacts on the atmosphere (air quality, climate) using the VOLCPLUME webportal (under further development).
     score: Score
     score_threshold: Filtrer par seuil de score
     select_ontologies: Sélectionner des ontologies
@@ -360,6 +375,7 @@ fr:
     submit: Soumettre
     type: Type
   check_resolvability:
+    blocked: URL bloquée
     check_resolvability_message_1: 'L''URL est résolvable et supporte les formats
       suivants : %{supported_format}'
     check_resolvability_message_2: 'L''URL est résolvable mais sont contenu n''est
@@ -403,12 +419,17 @@ fr:
     preferred_name: Nom préféré
     type: Type
   components:
+    add_another_object: "Ajouter un autre %{object_name}"
+    class: "classe"
+    contact: "contact"
+    portal: "portail"
     all_languages: Toutes les langues
     back: Retour
     by: par
     cancel_button: Annuler
     check_resolvability: vérification de la résolvabilité...
     classes: classes
+    close: Fermer
     concepts: concepts
     copy_original_uri: Copier l'URI d'origine
     copy_portal_uri: Copier l'URI de %{portal_name}
@@ -504,6 +525,8 @@ fr:
       month_day_year: "%-d %b %Y"
       monthfull_day_year: "%-d %b %Y"
       year_month_day_concise: "%d-%m-%Y"
+  definitions:
+    raw_data: Afficher la source, les dates et les données brutes de cette définition
   errors:
     error_message: Nous sommes désolés mais quelque chose a mal tourné.
     go_home_button: Accueil
@@ -513,6 +536,13 @@ fr:
   fair_score:
     fairness_unreachable_warning: Problème d'accès au service d'évaluation du niveau
       de FAIRness
+    foops_unreachable_warning: Problème d'accès au service d'évaluation FOOPS!
+    foops_description: 'Score d''évaluation FAIR calculé avec l''outil FOOPS! (Ontology
+      Pitfall Scanner for FAIR) à partir du fichier déposé dans le portail. Plus de détails
+      ici : https://foops.linkeddata.es/'
+    description: 'Le score FAIR évalue dans quelle mesure cette ontologie respecte
+      les principes FAIR (Findable, Accessible, Interoperable, Reusable). Deux évaluations
+      complémentaires sont disponibles : O''FAIRe et FOOPS!'
     go_to_api: Aller à l'API
     metadata_properties: Les propriétés de métadonnées listées ci-dessous sont extraites
       de %{mod_link}.
@@ -584,14 +614,15 @@ fr:
     fill_text: Veuillez remplir le texte approprié à partir de l'image fournie
     get_annotations: Obtenir des annotations
     get_recommendations: Obtenir des recommandations
+    go_to_api: Aller à l'API
     include_comment: Veuillez inclure votre commentaire
     include_email: Veuillez inclure votre email
     include_name: Veuillez inclure votre nom
     include_ontologies: Veuillez inclure au moins une ontologie
     include_slice_name: Veuillez inclure le nom de la slice
     index:
-      tagline: Le foyer des ontologies et des artefacts sémantiques dans l'agroalimentaire
-        et les domaines connexes.
+      agents_tooltip: Top 5 des agents avec le plus d'utilisation d'ontologie.
+      tagline: Le catalogue des ontologies et des artefacts sémantiques du système Terre, de l'environnement et des domaines connexes.
       title: Bienvenue sur %{site}
       welcome: Bienvenue sur %{site},
     individuals: Individus
@@ -636,6 +667,7 @@ fr:
     support_and_collaborations: Support & Collaborations
     twitter_news: Nouvelles
     users: Utilisateurs
+    agents: Agents
     view_full_site: Voir le site complet
     viewing_slice: 'Affichage de la slice:'
   instances:
@@ -794,6 +826,7 @@ fr:
     header:
       account_setting: Paramètres du compte
       annotator: Annotateur
+      user_ontologies: Mes ontologies
       browse: Parcourir
       cite_us: Nous citer
       documentation: Documentation
@@ -810,6 +843,8 @@ fr:
       support: Support
       agents : Agents
       projects: Projets
+      sparql_editor: Editeur SPARQL
+      explore: Explorer
     notices:
       at: à
       slice: Slice
@@ -1001,6 +1036,35 @@ fr:
   ontologies:
     access_rights_information: Informations supplémentaires sur la licence et les
       droits d'accès
+    admin:
+      title: "Page d'administration"
+      submissions:
+        title: "Soumissions"
+        table:
+          select: "Sélectionner"
+          submission_id: "ID de soumission"
+          release_date: "Date de publication"
+          status: "Statut"
+          actions: "Actions"
+        delete: "Supprimer"
+        confirm_delete: "Êtes-vous sûr de vouloir supprimer la soumission %{submission_id} ??"
+        delete_selected: "Supprimer la sélection"
+        confirm_delete_selected: "Êtes-vous sûr de vouloir supprimer les soumissions sélectionnées ?"
+        select_at_least_one: "Veuillez sélectionner au moins une soumission à supprimer."
+        submission_deleted: "Soumission %{submission_id} supprimée"
+        submissions_deleted: "Soumissions %{submission_ids} supprimées"
+        error_deleting_submissions: "Erreur lors de la suppression des soumissions: %{message}"
+        loading: "Chargement des soumissions..."
+      log:
+        title: "Journal de traitement"
+        loading: "Chargement du journal..."
+        no_log: "Aucun journal disponible."
+        parse_error: "Erreur lors de l'analyse du journal : %{message}"
+      ontology:
+        title: "Ontologie"
+        warning: "Attention : La suppression de l'ontologie est irréversible. Toutes les soumissions et métadonnées seront perdues."
+        delete: "Supprimer l'ontologie"
+        confirm_delete: "Êtes-vous sûr de vouloir supprimer l'ontologie ? Cette action est irréversible."
     add_new_submission: Ajouter une nouvelle soumission
     confirm_submission_title: Confirmer la soumission
     confirm_submission_message: Êtes-vous sûr de vouloir soumettre cette ontologie ? Cette action créera une nouvelle soumission.
@@ -1011,11 +1075,14 @@ fr:
     browser:
       admin_welcome: Bienvenue admin, cette couleur indique les fonctionnalités réservées
         aux administrateurs
-      search_placeholder: Filtrer les ontologies, e.g., AGROVOC, plante
+      search_placeholder: Filtrer les ontologies, e.g., GCMD, oxygen, etc...
       show_my_ontologies: Afficher mes ontologies seulement
       show_ontology_views: Afficher les vues de l'ontologie
+      show_public_ontology: Afficher seulement les ontologies publiques
       show_private_ontology: Afficher seulement les ontologies privées
-      show_retired_ontologies: Afficher les ontologies retirées
+      show_retired_ontologies: Afficher les ontologies retirées seulement
+    user_ontologies:
+      no_ontology_found: "Prêt à contribuer ?\n Soumettez votre première ontologie et commencez à constituer votre collection."
     taxonomy_information_tooltip: Voir plus d'informations sur les %{taxonomy_type} dans       
     categories: Catégories
     change_notes: Notes de changement
@@ -1050,7 +1117,8 @@ fr:
     exploring_and_searching: |-
       dans notre liste d'ontologies mais ils ne peuvent pas l'explorer ou la rechercher. Pour permettre l'exploration et la recherche,
       veuillez télécharger une version complète de votre ontologie.
-    fairness_assessment_questions: Questions d'évaluation du nveau de FAIRness O'FAIRe
+    fairness_assessment_questions_ofaire: Questions d'évaluation du niveau de FAIRness O'FAIRe
+    fairness_assessment_questions_foops: Questions d'évaluation du niveau de FAIRness FOOPS!
     filters: Filtres
     formality_levels: Niveaux de formalité
     general_information: Informations générales
@@ -1117,8 +1185,8 @@ fr:
       étapes de traitement ont échoué, voici les statuts actuels : %{status}'
     ontology_processing_failed: 'Le traitement de l''ontologie a échoué, avec les
       statuts suivants : %{status}'
-    ontology_search_prompt: Rechercher une ontologie ou un terme (e.g., hauteur de
-      plante)
+    ontology_search_prompt: Rechercher une ontologie ou un terme (e.g., température de surface de la mer)
+    class_search_prompt: Rechercher une classe (e.g., température de surface de la mer)
     ontology_submitted: Ontologie soumise avec succès !
     ontology_types: Types d'ontologies
     outside: extérieur
@@ -1244,7 +1312,7 @@ fr:
       note: 'Note :'
       or: OU
       other_links: Autres liens
-      person_and_organization: Personnes et organisations
+      person_and_organization: Agents
       projects_and_usage_information: Informations sur les projets et l'utilisation
       properties: Propriétés
       properties_search_placeholder: Rechercher une propriété dans %{acronym}
@@ -1254,6 +1322,7 @@ fr:
       set_the_variable: 'Vous pouvez régler la variable sur ''all'' pour rechercher
         dans toutes les ontologies de %{site} :'
       shortid: shortid
+      submissions: Soumissions
       uri: uri
       use_all_to_search: 'utilisez ''all'' pour rechercher dans toutes les ontologies
         de %{site} :'
@@ -1286,7 +1355,9 @@ fr:
       widgets: Les widgets ne sont disponibles que pour les ontologies stockées dans
         %{site}.
     see_details: Voir les détails
+    self: Ontologies
     showing: Affichage
+    showing_ontologies_user_size: Affichage de %{ontologies_size} sur %{analytics_size} ontologie en %{time}s
     showing_ontologies_size: Affichage de %{ontologies_size} sur %{analytics_size} de %{portals}
     submission: Soumission
     submit_new_ontology: Soumettre une nouvelle ontologie
@@ -1340,6 +1411,7 @@ fr:
       no_preferred_name_for_selected_language: Pas de nom préféré pour la langue sélectionnée.
       obsolete: Obsolète
       preferred_name: Nom préféré
+      show_all_synonyms: Afficher tous les synonymes
       synonyms: Synonymes
       type: Type
     header:
@@ -1640,6 +1712,10 @@ fr:
     preferred_name: Nom préféré
     type: Type
   search:
+    autocomplete:
+      agents: Agents
+      concepts: Concepts
+      ontologies: Ontologies
     advanced_options:
       include_in_search_title: Inclure dans la recherche
       include_in_search_values:
@@ -1662,27 +1738,33 @@ fr:
       more_from_ontology: de plus sur cette ontologie
       reuses_in: Réutilisé dans
       visualize: Visualiser
-    search_place_holder: Entrez un terme, e.g., hauteur de plante
+    search_place_holder: Entrez un terme, e.g., température de surface de la mer
     show_advanced_options: Afficher les options
   show_advanced_options: Afficher les options avancées
   statistics:
+    agents: Agents
     date: Date
+    description: "Évolution des ressources de %{portal} en chiffres (dernières %{last_years} années)."
     lead: "(dernières %{last_years} années)"
+    menu: Statistiques
     ontologies: Ontologies
     ontology_visits: Visites de l'ontologie
     projects: Projets
+    this_month: ce mois-ci
     title: Statistiques de %{portal}
     users: Utilisateurs
   submission_inputs:
+    name: Nom
+    acronym: Acronyme
+    categories: 'Catégories'
     accounts_allowed: Ajouter ou supprimer des comptes autorisés à voir cette ontologie
       dans %{portal_name}.
     administrators: Administrateurs
-    contact: Contact
+    projects: Projets
+    contact: contact
     contact_email: Email de %{name}
     contact_name: Nom du %{name}
-    deprecated_help: Une ontologie avec le statut <strong>retired</strong> (retirée)
-      doit nécessairement être également <strong>deprecated</strong> (dépréciée),
-      mais pas l'inverse.
+    deprecated_help: Une ontologie avec le statut retired (retirée) doit nécessairement être également deprecated (dépréciée), mais pas l'inverse.
     edit_metadata_instruction: Modifiez les métadonnées de votre ontologie ici. Certaines
       de ces valeurs sont utilisées par les fonctionnalités de %{portal_name}, notamment
       pour l'évaluation de la FAIRness. %{link}
@@ -1722,6 +1804,7 @@ fr:
 
       '
     ontology_umls_language_link: par l'outil UMLS2RDF.
+    ontology_xlsx_language_help: 'Template Crop Ontology (TDv5). Le fichier doit contenir une feuille nommée "Template for submission" avec les colonnes Variable, Trait, Method et Scale. Le fichier TDv5 sera automatiquement converti en OWL par %{portal_name}.'
     ontology_view_of_another_ontology: Cette ontologie est-elle une vue d'une autre
       ontologie ?
     validators: Validateurs
@@ -1729,6 +1812,17 @@ fr:
       de version dans une ontologie, consultez %{link}
     version_helper_link: recommandations.
     visibility: Visibilité
+    view_of: Vue de
+    sample_queries: Requêtes d'exemple
+    description: 'Description'
+    status: 'Statut'
+    valid: 'Date de validité'
+    hasOntologyLanguage: 'Langage de représentation'
+    subjects: Sujets
+    theme_taxonomy_not_set: Veuillez définir le champ themeTaxonomy dans la page d'administration pour l'utiliser pour la recherche des sujets
+    subjects_notice: "Les 'Subjets' doivent être sélectionnés dans l'ensemble d'ontologies suivant: %{ontologies}. Si vous souhaitez ajouter un autre mot-clé ou terme de vocabulaire, utilisez la propriété 'Mots-clés'."
+    attributes:
+      description: Description
   submissions:
     actions: Actions
     delete_submission_alert:
@@ -1736,23 +1830,26 @@ fr:
       content_2: "</span> pour l'ontologie <span style='color:red;font-weight:bold;'>"
       content_3: "</span> ?<br/><b>Cette action est IRREVERSIBLE !!!</b>"
     download: Télécharger
+    download_metadata: Métadonnées
     edit_button: Éditer
     filter:
-      all_formats: Tous les formats
-      sort_by_classes: Trier par nombre de classes
-      sort_by_creation_date: Trier par date de création
-      sort_by_fair_score: Trier par score FAIR
-      sort_by_instances_concepts: Trier par nombre d'instances/concepts
-      sort_by_name: Trier par nom
-      sort_by_notes: Trier par notes
-      sort_by_popularity: Trier par popularité
-      sort_by_projects: Trier par projets
-      sort_by_submitted_date: Trier par date de soumission
+      all_formats: Formats
+      sort: Trier
+      sort_by_classes:  Nombre de classes
+      sort_by_creation_date: Date de création
+      sort_by_fair_score: Score FAIR
+      sort_by_instances_concepts: Nombre d'instances
+      sort_by_name: Nom
+      sort_by_notes: Notes
+      sort_by_popularity: Popularité
+      sort_by_projects: Projets
+      sort_by_submitted_date: Date de soumission
     go_to_api: Aller à l'API
     id: ID
     modified: Modifié
     no_submissions_for_ontology: 'Aucune soumission pour l''ontologie : %{ontology}'
     save_button: Sauvegarder
+    submission: Soumission
     submission_updated_successfully: Soumission mise à jour
     submitted: Soumis
     toggle_dropdown: Basculer le menu déroulant
@@ -1762,6 +1859,8 @@ fr:
     groups_and_categories: Groupes et Catégories
     no_taxonomy_created: Aucun %{type} n'a encore été créé
     show_sub_categories: Afficher les sous-catégories
+    groups: Groupes
+    categories: Catégories
   tools:
     converter:
       description: 'L''outil de conversion de contenu offre la possibilité de d''exporter
@@ -1816,6 +1915,7 @@ fr:
       error_delete_message: Impossible de supprimer cet utilisateur car il est encore
         utilisé
       first_name: Prénom
+      last_login: Dernière connexion
       last_name: Nom
       login_as: Se connecter comme
       ontologies: Ontologies
@@ -1828,7 +1928,7 @@ fr:
     recaptcha_validation: Veuillez remplir le texte approprié à partir de l'image
       fournie
     show:
-      accessible_semantic_resources: Ontologies Accessibles
+      accessible_semantic_resources: Ontologies accessibles
       api_documentation: Documentation de l'API
       api_key_description: Votre clé API peut être utilisée pour accéder aux services
         Web de %{portal}
@@ -1881,3 +1981,9 @@ fr:
     name: nom
     ontology_visits: Visites de l'ontologie
     visits: visites
+  sparql_endpoint:
+    description: Interrogez des ensembles de données structurés à l'aide de SPARQL
+      pour récupérer, filtrer et manipuler efficacement des artefacts sémantiques.
+    title: Éditeur de requêtes SPARQL
+    private_ontology_warning: Rendez l'ontologie publique pour activer l'accès depuis l’endpoint SPARQL.
+    edit_sample_queries: Éditer les requêtes d'exemple

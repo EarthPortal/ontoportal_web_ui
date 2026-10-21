@@ -1,6 +1,9 @@
 module SearchContent
   extend ActiveSupport::Concern
 
+  AGENTS_AUTOCOMPLETE_QF = 'identifiers_texts^20 acronym_text^15 name_text^10 email_text^10'
+  AGENTS_AUTOCOMPLETE_SIZE = 5
+
   def search_ontologies(query: '*', groups: [], categories: [], languages: [], private_only: false, formats: [],
                         is_of_type: [], formality_level: [],
                         show_views: false, status: 'alpha,beta,production',
@@ -48,7 +51,7 @@ module SearchContent
     end
   end
 
-  def search_ontologies_content(query:, page: 1, page_size: 10, filter_by_ontologies: [], filter_by_types: [])
+  def search_ontologies_content(query:, page: 1, page_size: 10, filter_by_ontologies: [], filter_by_types: [], show_ontologies: true)
     acronyms = filter_by_ontologies
     original_query = query
     types = filter_by_types
@@ -70,7 +73,7 @@ module SearchContent
     selected_onto.uniq!
     [selected_onto.first].compact.each do |o|
       acr = o.acronym
-      acronyms << acr
+      acronyms << acr unless acronyms.include?(acr)
       query.gsub!(/\b#{acr}\b/, "")
       query.gsub!(/\b#{acr.downcase}\b/, "")
       query.gsub!('-', " ")
@@ -85,8 +88,8 @@ module SearchContent
       query = "*#{query}*"
     end
 
-    results = search_content( q: query, qf: qf.join(' '), page: page, pagesize: page_size, ontologies: acronyms.first, types: types.join(','))
-    [search_content_result_to_json(original_query, query, results, ontologies, selected_onto), results.page,results.nextPage, results.totalCount]
+    results = search_content( q: query, qf: qf.join(' '), ontologies: acronyms.join(','), types: types.join(','))
+    [search_content_result_to_json(original_query, query, results, ontologies, selected_onto, show_ontologies), results.page,results.nextPage, results.totalCount]
   end
 
 
@@ -95,20 +98,60 @@ module SearchContent
     LinkedData::Client::HTTP.get('search/ontologies/content', params)
   end
 
+  # Agents live in their own Solr core, so their scores are not comparable with
+  # ontology content scores and the two result sets cannot be merged by
+  # relevance. They are fetched separately and tagged so the autocomplete can
+  # show them as their own section.
+  def search_agents_content(query:, page_size: AGENTS_AUTOCOMPLETE_SIZE)
+    return [] if query.blank?
+
+    results = LinkedData::Client::HTTP.get('/search/agents',
+                                           query: "#{query}*",
+                                           qf: AGENTS_AUTOCOMPLETE_QF,
+                                           include: 'name,acronym,agentType',
+                                           page: 1,
+                                           pagesize: page_size)
+
+    agents_result_to_json(Array(results&.collection))
+  rescue StandardError => e
+    # The agents section must never take the rest of the dropdown down with it.
+    Rails.logger.error("Agents autocomplete failed for #{query.inspect}: #{e.message}")
+    []
+  end
+
   private
 
-  def search_content_result_to_json(query, changed_query, results, ontologies, selected_onto = [])
-    json = []
-    selected_onto = selected_onto.empty? ? ontologies.select { |x| x.name.downcase.include?(query.downcase) || x.acronym.downcase.include?(query.downcase) } : selected_onto
-
-    json += selected_onto.map do |x|
+  # Shown in the order search/agents returns them, i.e. by Solr relevance.
+  def agents_result_to_json(agents)
+    agents.map do |agent|
       {
-        id: ontology_path(id: x.acronym, p: 'summary'),
-        name: x.name,
-        acronym: x.acronym,
-        type: x.viewOf.blank? ? 'Ontology' : 'Ontology View',
-        label: nil
+        id: agent_path(helpers.agent_id(agent)),
+        # The shared row template renders `label` as the primary line, so the
+        # agent's name goes there rather than in `name` as an ontology's does.
+        name: nil,
+        acronym: agent.acronym,
+        type: helpers.t("agents.form.#{agent.agentType}", default: agent.agentType.to_s),
+        label: agent.name,
+        group: 'agents'
       }
+    end
+  end
+
+  def search_content_result_to_json(query, changed_query, results, ontologies, selected_onto = [], show_ontologies)
+    json = []
+    if show_ontologies        
+      selected_onto = selected_onto.empty? ? ontologies.select { |x| x.name.downcase.include?(query.downcase) || x.acronym.downcase.include?(query.downcase) } : selected_onto
+
+      json += selected_onto.map do |x|
+        {
+          id: ontology_path(id: x.acronym, p: 'summary'),
+          name: x.name,
+          acronym: x.acronym,
+          type: x.viewOf.blank? ? 'Ontology' : 'Ontology View',
+          label: nil,
+          group: 'ontologies'
+        }
+      end
     end
 
     changed_query.gsub!('*', '')
@@ -137,7 +180,8 @@ module SearchContent
         name: x.resource_id,
         acronym: acronym,
         type: type || '',
-        label: label
+        label: label,
+        group: 'concepts'
       }
     end.compact
 

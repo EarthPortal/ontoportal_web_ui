@@ -24,7 +24,8 @@ module MetricsHelper
       properties_count: prop_count,
       mappings_count: map_count,
       projects_count: projects_count,
-      users_count: users_count
+      users_count: users_count,
+      agents_count: agents_count
     }
   end
 
@@ -42,9 +43,15 @@ module MetricsHelper
 
   private
 
+  def agents_count()
+    agents_page = LinkedData::Client::Models::Agent.all(include: "ID", page: 1, pagesize: 1, display_links: false, display_context: false).first
+    return 0 if agents_page.nil? || agents_page.errors
+    agents_page.respond_to?(:pageCount) ? agents_page.pageCount : 0
+  end
+
   def projects_count(ontologies_acronym = [])
     projects = LinkedData::Client::Models::Project.all
-    projects.select! { |p| ontologies_acronym.intersection(p.ontologyUsed.map{|x| x.split('/').last}).any? } unless ontologies_acronym.empty?
+    projects.select! { |p| ontologies_acronym.intersection(Array(p.ontologyUsed).map{|x| x.split('/').last}).any? } unless ontologies_acronym.empty?
     projects.size
   end
 

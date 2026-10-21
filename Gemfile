@@ -101,6 +101,10 @@ gem 'countries', '~> 5.7'
 
 # Custom API client
 gem 'ontologies_api_client', git: 'https://github.com/earthportal/ontologies_api_ruby_client.git', branch: 'development'
+
+# SSRF protection for the URI resolvability checker
+gem 'ssrf_filter', '~> 1.5'
+
 # Ruby 2.7.8 pinned gems (to remove when migrating to Ruby >= 3.0)
 
 gem 'ffi', '~> 1.16.3'
@@ -189,3 +193,9 @@ gem 'concurrent-ruby', '1.3.4'
 gem 'nokogiri', '~> 1.13.10'
 gem 'rexml'
 gem "sparql", "~> 3.3"
+
+# Feature flipping
+gem 'flipper'
+gem 'flipper-ui'
+gem 'flipper-active_record'
+gem 'flipper-active_support_cache_store'

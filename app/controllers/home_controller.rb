@@ -3,7 +3,8 @@
 class HomeController < ApplicationController
   layout :determine_layout
 
-  include FairScoreHelper, FederationHelper,MetricsHelper
+  include FairScoreHelper, FederationHelper, MetricsHelper, AgentHelper
+  include OntoportalInstances
 
   def index
     @analytics = Rails.cache.fetch("ontologies_analytics-#{@subdomain_filter[:acronym].presence || 'all'}-#{Time.now.year}-#{Time.now.month}", expires_in: 2.hours) do
@@ -11,7 +12,6 @@ class HomeController < ApplicationController
     end
 
     @slices = LinkedData::Client::Models::Slice.all
-
     @anal_ont_names = []
     @anal_ont_numbers = []
     unless @analytics.empty?
@@ -20,6 +20,7 @@ class HomeController < ApplicationController
         @anal_ont_numbers << count
       end
     end
+    @portals_instances = active_ontoportal_instances
   end
 
   # Add a new action for the metrics frame
@@ -33,20 +34,44 @@ class HomeController < ApplicationController
     end
   end
 
+  # Add a new action for the agents section
+  def agents
+    require 'net/http'
+    require 'json'
+
+    @agents_data = Rails.cache.fetch("agents_data_home_page", expires_in: 1.hour) do
+      api_url = agents_rest_url(page=1, pagesize=2222, display='name,agentType,usages')  + "&apikey=#{get_apikey}"
+      uri = URI(api_url)
+      http = Net::HTTP.new(uri.host, uri.port)
+      http.use_ssl = true if uri.scheme == 'https'
+
+      request = Net::HTTP::Get.new(uri.request_uri)
+      response = http.request(request)
+
+      if response.is_a?(Net::HTTPSuccess)
+        JSON.parse(response.body)
+      else
+        { "collection" => [] }
+      end
+    end
+
+    respond_to do |format|
+      format.html { render partial: 'agents', layout: false }
+    end
+  end
+
   def set_cookies
     cookies.permanent[:cookies_accepted] = params[:cookies] if params[:cookies]
     render 'cookies', layout: nil
   end
 
+  # A portal that is down, retired or shielded from automated requests still gets a
+  # tooltip: fall back on what the registry says about it.
   def portal_config
-    @config = $PORTALS_INSTANCES.select { |x| x[:name].downcase.eql?((params[:portal] || helpers.portal_name).downcase) }.first
-    if @config && @config[:api]
-      @portal_config = get_portal_config
-      @color = @portal_config[:color].present? ? @portal_config[:color] : @config[:color]
-      @name = @portal_config[:title].present? ? @portal_config[:title] : @config[:name]
-    else
-      @portal_config = {}
-    end
+    @config = portal_instance_config(params[:portal] || helpers.portal_name) || {}
+    @portal_config = @config[:api].present? ? get_portal_config : {}
+    @color = @portal_config[:color].presence || @config[:color]
+    @name = @portal_config[:title].presence || @config[:name]
   end
 
   def tools
@@ -242,6 +267,15 @@ class HomeController < ApplicationController
     @groups = others + agriculture
   end
 
+  def portal_instance_config(portal_key)
+    portal_key = portal_key.to_s.downcase
+    portal = ontoportal_instances.find { |instance| instance[:name].to_s.downcase.eql?(portal_key) }
+    return portal unless portal && portal_key.eql?(helpers.portal_name.to_s.downcase)
+
+    # Describe this portal from its own API rather than from the publicly advertised one
+    portal.merge(api: helpers.rest_url)
+  end
+
   def get_portal_config
     portal_config = LinkedData::Client::Models::Ontology.top_level_links(@config[:api])
     if portal_config.is_a?(LinkedData::Client::Models::SemanticArtefactCatalog)
@@ -250,5 +284,8 @@ class HomeController < ApplicationController
       portal_config = portal_config.to_h
     end
     portal_config
+  rescue StandardError => e
+    Rails.logger.info("Could not read the configuration of #{@config[:name]}: #{e.message}")
+    {}
   end
 end
