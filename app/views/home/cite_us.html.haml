@@ -1,0 +1,25 @@
+
+.container.py-4
+  = render PageHeaderComponent.new(title: t('cite_us_page.title'), description: nil)
+
+  .home-section-title.mt-4
+    .text= t('cite_us_page.how_to_cite')
+    %hr.home-section-line/
+  %p.mb-3
+    Christelle Pierkot, Guillaume Alviset, Marine Vernet. The EarthPortal, towards an ontology repository for the Earth System semantic artefacts. Onto4FAIR, Sep 2023, Leipzig, Germany. ⟨hal-04908666⟩
+    = link_to 'https://hal.science/hal-04908666v1', 'https://hal.science/hal-04908666v1', target: '_blank', rel: 'noopener noreferrer'
+
+  .home-section-title.mt-4
+    .text= t('cite_us_page.other_references')
+    %hr.home-section-line/
+  %p.mb-3
+    Pierkot C, Alviset G, Puissant A, Chaffard V, Debard S, Coussot C (2025) Enhancing Semantic Interoperability for Land Surface Data: The Role of EarthPortal. ARPHA Conference Abstracts 8: e151393.
+    = link_to 'https://doi.org/10.3897/aca.8.e151393', 'https://doi.org/10.3897/aca.8.e151393', target: '_blank', rel: 'noopener noreferrer'
+  %p.mb-3
+    Christelle Pierkot, Guillaume Alviset. SIST. (2024, 5 décembre). Webinaire SIST 2024 - Interopérabilité sémantique des données de la recherche : utilisation d'EarthPortal. [Vidéo]. Canal-U.
+    = link_to 'https://doi.org/10.60527/szve-pp97', 'https://doi.org/10.60527/szve-pp97', target: '_blank', rel: 'noopener noreferrer'
+  %p.mb-3
+    Christelle Pierkot, Hélène Bressan, Guillaume Alviset. Enhancing FAIRness of Spatiotemporal Data through Semantics: A Case Study with EarthPortal and EaSy Data. SIMbig 2024 - 11th International Conference on Information Management and Big Data, Nov 2024, Ilo, Peru. ⟨hal-04908547⟩
+    = link_to 'https://hal.science/hal-04908547v1', 'https://hal.science/hal-04908547v1', target: '_blank', rel: 'noopener noreferrer'
+
+  = render 'support_collaborations'
