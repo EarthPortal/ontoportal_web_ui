@@ -1,0 +1,12 @@
+
+.container.py-4
+  = render PageHeaderComponent.new(title: t('about_page.title'), description: nil)
+
+  %p.mt-4= t('about_page.description')
+
+  %p.mt-3
+    = t('about_page.video_before')
+    = link_to t('about_page.video_link'), 'https://www.canal-u.tv/chaines/sist/webinaire-sist-2024-interoperabilite-semantique-des-donnees-de-la-recherche', target: '_blank', rel: 'noopener noreferrer'
+    = t('about_page.video_after')
+
+  = render 'support_collaborations'

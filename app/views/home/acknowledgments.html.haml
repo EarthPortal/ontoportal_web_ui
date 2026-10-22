@@ -1,0 +1,7 @@
+
+.container.py-4
+  = render PageHeaderComponent.new(title: t('acknowledgments_page.title'), description: nil)
+
+  %p.mt-4= t('acknowledgments_page.description')
+
+  = render 'support_collaborations'

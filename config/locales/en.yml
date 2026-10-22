@@ -750,6 +750,23 @@ en:
     search_language_help_text: Indicate the language on which to perform the search,
       restricting results to terms within that language
     translation_not_available: "%{language} translation not available"
+  about_page:
+    title: About EarthPortal
+    description: >-
+      EarthPortal is a catalog of thematic semantic artefacts and a semantic repository intended for Earth sciences based on OntoPortal technology and supported by the Data Terra research infrastructure. Developed within the EOSC FAIR-IMPACT project, its implementation adheres to national and European recommendations, aiming to enhance the dissemination and reuse of semantic artefacts in an interdisciplinary research context. EarthPortal also ensures the traceability and recognition of the authorship of vocabularies, thus offering better recognition for their creators. At the European level, the recommendations of the “Semantic Interoperability” Task Force emphasize the importance of recognizing catalogs of semantic artefacts (as described in the interoperability framework of the European Open Science Cloud - EOSC) as a crucial element for the long-term sustainability of any research data infrastructure.
+    video_before: A video overview introducing EarthPortal is available
+    video_link: here
+    video_after: (French only).
+  team_page:
+    title: EarthPortal Team
+  cite_us_page:
+    title: Cite Us
+    how_to_cite: How to cite us
+    other_references: Other references
+  acknowledgments_page:
+    title: Acknowledgments
+    description: >-
+      EarthPortal has been developed within the Horizon Europe FAIR-IMPACT project (GA 101057344). It is currently maintained with the EOSC CONNECT CDIF4EOSC FLUID-AI FAIRSCOPE LUMEN project (GA 101187940). EarthPortal is supported by the Data Terra Research Infrastructure and the CNRS.
   layout:
     footer:
       about: About

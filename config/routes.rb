@@ -174,6 +174,10 @@ Rails.application.routes.draw do
 
 
   # Top-level pages
+  get '/about', to: 'home#about'
+  get '/team', to: 'home#team'
+  get '/cite_us', to: 'home#cite_us'
+  get '/acknowledgments', to: 'home#acknowledgments'
   match '/feedback', to: 'home#feedback', via: [:get, :post]
   get '/slice', to: 'home#slice'
   post '/slice', to: 'home#slice'
