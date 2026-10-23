@@ -45,6 +45,9 @@ if [ ! -d "tmp/ontoportal_docker" ]; then
   git clone --depth=1 -b  development https://github.com/ontoportal-lirmm/ontoportal_docker.git tmp/ontoportal_docker
 fi
 
+# Use the EarthPortal API docker-compose instead of the ontoportal-lirmm one
+sed -i.bak 's/^ORGANIZATION_NAME=.*/ORGANIZATION_NAME=EarthPortal/' tmp/ontoportal_docker/.env.sample
+
 # If an option is not provided, check and use the corresponding value from the environment variables
 api_key="${api_key:-$OP_API_KEY}"
 image_repository="${image_repository:-$API_IMAGE_REPOSITORY}"
