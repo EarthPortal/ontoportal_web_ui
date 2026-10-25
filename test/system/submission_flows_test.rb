@@ -647,5 +647,10 @@ class SubmissionFlowsTest < ApplicationSystemTestCase
 
       click_button 'Finish'
     end
+
+    # Finish opens a popup asking to confirm the submission
+    within '#submissionModal' do
+      click_button 'Confirm'
+    end
   end
 end
