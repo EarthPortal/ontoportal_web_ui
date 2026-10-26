@@ -158,6 +158,15 @@ module ApplicationTestHelpers
       'light-color': '#F1F6FA'
     }.freeze
 
+    BIOPORTAL = {
+      name: 'BioPortal',
+      ui: 'https://bioportal.bioontology.org/',
+      api: 'https://data.bioontology.org/',
+      apikey: '8b5b7825-538d-40e0-9e9e-5ab9274a9aeb',
+      color: '#234979',
+      'light-color': '#E9F2FA'
+    }.freeze
+
     PORTAL_DOWN = {
       name: 'testportal-down',
       ui: 'https://down.testportal.lirmm.fr/',
