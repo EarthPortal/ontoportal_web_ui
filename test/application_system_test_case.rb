@@ -1,5 +1,9 @@
 require "test_helper"
 require_relative 'helpers/application_test_helpers'
+require "minitest/retry"
+
+# Browser tests sometimes fail on a slow CI runner, give them two more tries there
+Minitest::Retry.use!(retry_count: 2) if ENV['CI'].present?
 
 class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
   include ApplicationTestHelpers::Ontologies
