@@ -158,6 +158,16 @@ module ApplicationTestHelpers
       'light-color': '#F1F6FA'
     }.freeze
 
+    # The repository is public, so the apikey comes from the EARTHPORTAL_APIKEY secret
+    EARTHPORTAL = {
+      name: 'EarthPortal',
+      ui: 'https://earthportal.eu/',
+      api: 'https://data.earthportal.eu/',
+      apikey: ENV['EARTHPORTAL_APIKEY'],
+      color: '#1E6F9F',
+      'light-color': '#EAF3F8'
+    }.freeze
+
     PORTAL_DOWN = {
       name: 'testportal-down',
       ui: 'https://down.testportal.lirmm.fr/',

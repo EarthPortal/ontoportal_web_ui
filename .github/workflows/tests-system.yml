@@ -17,6 +17,7 @@ env:
   BIOMIXER_URL: ${{ secrets.BIOMIXER_URL }}
   FAIRNESS_URL: ${{ secrets.FAIRNESS_URL }}
   ANNOTATOR_URL: ${{ secrets.ANNOTATOR_URL }}
+  EARTHPORTAL_APIKEY: ${{ secrets.EARTHPORTAL_APIKEY }}
   DB_HOST: 127.0.0.1
   AGENTS_ENABLED: true
 jobs:
