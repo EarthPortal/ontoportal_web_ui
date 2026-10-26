@@ -183,6 +183,9 @@ group :test do
   # Mock HTTP requests in tests
   gem 'webmock'
 
+  # Retry system tests that fail because the browser was slow
+  gem 'minitest-retry', require: false
+
   # Testing framework for Rails
   gem 'rspec-rails'
 end
