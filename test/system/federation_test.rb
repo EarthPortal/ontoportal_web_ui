@@ -6,7 +6,7 @@ class FederationTest < ApplicationSystemTestCase
     @search_path = "/search"
     @query = "test"
     @ontologies_path = "/ontologies"
-    federate_with(BIOPORTAL, PORTAL_DOWN)
+    federate_with(AGROPORTAL, PORTAL_DOWN)
   end
 
   test "perform federated search in search page and make sure federation is working" do
@@ -14,7 +14,7 @@ class FederationTest < ApplicationSystemTestCase
     visit "#{@search_path}?q=#{@query}"
     results_count_no_federation = find('.search-page-number-of-results').text.scan(/\d+/).first.to_i
 
-    visit "#{@search_path}?q=#{@query}&lang=all&portals%5B%5D=bioportal"
+    visit "#{@search_path}?q=#{@query}&lang=all&portals%5B%5D=agroportal"
     results_count_federation = find('.search-page-number-of-results').text.scan(/\d+/).first.to_i
 
     assert_not_equal results_count_no_federation, results_count_federation
@@ -48,7 +48,7 @@ class FederationTest < ApplicationSystemTestCase
 
     ### Federation activated
 
-    visit "#{@ontologies_path}?sort_by=ontology_name&portals=bioportal"
+    visit "#{@ontologies_path}?sort_by=ontology_name&portals=agroportal"
 
 
     loop do # Scroll all down to display all the results
