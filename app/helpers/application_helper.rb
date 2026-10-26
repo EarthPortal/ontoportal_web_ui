@@ -507,7 +507,7 @@ module ApplicationHelper
     parent_to_children = Hash.new { |hash, key| hash[key] = [] }
     categories.each do |category|
       next unless category.parentCategory
-      category.parentCategory.each do |parent_id|
+      Array(category.parentCategory).each do |parent_id|
         parent_acronym = id_to_acronym(parent_id)
         child_acronym = id_to_acronym(category.id)
         parent_to_children[parent_acronym] << child_acronym
