@@ -17,6 +17,7 @@ env:
   BIOMIXER_URL: ${{ secrets.BIOMIXER_URL }}
   FAIRNESS_URL: ${{ secrets.FAIRNESS_URL }}
   ANNOTATOR_URL: ${{ secrets.ANNOTATOR_URL }}
+  EARTHPORTAL_APIKEY: ${{ secrets.EARTHPORTAL_APIKEY }}
   DB_HOST: 127.0.0.1
   AGENTS_ENABLED: true
 jobs:
@@ -65,3 +66,12 @@ jobs:
           CI=true RAILS_ENV=test bin/rails assets:clobber
           CI=true RAILS_ENV=test bin/rails  assets:precompile
           CI=true RAILS_ENV=test bin/rails test -v test/system/*
+      - name: Upload screenshots and logs of the failed tests
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: system-tests-debug
+          path: |
+            tmp/screenshots
+            log/test.log
+          retention-days: 7
