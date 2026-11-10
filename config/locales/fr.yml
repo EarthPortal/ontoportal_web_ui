@@ -1846,6 +1846,8 @@ fr:
       sort_by_submitted_date: Date de soumission
     go_to_api: Aller à l'API
     id: ID
+    interface_required:
+      modificationDate: La date de modification est obligatoire
     modified: Modifié
     no_submissions_for_ontology: 'Aucune soumission pour l''ontologie : %{ontology}'
     save_button: Sauvegarder

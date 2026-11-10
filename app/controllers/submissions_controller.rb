@@ -26,6 +26,8 @@ class SubmissionsController < ApplicationController
     @ontology = LinkedData::Client::Models::Ontology.find_by_acronym(params[:ontology_id]).first
     @submission = @ontology.explore.latest_submission || LinkedData::Client::Models::OntologySubmission.new
     @submission.id = nil
+    # A new version is a new modification: today by default, not the date of the previous version
+    @submission.modificationDate = Date.today.to_s
     @categories = LinkedData::Client::Models::Category.all
     @groups = LinkedData::Client::Models::Group.all
     @user_select_list = LinkedData::Client::Models::User.all.map {|u| [u.username, u.id]}
@@ -37,6 +39,10 @@ class SubmissionsController < ApplicationController
   # Called when form to "Add submission" is submitted
   def create
     @is_update_ontology = true
+
+    # Fields required by the interface only: refuse before saving anything (the ontology fields of page 1 included)
+    interface_errors = interface_required_errors(params[:submission])
+    return show_new_errors(interface_errors) if interface_errors.any?
 
     if params[:ontology]
       @ontology, response = update_existent_ontology(params[:ontology_id])
@@ -125,6 +131,31 @@ class SubmissionsController < ApplicationController
       end
       return redirect_to "/ontologies/#{acronym}",
                          notice: t('submissions.submission_updated_successfully')
+    end
+
+    # Fields required by the interface only. Like the API checks, this runs after the ontology fields
+    # (name, categories...) are saved, so the error form does not lose them.
+    @ontology ||= LinkedData::Client::Models::Ontology.find_by_acronym(acronym).first
+    interface_errors = if params[:attribute]
+                         # one-field save (metadata administration page): only check the field being saved
+                         interface_required_errors(params[:submission], only_sent: true)
+                       else
+                         # the Edit form only sends the fields of the opened tabs: check the others on the saved values
+                         saved_submission = @ontology&.explore&.submissions({ include: SubmissionInputsHelper::INTERFACE_REQUIRED_ATTRIBUTES.join(',') }, submission_id)
+                         interface_required_errors(params[:submission], saved_submission: saved_submission)
+                       end
+
+    if interface_errors.any?
+      if params[:attribute].nil?
+        show_new_errors(interface_errors, partial: 'submissions/form_content', id: 'test')
+      else
+        @errors = interface_errors
+        @submission = submission_from_params(params[:submission])
+        @submission.submissionId = submission_id
+        reset_agent_attributes
+        render_submission_attribute(params[:attribute])
+      end
+      return
     end
 
     @submission, response = update_submission(update_submission_hash(acronym), submission_id, @ontology)

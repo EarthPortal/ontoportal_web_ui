@@ -32,6 +32,25 @@ module SubmissionUpdater
     [@submission, @submission.update(values: new_values, cache_refresh_all: false)]
   end
 
+  # Checks the fields that only the interface requires (SubmissionInputsHelper::INTERFACE_REQUIRED_ATTRIBUTES).
+  # The API does not require them, so the submissions saved before this rule stay valid.
+  #   submitted_values: the submission fields sent by the form
+  #   saved_submission: (Edit mode) the saved submission, used for a required field the form did not send
+  #                     (the Edit form only sends the fields of the opened tabs)
+  #   only_sent: only check the fields sent by the form (one-field save of the metadata administration page)
+  # Returns the errors in the same shape as the API ones, e.g. { modificationDate: { existence: '...' } }, or {}
+  def interface_required_errors(submitted_values, saved_submission: nil, only_sent: false)
+    submitted_values ||= {}
+
+    SubmissionInputsHelper::INTERFACE_REQUIRED_ATTRIBUTES.each_with_object({}) do |attr, errors|
+      sent = submitted_values.key?(attr)
+      next if only_sent && !sent
+
+      value = sent ? submitted_values[attr] : saved_submission&.send(attr)
+      errors[attr.to_sym] = { existence: t("submissions.interface_required.#{attr}") } if value.blank?
+    end
+  end
+
   def add_ontologies_to_object(ontologies,object)
     ontologies.each do |ont|
       next if object.ontologies.include?(ont)

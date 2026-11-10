@@ -1,5 +1,9 @@
 module SubmissionInputsHelper
 
+  # Attributes required by the interface only (red star + check before saving), not by the API model:
+  # the submissions saved before this rule stay valid for the API (saving, reprocessing).
+  INTERFACE_REQUIRED_ATTRIBUTES = %w[modificationDate].freeze
+
   class SubmissionMetadataInput
     include MetadataHelper, ApplicationHelper
 
@@ -49,6 +53,8 @@ module SubmissionInputsHelper
     end
 
     def required?
+      return true if INTERFACE_REQUIRED_ATTRIBUTES.include?(@attribute_key.to_s)
+
       @attr_metadata && Array(@attr_metadata['enforce']).include?('existence')
     end
   end

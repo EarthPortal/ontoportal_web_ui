@@ -43,11 +43,11 @@
                     = render partial: 'ontologies/submission_location_form'
 
                 - c.page do
-                  .upload-ontology-input-field-container
-                    - if @is_update_ontology
-                      = attribute_input('modificationDate', label: t("ontologies.modification_date"), max_date: Date.today)
-                    - else
+                  - unless @is_update_ontology
+                    .upload-ontology-input-field-container
                       = attribute_input('released',  label: t("ontologies.date_of_original_creation"),  max_date: Date.today)
+                  .upload-ontology-input-field-container
+                    = attribute_input('modificationDate', label: t("ontologies.modification_date"), max_date: Date.today)
                   .upload-ontology-contact{id: "submissioncontact_from_group_input"}
                     = contact_input(show_help: false)
 

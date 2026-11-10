@@ -1788,6 +1788,8 @@ en:
       sort_by_submitted_date: Submitted date
     go_to_api: Go to API
     id: ID
+    interface_required:
+      modificationDate: Modification date is required
     modified: Modified
     no_submissions_for_ontology: 'No submissions for ontology: %{ontology}'
     save_button: Save

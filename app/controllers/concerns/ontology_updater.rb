@@ -253,7 +253,8 @@ module OntologyUpdater
     @groups = LinkedData::Client::Models::Group.all(display_links: false, display_context: false)
     @user_select_list = LinkedData::Client::Models::User.all.map { |u| [u.username, u.id] }
     @user_select_list.sort! { |a, b| a[1].downcase <=> b[1].downcase }
-    @errors = response_errors(object)
+    # object: an API response, or errors already prepared by the interface (interface_required_errors)
+    @errors = object.is_a?(Hash) ? object : response_errors(object)
     @selected_attributes = (Array(errors_attributes) + Array(params[:submission]&.keys)).uniq
     @ontology = ontology_from_params if @ontology.nil?
 
