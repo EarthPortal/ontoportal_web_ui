@@ -40,6 +40,8 @@
                           - @submission.valid = nil unless @submission.status&.eql?('retired')
                           = attribute_input("valid", label: t('submission_inputs.valid'))
                   .upload-ontology-field-container.mt-3
+                    = attribute_input('hasLicense', help: metadata_license_help_link)
+                  .upload-ontology-field-container.mt-3
                     = render partial: 'ontologies/submission_location_form'
 
                 - c.page do
@@ -50,6 +52,8 @@
                     = attribute_input('modificationDate', label: t("ontologies.modification_date"), max_date: Date.today)
                   .upload-ontology-contact{id: "submissioncontact_from_group_input"}
                     = contact_input(show_help: false)
+                  .upload-ontology-input-field-container.mt-3{id: "submissionhasCreator_from_group_input"}
+                    = attribute_input('hasCreator')
 
 #submissionModal.modal.fade{'data-controller': 'submission-modal', 'data-submission-modal-target': 'modal'}
   .modal-dialog

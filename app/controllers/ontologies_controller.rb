@@ -130,7 +130,7 @@ class OntologiesController < ApplicationController
     @is_update_ontology = false
 
     # Fields required by the interface only: refuse before creating anything
-    interface_errors = interface_required_errors(params[:submission])
+    interface_errors = interface_required_errors(params[:submission], params[:ontology])
     return show_new_errors(interface_errors) if interface_errors.any?
 
     @ontology = ontology_from_params.save

@@ -41,7 +41,7 @@ class SubmissionsController < ApplicationController
     @is_update_ontology = true
 
     # Fields required by the interface only: refuse before saving anything (the ontology fields of page 1 included)
-    interface_errors = interface_required_errors(params[:submission])
+    interface_errors = interface_required_errors(params[:submission], params[:ontology])
     return show_new_errors(interface_errors) if interface_errors.any?
 
     if params[:ontology]
@@ -133,17 +133,12 @@ class SubmissionsController < ApplicationController
                          notice: t('submissions.submission_updated_successfully')
     end
 
-    # Fields required by the interface only. Like the API checks, this runs after the ontology fields
-    # (name, categories...) are saved, so the error form does not lose them.
+    # Fields required by the interface only: in the Edit mode a saved value can not be erased.
+    # Like the API checks, this runs after the ontology fields (name, categories...) are saved,
+    # so the error form does not lose them (an emptied list of categories is not saved, see update_existent_ontology).
     @ontology ||= LinkedData::Client::Models::Ontology.find_by_acronym(acronym).first
-    interface_errors = if params[:attribute]
-                         # one-field save (metadata administration page): only check the field being saved
-                         interface_required_errors(params[:submission], only_sent: true)
-                       else
-                         # the Edit form only sends the fields of the opened tabs: check the others on the saved values
-                         saved_submission = @ontology&.explore&.submissions({ include: SubmissionInputsHelper::INTERFACE_REQUIRED_ATTRIBUTES.join(',') }, submission_id)
-                         interface_required_errors(params[:submission], saved_submission: saved_submission)
-                       end
+    saved_submission = @ontology&.explore&.submissions({ include: SubmissionInputsHelper::INTERFACE_REQUIRED_SUBMISSION_ATTRIBUTES.join(',') }, submission_id)
+    interface_errors = interface_erased_errors(params[:submission], params[:ontology], saved_submission, @ontology)
 
     if interface_errors.any?
       if params[:attribute].nil?

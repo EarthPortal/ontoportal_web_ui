@@ -1,8 +1,12 @@
 module SubmissionInputsHelper
 
-  # Attributes required by the interface only (red star + check before saving), not by the API model:
-  # the submissions saved before this rule stay valid for the API (saving, reprocessing).
-  INTERFACE_REQUIRED_ATTRIBUTES = %w[modificationDate].freeze
+  # Fields required by the interface only (red star + check before saving), not by the API model:
+  # the ontologies saved before this rule stay valid for the API (saving, reprocessing).
+  # The submission form requires them; the Edit mode only refuses to erase a saved value
+  # (see SubmissionUpdater#interface_required_errors and #interface_erased_errors).
+  INTERFACE_REQUIRED_SUBMISSION_ATTRIBUTES = %w[modificationDate hasLicense hasCreator].freeze
+  # hasDomain here is the categories of the ontology (the submission also has a hasDomain: the subjects)
+  INTERFACE_REQUIRED_ONTOLOGY_ATTRIBUTES = %w[hasDomain].freeze
 
   class SubmissionMetadataInput
     include MetadataHelper, ApplicationHelper
@@ -53,9 +57,14 @@ module SubmissionInputsHelper
     end
 
     def required?
-      return true if INTERFACE_REQUIRED_ATTRIBUTES.include?(@attribute_key.to_s)
+      return true if interface_required?
 
       @attr_metadata && Array(@attr_metadata['enforce']).include?('existence')
+    end
+
+    # required by the interface only, not by the API (see INTERFACE_REQUIRED_SUBMISSION_ATTRIBUTES)
+    def interface_required?
+      INTERFACE_REQUIRED_SUBMISSION_ATTRIBUTES.include?(@attribute_key.to_s)
     end
   end
 
@@ -162,9 +171,12 @@ module SubmissionInputsHelper
     categories_children = categories_with_children(categories)
     categories_parents = categories_with_parents(categories_children)
     field_name = 'ontology[hasDomain][]'
+    # required by the interface only, and only when the portal has categories to choose from
+    label = t('submission_inputs.categories')
+    label = label_required(label) if INTERFACE_REQUIRED_ONTOLOGY_ATTRIBUTES.include?('hasDomain') && categories.present?
 
     input_field = -> {
-      render Input::InputFieldComponent.new(name: '', label: t('submission_inputs.categories')) do
+      render Input::InputFieldComponent.new(name: '', label: label, error_message: attribute_error(:hasDomain)) do
         content_tag(:div, class: 'upload-ontology-chips-container', 'data-controller': 'parent-categories-selector',
         'data-parent-categories-selector-categories-children-value': "#{categories_children.to_json}",
         'data-parent-categories-selector-categories-parents-value': "#{categories_parents.to_json}",
@@ -463,13 +475,17 @@ module SubmissionInputsHelper
       select_values = select_values.map { |lbl, val| [FORMAT_VALUE_LABELS[val] || lbl, val] }
     end
 
-    if !multiple && !attr.required?
+    # A select required by the API has no empty choice and selects its first value when empty.
+    # A select required by the interface only (e.g. hasLicense) keeps an empty choice: the author must choose
+    # (red star from the label, check before saving).
+    api_required = attr.required? && !attr.interface_required?
+    if !multiple && !api_required
       select_values << ['', '']
       metadata_values = '' if metadata_values.nil?
     end
 
     select_input(name: name, label: label, values: select_values,
-                 selected: metadata_values, multiple: multiple, required: attr.required?,
+                 selected: metadata_values, multiple: multiple, required: api_required,
                  open_to_add: open_to_add_metadata?(attr.attr_key), help: help_text)
   end
 

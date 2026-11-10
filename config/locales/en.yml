@@ -1789,6 +1789,9 @@ en:
     go_to_api: Go to API
     id: ID
     interface_required:
+      hasCreator: At least one creator is required
+      hasDomain: At least one category is required
+      hasLicense: License is required
       modificationDate: Modification date is required
     modified: Modified
     no_submissions_for_ontology: 'No submissions for ontology: %{ontology}'

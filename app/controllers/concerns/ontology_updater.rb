@@ -299,7 +299,8 @@ module OntologyUpdater
   def reset_agent_attributes
     helpers.agent_attributes.each do |attr|
       current_val = @submission[attr]
-      new_values = Array(current_val).map do |x|
+      # an empty agent input sends '' (e.g. copyrightHolder): nothing to find
+      new_values = Array(current_val).reject(&:blank?).map do |x|
         next x if x.is_a?(LinkedData::Client::Models::Agent)
         LinkedData::Client::Models::Agent.find(x.split('/').last)
       end
