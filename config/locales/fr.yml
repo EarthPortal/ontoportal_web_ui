@@ -1807,6 +1807,7 @@ fr:
     ontology_xlsx_language_help: 'Template Crop Ontology (TDv5). Le fichier doit contenir une feuille nommée "Template for submission" avec les colonnes Variable, Trait, Method et Scale. Le fichier TDv5 sera automatiquement converti en OWL par %{portal_name}.'
     ontology_view_of_another_ontology: Cette ontologie est-elle une vue d'une autre
       ontologie ?
+    portal_generated_help: "Rempli automatiquement par %{portal_name}. Seule l'équipe %{portal_name} peut le modifier."
     validators: Validateurs
     version_help: Pour plus d'informations sur la manière d'encoder les informations
       de version dans une ontologie, consultez %{link}
