@@ -11,6 +11,23 @@ module SubmissionInputsHelper
   # greyed out in the Edit mode for the authors, only the portal admins can change them.
   # The interface only: the API still accepts them (scripts, imports, values read in the file).
   PORTAL_GENERATED_ATTRIBUTES = %w[dataDump csvDump uriLookupEndpoint openSearchDescription].freeze
+  # Fields marked Recommended by the metadata guideline and filled by the author (Data Terra internship,
+  # SA_Management mapping/guideline_profile.csv). In the Edit tabs an empty one shows a "Recommended" badge:
+  # display only, nothing is required. Not listed: the 4 Recommended fields filled by the curator
+  # (curatedOn, curatedBy, includedInDataCatalog, viewOf), and subjects / sampleQueries (own inputs).
+  RECOMMENDED_ATTRIBUTES = %w[
+    versionIRI hasFormalityLevel hasOntologySyntax naturalLanguage isOfType
+    abstract notes homepage documentation keywords hiddenLabel alternative publication
+    valid
+    useGuidelines copyrightHolder
+    hasContributor publisher fundedBy endorsedBy translator
+    isFormatOf hasFormat endpoint source
+    bugDatabase audience repository mailingList toDoList award
+    knownUsage designedForOntologyTask coverage example
+    hasPriorVersion hasPart similarTo isAlignedTo hasDisparateModelling useImports usedBy workTranslation translationOfWork
+    preferredNamespaceUri preferredNamespacePrefix metadataVoc
+    usedOntologyEngineeringTool accrualMethod accrualPeriodicity accrualPolicy competencyQuestion
+  ].freeze
 
   class SubmissionMetadataInput
     include MetadataHelper, ApplicationHelper
@@ -665,7 +682,59 @@ module SubmissionInputsHelper
       html = content_tag(:span, label)
       html += content_tag(:span, '*', class: "text-danger") if attr.required?
       html += content_tag(:span, tooltip_span, class: 'ml-1') if show_tooltip
+      html += recommended_badge if recommended_badge?(attr)
       html
+    end
+  end
+
+  # Only in the Edit tabs: SubmissionsController#edit_properties sets @show_recommended_badges
+  # (not the submission form, not the inline edit, not the curator page)
+  def recommended_badge?(attr)
+    return false unless @show_recommended_badges
+    return false unless attr.respond_to?(:attr_key) && attr.respond_to?(:values)
+
+    RECOMMENDED_ATTRIBUTES.include?(attr.attr_key.to_s) && metadata_value_blank?(attr.values)
+  end
+
+  # Bootstrap pill, with the colours of the Recommended level of the author prototype
+  def recommended_badge
+    content_tag(:span, t('submission_inputs.recommended'), class: 'badge badge-pill ml-2',
+                style: 'background-color: #fff3cd; color: #7a5a00;',
+                title: t('submission_inputs.recommended_help'), 'data-controller': 'tooltip')
+  end
+
+  # Number of empty Recommended fields among the attributes of an Edit tab, i.e. the number of badges in this tab.
+  # submission: the values read by SubmissionsController#edit (nil when they could not be read: no count)
+  def recommended_empty_count(attributes, submission = @recommended_values)
+    return 0 unless submission
+
+    (Array(attributes).flatten.map(&:to_s) & RECOMMENDED_ATTRIBUTES).count do |attr|
+      value = begin
+        submission.send(attr)
+      rescue StandardError
+        nil
+      end
+      metadata_value_blank?(value)
+    end
+  end
+
+  # Small round next to the tab name, same colours as the Recommended badge; nothing when the count is 0
+  def recommended_count_badge(count)
+    return '' unless count.to_i.positive?
+
+    content_tag(:span, count, class: 'badge badge-pill float-right',
+                style: 'background-color: #fff3cd; color: #7a5a00;',
+                title: t('submission_inputs.recommended_count', count: count), 'data-controller': 'tooltip')
+  end
+
+  # true for nil, a blank text, and a list or a record with only blank values (false is a real answer)
+  def metadata_value_blank?(value)
+    case value
+    when nil then true
+    when String then value.strip.empty?
+    when Array then value.all? { |v| metadata_value_blank?(v) }
+    when Hash then value.values.all? { |v| metadata_value_blank?(v) }
+    else false
     end
   end
 

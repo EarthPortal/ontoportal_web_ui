@@ -64,6 +64,8 @@ class SubmissionsController < ApplicationController
 
   # Called when form to "Edit submission" is submitted
   def edit_properties
+    # "Recommended" badges on the empty fields of the Edit tabs, not in the inline edit (SubmissionInputsHelper#recommended_badge?)
+    @show_recommended_badges = !params[:inline_save]&.eql?('true')
     display_submission_attributes(params[:ontology_id], params[:properties]&.split(','), submissionId: params[:submission_id], inline_save: params[:inline_save]&.eql?('true'))
 
     attribute_template_output = render_to_string(inline: helpers.render_submission_inputs(params[:container_id] || 'metadata_by_ontology', @submission))
@@ -87,6 +89,8 @@ class SubmissionsController < ApplicationController
     if @selected_attributes.empty?
       @categories_order = ['general', 'description', 'dates', 'licensing', 'agents', 'links', 'media', 'community', 'usage' ,'relations', 'content','methodology', 'object description properties']
       @category_attributes = category_attributes
+      # values of the Recommended fields, to count the empty ones next to each tab (SubmissionInputsHelper#recommended_empty_count)
+      @recommended_values = recommended_values_submission(params[:id])
     end
     render 'submissions/edit', layout: params[:container_id] ?  nil : 'ontology'
   end
@@ -181,5 +185,15 @@ class SubmissionsController < ApplicationController
 
 
 
+
+  private
+
+  # The submission with only the Recommended fields, or nil if it can not be read (then no count is shown)
+  def recommended_values_submission(submission_id)
+    submission = @ontology.explore.submissions({ display: SubmissionInputsHelper::RECOMMENDED_ATTRIBUTES.join(',') }, submission_id)
+    submission.nil? || response_error?(submission) ? nil : submission
+  rescue StandardError
+    nil
+  end
 
 end

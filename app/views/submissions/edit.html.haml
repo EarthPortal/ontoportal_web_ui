@@ -27,6 +27,7 @@
                 - @categories_order.each_with_index  do |key, index|
                   %a.edit-ontology-tab-item.d-block{href: "##{key.parameterize}-tab", "data-toggle" => "pill", class:  section.eql?(key.parameterize) ? 'active show' : ''}
                     = key.humanize
+                    = recommended_count_badge(recommended_empty_count(@category_attributes[key]))
 
           #myTabContent.edit-ontology-right-column.w-100
             = render TurboFrameComponent.new(id:"metadata_by_ontology") do
