@@ -213,7 +213,9 @@ module SubmissionUpdater
       m_attr = m['attribute'].to_sym
       if p[m_attr] && m['enforce'].include?('list')
         p[m_attr] = Array(p[m_attr]) unless p[m_attr].is_a?(Array)
-        p[m_attr] = p[m_attr].map { |x| x.is_a?(Hash) ? x.values.reject(&:empty?) : x.reject(&:empty?) }.flatten.uniq if m['enforce'].include?('Agent')
+        # Array(x): the deposit runs these params twice (new_submission_hash, then save_submission),
+        # the second time the agents are already ids (strings), e.g. ["http://.../Agents/1"]
+        p[m_attr] = p[m_attr].map { |x| x.is_a?(Hash) ? x.values.reject(&:empty?) : Array(x).reject(&:empty?) }.flatten.uniq if m['enforce'].include?('Agent')
       end
     end
 
