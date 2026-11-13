@@ -13,7 +13,7 @@
         = params["id"]
       
     = turbo_frame_tag(params[:container_id] || 'test') do
-      = form_for :submission, url: ontology_submission_path(@ontology.acronym, params["id"]), html: { id: "ontology_submission_form", method: :put, multipart: true, 'data-turbo': true, 'data-turbo-frame': '_top', novalidate: 'true'} do
+      = form_for :submission, url: ontology_submission_path(@ontology.acronym, params["id"]), html: { id: "ontology_submission_form", method: :put, multipart: true, 'data-turbo': true, 'data-turbo-frame': '_top', 'data-controller': 'recommended-badges', novalidate: 'true'} do
         .edit-ontology-title
           %div
             = t('submission_inputs.edit_ontology_title')
@@ -27,6 +27,7 @@
                 - @categories_order.each_with_index  do |key, index|
                   %a.edit-ontology-tab-item.d-block{href: "##{key.parameterize}-tab", "data-toggle" => "pill", class:  section.eql?(key.parameterize) ? 'active show' : ''}
                     = key.humanize
+                    = recommended_count_badge(recommended_empty_count(@category_attributes[key]))
 
           #myTabContent.edit-ontology-right-column.w-100
             = render TurboFrameComponent.new(id:"metadata_by_ontology") do
