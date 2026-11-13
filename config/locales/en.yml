@@ -1754,7 +1754,7 @@ en:
     portal_generated_help: Filled in automatically by %{portal_name}. Only the %{portal_name} team can change it.
     recommended: Recommended
     recommended_help: Recommended by the metadata guidelines. Filling it in improves the description of the ontology.
-    recommended_count: 'Recommended fields to complete: %{count}'
+    recommended_count: Empty recommended fields in this tab
     validators: Validators
     version_help: For more information on how to encode versioning information in
       an ontology, see %{link}

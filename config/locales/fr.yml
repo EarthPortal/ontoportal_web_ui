@@ -1810,7 +1810,7 @@ fr:
     portal_generated_help: "Rempli automatiquement par %{portal_name}. Seule l'équipe %{portal_name} peut le modifier."
     recommended: Recommandé
     recommended_help: "Recommandé par le guide des métadonnées. Le remplir améliore la description de l'ontologie."
-    recommended_count: 'Champs recommandés à compléter : %{count}'
+    recommended_count: Champs recommandés vides dans cet onglet
     validators: Validateurs
     version_help: Pour plus d'informations sur la manière d'encoder les informations
       de version dans une ontologie, consultez %{link}

@@ -682,7 +682,7 @@ module SubmissionInputsHelper
       html = content_tag(:span, label)
       html += content_tag(:span, '*', class: "text-danger") if attr.required?
       html += content_tag(:span, tooltip_span, class: 'ml-1') if show_tooltip
-      html += recommended_badge if recommended_badge?(attr)
+      html += recommended_badge(attr) if recommended_badge?(attr)
       html
     end
   end
@@ -693,20 +693,27 @@ module SubmissionInputsHelper
     return false unless @show_recommended_badges
     return false unless attr.respond_to?(:attr_key) && attr.respond_to?(:values)
 
-    RECOMMENDED_ATTRIBUTES.include?(attr.attr_key.to_s) && metadata_value_blank?(attr.values)
+    RECOMMENDED_ATTRIBUTES.include?(attr.attr_key.to_s)
   end
 
-  # Bootstrap pill, with the colours of the Recommended level of the author prototype
-  def recommended_badge
-    content_tag(:span, t('submission_inputs.recommended'), class: 'badge badge-pill ml-2',
+  # Bootstrap pill, with the colours of the Recommended level of the author prototype.
+  # Every Recommended field gets one, hidden when the field is filled: the recommended-badges Stimulus controller
+  # (on the Edit form) shows it when the author empties the field and hides it when the author fills it.
+  # data-recommended-agent: an agent field is filled only when an agent is chosen (not when a name is searched)
+  def recommended_badge(attr)
+    css = 'badge badge-pill ml-2'
+    css += ' d-none' unless metadata_value_blank?(attr.values)
+    content_tag(:span, t('submission_inputs.recommended'), class: css,
                 style: 'background-color: #fff3cd; color: #7a5a00;',
-                title: t('submission_inputs.recommended_help'), 'data-controller': 'tooltip')
+                title: t('submission_inputs.recommended_help'),
+                data: { controller: 'tooltip', recommended_badge: attr.attr_key.to_s,
+                        recommended_agent: attr.respond_to?(:type?) && attr.type?('Agent') ? 'true' : 'false' })
   end
 
-  # Number of empty Recommended fields among the attributes of an Edit tab, i.e. the number of badges in this tab.
+  # Number of empty Recommended fields among the attributes of an Edit tab, i.e. the number of badges shown in this tab.
   # submission: the values read by SubmissionsController#edit (nil when they could not be read: no count)
   def recommended_empty_count(attributes, submission = @recommended_values)
-    return 0 unless submission
+    return nil unless submission
 
     (Array(attributes).flatten.map(&:to_s) & RECOMMENDED_ATTRIBUTES).count do |attr|
       value = begin
@@ -718,13 +725,18 @@ module SubmissionInputsHelper
     end
   end
 
-  # Small round next to the tab name, same colours as the Recommended badge; nothing when the count is 0
+  # Small round next to the tab name, same colours as the Recommended badge; hidden when the count is 0,
+  # nothing when the count is unknown. The recommended-badges Stimulus controller changes the number while the author types.
+  # The tooltip has no number: it is built once, when the page opens.
   def recommended_count_badge(count)
-    return '' unless count.to_i.positive?
+    return '' if count.nil?
 
-    content_tag(:span, count, class: 'badge badge-pill float-right',
+    css = 'badge badge-pill float-right'
+    css += ' d-none' unless count.positive?
+    content_tag(:span, count, class: css,
                 style: 'background-color: #fff3cd; color: #7a5a00;',
-                title: t('submission_inputs.recommended_count', count: count), 'data-controller': 'tooltip')
+                title: t('submission_inputs.recommended_count'),
+                data: { controller: 'tooltip', recommended_count: '' })
   end
 
   # true for nil, a blank text, and a list or a record with only blank values (false is a real answer)
