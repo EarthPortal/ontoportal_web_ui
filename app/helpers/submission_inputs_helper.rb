@@ -11,6 +11,31 @@ module SubmissionInputsHelper
   # greyed out in the Edit mode for the authors, only the portal admins can change them.
   # The interface only: the API still accepts them (scripts, imports, values read in the file).
   PORTAL_GENERATED_ATTRIBUTES = %w[dataDump csvDump uriLookupEndpoint openSearchDescription].freeze
+  # Translated labels of the fields, for the list of the fields in error at the top of the submission form
+  # and of the Edit mode (submission_error_field_label): the same labels as above the inputs.
+  # Fields with a translated label in both forms (mostly the ontology fields)
+  ERROR_FIELD_LABEL_KEYS = {
+    'acronym' => 'submission_inputs.acronym',
+    'name' => 'submission_inputs.name',
+    'administeredBy' => 'submission_inputs.administrators',
+    'hasDomain' => 'submission_inputs.categories', # the categories of the ontology, not the subjects
+    'group' => 'submission_inputs.groups',
+    'viewingRestriction' => 'submission_inputs.visibility',
+    'projects' => 'submission_inputs.projects',
+    'hasOntologyLanguage' => 'submission_inputs.hasOntologyLanguage',
+    'uploadFilePath' => 'ontologies.location',
+    'pullLocation' => 'ontologies.location'
+  }.freeze
+  # Fields with their own label in the submission form only (ontologies/new.html.haml)
+  SUBMISSION_FORM_ERROR_FIELD_LABEL_KEYS = {
+    'URI' => 'ontologies.uri',
+    'description' => 'submission_inputs.description',
+    'notes' => 'ontologies.change_notes',
+    'status' => 'submission_inputs.status',
+    'valid' => 'submission_inputs.valid',
+    'released' => 'ontologies.date_of_original_creation',
+    'modificationDate' => 'ontologies.modification_date'
+  }.freeze
   # Fields marked Recommended by the metadata guideline and filled by the author (Data Terra internship,
   # SA_Management mapping/guideline_profile.csv). In the Edit tabs an empty one shows a "Recommended" badge:
   # display only, nothing is required. Not listed: the 4 Recommended fields filled by the curator
@@ -410,6 +435,19 @@ module SubmissionInputsHelper
     else
       label || data.label
     end
+  end
+
+  # Label of a field in error, for the list at the top of the submission form (submission_form: true) and of the
+  # Edit mode (ApplicationHelper#error_message_alert): the translated label of the interface, else the label given
+  # by the API (the one shown above the input in the Edit mode), else the technical name as before
+  def submission_error_field_label(attr_key, submission_form: false)
+    attr_key = attr_key.to_s
+    i18n_key = (SUBMISSION_FORM_ERROR_FIELD_LABEL_KEYS[attr_key] if submission_form) || ERROR_FIELD_LABEL_KEYS[attr_key]
+    return t(i18n_key) if i18n_key
+
+    attr_metadata(attr_key)&.dig('label').presence || attr_key
+  rescue StandardError
+    attr_key
   end
 
   private

@@ -82,7 +82,7 @@ class SubmissionFlowsTest < ApplicationSystemTestCase
     fill_ontology(@new_ontology, @new_submission)
 
     # the form comes back with the error and nothing is created
-    assert_text 'Errors in fields modificationDate'
+    assert_text 'Errors in fields Modification date'
     assert_text 'Submit new ontology'
     refute_selector 'h2', text: 'Ontology submitted successfully!'
   end
@@ -96,7 +96,7 @@ class SubmissionFlowsTest < ApplicationSystemTestCase
     fill_ontology(@new_ontology, @new_submission)
 
     # the form comes back with the error and nothing is created
-    assert_text 'Errors in fields hasDomain'
+    assert_text 'Errors in fields Categories'
     assert_text 'Submit new ontology'
     refute_selector 'h2', text: 'Ontology submitted successfully!'
   end

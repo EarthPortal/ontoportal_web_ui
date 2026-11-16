@@ -4,7 +4,7 @@
   = form_for :ontology, url: {action: "create"}, html: {id: "ontologyForm", multipart: true, novalidate: true} do
     .upload-ontology-container
       %div{style: 'width: 589px'}
-        = error_message_alert
+        = error_message_alert(field_labels: :submission_form)
         .upload-ontology-card
           .upload-ontology-center
             .d-flex.justify-content-between
