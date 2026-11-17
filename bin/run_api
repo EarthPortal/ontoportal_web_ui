@@ -55,6 +55,11 @@ image_tag="${image_tag:-$API_IMAGE_TAG}"
 starter_ontology="${starter_ontology:-$STARTER_ONTOLOGY}"
 remote_api_url="${remote_api_url:-$OP_API_URL}"
 
+# ontoportal_docker's ./run ignores -k and -u (its patterns no longer match .env.sample),
+# so write the source portal and its API key directly in .env.sample
+[ -n "$api_key" ] && sed -i.bak "s|^OP_APIKEY=.*|OP_APIKEY=$api_key|" tmp/ontoportal_docker/.env.sample
+[ -n "$remote_api_url" ] && sed -i.bak "s|^OP_API_URL=.*|OP_API_URL=$remote_api_url|" tmp/ontoportal_docker/.env.sample
+
 if curl -sSf http://localhost:9393 > /dev/null 2>&1; then
   echo "API is already running in http://localhost:9393"
   exit 0
