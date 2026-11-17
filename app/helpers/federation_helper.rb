@@ -207,7 +207,7 @@ module FederationHelper
       if internal_ontology
         internal_ontology
       else
-        external_canonical_ontology_portal(ontologies)
+        external_canonical_ontology_portal(ontologies) || ontologies.first
       end
     end
   end

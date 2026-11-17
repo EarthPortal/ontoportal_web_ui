@@ -65,7 +65,7 @@ class AnnotatorController < ApplicationController
     all_submissions = LinkedData::Client::Models::OntologySubmission.all(include: 'pullLocation', include_views: true, display_links: false, display_context: false)
     results.each do |x|
       o = x[:ontology]
-      o[:pullLocation] = all_submissions.select { |s| s.id.split('/')[-3].eql?(o[:id].split('/').last) }.first&.pullLocation
+      o[:pullLocation] = all_submissions.select { |s| s.id.present? && s.id.split('/')[-3].eql?(o[:id].split('/').last) }.first&.pullLocation
     end
   end
 
