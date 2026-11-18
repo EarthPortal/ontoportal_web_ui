@@ -119,17 +119,23 @@ module ApplicationHelper
     BLOCK
   end
 
-  def error_message_text
+  # field_labels: :submission_form (submission form) or :edit (Edit mode) lists the fields in error with their labels
+  # (SubmissionInputsHelper#submission_error_field_label); nil lists their technical names (the other pages)
+  def error_message_text(field_labels: nil)
     return @errors if @errors.is_a?(String)
     @errors = @errors[:error] if @errors && @errors[:error]
-    t('application.errors_in_fields', errors: @errors.keys.join(', '))
+    fields = @errors.keys
+    if field_labels
+      fields = fields.map { |key| submission_error_field_label(key, submission_form: field_labels.eql?(:submission_form)) }
+    end
+    t('application.errors_in_fields', errors: fields.join(', '))
   end
 
-  def error_message_alert
+  def error_message_alert(field_labels: nil)
     return if @errors.nil?
 
     content_tag(:div, class: 'my-1') do
-      render Display::AlertComponent.new(message: error_message_text, type: 'danger', closable: false)
+      render Display::AlertComponent.new(message: error_message_text(field_labels: field_labels), type: 'danger', closable: false)
     end
   end
 

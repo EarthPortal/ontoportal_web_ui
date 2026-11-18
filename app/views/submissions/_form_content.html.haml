@@ -1,6 +1,6 @@
 - unless @errors.nil?
   = turbo_frame_tag 'test', target: '_top' do
-    = error_message_alert
+    = error_message_alert(field_labels: :edit)
     = form_for :submission, url: ontology_submission_path(params["ontology_id"], params["id"]), html: { id: "ontology_submission_form", method: :put, multipart: true, 'data-turbo': true, novalidate: 'true'} do
       = render_submission_inputs('', @submission)
       %hr#edit-ontology-actions-devider

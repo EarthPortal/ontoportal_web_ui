@@ -26,6 +26,8 @@ class SubmissionsController < ApplicationController
     @ontology = LinkedData::Client::Models::Ontology.find_by_acronym(params[:ontology_id]).first
     @submission = @ontology.explore.latest_submission || LinkedData::Client::Models::OntologySubmission.new
     @submission.id = nil
+    # A new version is a new modification: today by default, not the date of the previous version
+    @submission.modificationDate = Date.today.to_s
     @categories = LinkedData::Client::Models::Category.all
     @groups = LinkedData::Client::Models::Group.all
     @user_select_list = LinkedData::Client::Models::User.all.map {|u| [u.username, u.id]}
@@ -37,6 +39,10 @@ class SubmissionsController < ApplicationController
   # Called when form to "Add submission" is submitted
   def create
     @is_update_ontology = true
+
+    # Fields required by the interface only: refuse before saving anything (the ontology fields of page 1 included)
+    interface_errors = interface_required_errors(params[:submission], params[:ontology])
+    return show_new_errors(interface_errors) if interface_errors.any?
 
     if params[:ontology]
       @ontology, response = update_existent_ontology(params[:ontology_id])
@@ -58,6 +64,8 @@ class SubmissionsController < ApplicationController
 
   # Called when form to "Edit submission" is submitted
   def edit_properties
+    # "Recommended" badges on the empty fields of the Edit tabs, not in the inline edit (SubmissionInputsHelper#recommended_badge?)
+    @show_recommended_badges = !params[:inline_save]&.eql?('true')
     display_submission_attributes(params[:ontology_id], params[:properties]&.split(','), submissionId: params[:submission_id], inline_save: params[:inline_save]&.eql?('true'))
 
     attribute_template_output = render_to_string(inline: helpers.render_submission_inputs(params[:container_id] || 'metadata_by_ontology', @submission))
@@ -81,6 +89,8 @@ class SubmissionsController < ApplicationController
     if @selected_attributes.empty?
       @categories_order = ['general', 'description', 'dates', 'licensing', 'agents', 'links', 'media', 'community', 'usage' ,'relations', 'content','methodology', 'object description properties']
       @category_attributes = category_attributes
+      # values of the Recommended fields, to count the empty ones next to each tab (SubmissionInputsHelper#recommended_empty_count)
+      @recommended_values = recommended_values_submission(params[:id])
     end
     render 'submissions/edit', layout: params[:container_id] ?  nil : 'ontology'
   end
@@ -127,6 +137,26 @@ class SubmissionsController < ApplicationController
                          notice: t('submissions.submission_updated_successfully')
     end
 
+    # Fields required by the interface only: in the Edit mode a saved value can not be erased.
+    # Like the API checks, this runs after the ontology fields (name, categories...) are saved,
+    # so the error form does not lose them (an emptied list of categories is not saved, see update_existent_ontology).
+    @ontology ||= LinkedData::Client::Models::Ontology.find_by_acronym(acronym).first
+    saved_submission = @ontology&.explore&.submissions({ include: SubmissionInputsHelper::INTERFACE_REQUIRED_SUBMISSION_ATTRIBUTES.join(',') }, submission_id)
+    interface_errors = interface_erased_errors(params[:submission], params[:ontology], saved_submission, @ontology)
+
+    if interface_errors.any?
+      if params[:attribute].nil?
+        show_new_errors(interface_errors, partial: 'submissions/form_content', id: 'test')
+      else
+        @errors = interface_errors
+        @submission = submission_from_params(params[:submission])
+        @submission.submissionId = submission_id
+        reset_agent_attributes
+        render_submission_attribute(params[:attribute])
+      end
+      return
+    end
+
     @submission, response = update_submission(update_submission_hash(acronym), submission_id, @ontology)
     if params[:attribute].nil?
       if response_error?(response)
@@ -155,5 +185,15 @@ class SubmissionsController < ApplicationController
 
 
 
+
+  private
+
+  # The submission with only the Recommended fields, or nil if it can not be read (then no count is shown)
+  def recommended_values_submission(submission_id)
+    submission = @ontology.explore.submissions({ display: SubmissionInputsHelper::RECOMMENDED_ATTRIBUTES.join(',') }, submission_id)
+    submission.nil? || response_error?(submission) ? nil : submission
+  rescue StandardError
+    nil
+  end
 
 end

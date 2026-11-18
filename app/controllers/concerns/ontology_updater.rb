@@ -253,7 +253,8 @@ module OntologyUpdater
     @groups = LinkedData::Client::Models::Group.all(display_links: false, display_context: false)
     @user_select_list = LinkedData::Client::Models::User.all.map { |u| [u.username, u.id] }
     @user_select_list.sort! { |a, b| a[1].downcase <=> b[1].downcase }
-    @errors = response_errors(object)
+    # object: an API response, or errors already prepared by the interface (interface_required_errors)
+    @errors = object.is_a?(Hash) ? object : response_errors(object)
     @selected_attributes = (Array(errors_attributes) + Array(params[:submission]&.keys)).uniq
     @ontology = ontology_from_params if @ontology.nil?
 
@@ -298,7 +299,8 @@ module OntologyUpdater
   def reset_agent_attributes
     helpers.agent_attributes.each do |attr|
       current_val = @submission[attr]
-      new_values = Array(current_val).map do |x|
+      # an empty agent input sends '' (e.g. copyrightHolder): nothing to find
+      new_values = Array(current_val).reject(&:blank?).map do |x|
         next x if x.is_a?(LinkedData::Client::Models::Agent)
         LinkedData::Client::Models::Agent.find(x.split('/').last)
       end

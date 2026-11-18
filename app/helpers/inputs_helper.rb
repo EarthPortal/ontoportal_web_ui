@@ -41,10 +41,10 @@ module InputsHelper
     render SwitchInputComponent.new(id: id, name: name, label: label, checked: checked, value: value, boolean_switch: boolean_switch, style: style, help: help)
   end
 
-  def url_input(name:, value:, label: nil, help: nil)
+  def url_input(name:, value:, label: nil, help: nil, disabled: false)
     render Input::UrlComponent.new(label: input_label(label, name), name: name, value: value,
                                    error_message: input_error_message(name),
-                                   helper_text:  help)
+                                   helper_text:  help, disabled: disabled)
   end
 
   def text_area_input(name:, value:, label: nil, help: nil, resize: nil)
