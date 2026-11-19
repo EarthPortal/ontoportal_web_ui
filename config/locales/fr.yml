@@ -124,6 +124,29 @@ fr:
       users: Utilisateurs
       valid_till: Valide jusqu'à
       catalog_config: Description du site
+      curation: Curation
+    curation:
+      title: Curation
+      description: "Toutes les ontologies, vues et entrées « métadonnées seulement », avec les champs recommandés encore vides dans leur dernière version (sur %{total}). Curate ouvre la page Edit de cette version."
+      search_placeholder: Filtrer par acronyme, nom ou type
+      ontology: Ontologie
+      type: Type
+      recommended: Champs recommandés
+      curation: Curation (curatedBy / curatedOn)
+      actions: Actions
+      types:
+        ontology: Ontologie
+        view: Vue
+        metadata_only: Métadonnées seulement
+      private: Privée
+      empty: "%{count} vide(s)"
+      complete: Complet
+      filled: "%{filled}/%{total} remplis"
+      no_submission: Aucune soumission
+      not_curated: Non curée
+      curated_on: "Curée le %{date}"
+      curated_by: "par %{names}"
+      curate: Curate
     catalog_configuration:
       description_text: |
         Utilisez cette page pour configurer les informations du site actuel %{portal_name}.

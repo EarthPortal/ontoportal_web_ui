@@ -788,6 +788,9 @@ module SubmissionInputsHelper
     end
   end
 
+  # Also used by the Curation tab of the administration console (Admin::CurationController)
+  public :recommended_empty_count
+
   def attribute_help_text(attr)
     label = attr.label
     help = attr.help_text

@@ -1,0 +1,46 @@
+= turbo_frame_tag 'curation-tab' do
+  .d-flex.flex-column.py-4
+    = render PageHeaderComponent.new(title: t('admin.curation.title'), description: t('admin.curation.description', total: @recommended_total))
+
+    -# Turbo off for the links of the table: a full page load, so that Cancel (history back) and the browser back button
+    -# of the Edit page come back here (Turbo does not restore the ?section=curation entry added by the admin tabs)
+    %div{data: { turbo: 'false' }}
+      = render TableComponent.new(id: 'admin_curation', borderless: true, outline: true, searching: true,
+                                  sort_column: '2', search_placeholder: t('admin.curation.search_placeholder')) do |t|
+        - t.header do |h|
+          - h.th { t('admin.curation.ontology') }
+          - h.th { t('admin.curation.type') }
+          - h.th { t('admin.curation.recommended') }
+          - h.th { t('admin.curation.curation') }
+          - h.th { t('admin.curation.actions') }
+        - @rows.each do |row|
+          %tr
+            %td
+              = link_to row[:acronym], ontology_path(row[:acronym]), class: 'font-weight-bold'
+              %div.text-muted.small.text-truncate{style: 'max-width: 320px', title: row[:name]}= row[:name]
+              - if row[:private]
+                = render ChipButtonComponent.new(text: t('admin.curation.private'), type: 'static')
+            %td= t("admin.curation.types.#{row[:type]}")
+            %td{data: { order: row[:recommended_empty] || -1 }}
+              - if row[:recommended_empty].nil?
+                %span.text-muted= t('admin.curation.no_submission')
+              - elsif row[:recommended_empty].zero?
+                = render ChipButtonComponent.new(text: t('admin.curation.complete'), type: 'static')
+              - else
+                -# Same badge as the Recommended badges of the Edit page
+                %span.badge.badge-pill{style: 'background-color: #fff3cd; color: #7a5a00;'}= t('admin.curation.empty', count: row[:recommended_empty])
+              - unless row[:recommended_empty].nil?
+                %div.text-muted.small= t('admin.curation.filled', filled: @recommended_total - row[:recommended_empty], total: @recommended_total)
+            %td
+              - if row[:curated_on].empty? && row[:curated_by].empty?
+                %span.text-muted= t('admin.curation.not_curated')
+              - else
+                - if row[:curated_on].any?
+                  %div= t('admin.curation.curated_on', date: row[:curated_on].join(', '))
+                - if row[:curated_by].any?
+                  %div.text-muted.small= t('admin.curation.curated_by', names: row[:curated_by].join(', '))
+            %td
+              - if row[:submission_id]
+                = render Buttons::RegularButtonComponent.new(id: "curate-#{row[:acronym].parameterize}", value: t('admin.curation.curate'),
+                                                             variant: 'secondary', size: 'slim', state: 'regular',
+                                                             href: edit_ontology_submission_path(row[:acronym], row[:submission_id]))

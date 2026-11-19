@@ -117,6 +117,29 @@ en:
       users: Users
       valid_till: Valid till
       catalog_config: Site description
+      curation: Curation
+    curation:
+      title: Curation
+      description: "All the ontologies, views and metadata-only entries, with the Recommended fields of their latest version that are still empty (out of %{total}). Curate opens the Edit page of this version."
+      search_placeholder: Filter by acronym, name or type
+      ontology: Ontology
+      type: Type
+      recommended: Recommended fields
+      curation: Curation (curatedBy / curatedOn)
+      actions: Actions
+      types:
+        ontology: Ontology
+        view: View
+        metadata_only: Metadata only
+      private: Private
+      empty: "%{count} empty"
+      complete: Complete
+      filled: "%{filled}/%{total} filled"
+      no_submission: No submission
+      not_curated: Not curated
+      curated_on: "Curated on %{date}"
+      curated_by: "by %{names}"
+      curate: Curate
     catalog_configuration:
       description_text: |
         Use this page to configure the current site %{portal_name} information.
