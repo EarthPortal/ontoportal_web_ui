@@ -276,6 +276,19 @@ module FederationHelper
     end
   end
 
+  def federation_link(title:, name: nil, color: nil)
+    content_tag(:span, class: '', style: color ? "color: #{color} !important" : '',
+                'data-controller': 'federation-portals-colors',
+                'data-federation-portals-colors-color-value': color,
+                'data-federation-portals-colors-portal-name-value': name.to_s.downcase) do
+      content_tag(:div, class: 'd-flex align-items-center') do
+        out = title.to_s
+        out += inline_svg_tag 'icons/external-link.svg', class: "ml-1 federated-icon-#{name.to_s.downcase} #{color ? '' : 'd-none'}"
+        out.html_safe
+      end
+    end
+  end
+
   def federated_search_counts(search_results)
     ids = search_results.flat_map do |result|
       ontology_id = result.dig(:root, :ontology_id) || rest_url
