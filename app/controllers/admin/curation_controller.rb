@@ -24,11 +24,20 @@ class Admin::CurationController < ApplicationController
     # Most empty Recommended fields first, the ontologies without submission last
     @rows = ontologies.map { |ontology| curation_row(ontology, submissions[ontology.id]) }
                       .sort_by { |row| [-(row[:recommended_empty] || -1), row[:acronym].to_s] }
+
+    # The numbers at the top of the tab
+    @kpis = {
+      entries: @rows.size,
+      recommended_empty: @rows.sum { |row| row[:recommended_empty].to_i },
+      curated: @rows.count { |row| row[:curated] }
+    }
   end
 
   private
 
   def curation_row(ontology, submission)
+    curated_on = curation_dates(submission)
+    curated_by = curation_agents(submission)
     {
       acronym: ontology.acronym,
       name: ontology.name,
@@ -37,8 +46,9 @@ class Admin::CurationController < ApplicationController
       submission_id: submission&.submissionId,
       # Same count as the sum of the tab counters of the Edit page (Recommended badges)
       recommended_empty: submission && helpers.recommended_empty_count(SubmissionInputsHelper::RECOMMENDED_ATTRIBUTES, submission),
-      curated_on: curation_dates(submission),
-      curated_by: curation_agents(submission)
+      curated_on: curated_on,
+      curated_by: curated_by,
+      curated: curated_on.any? || curated_by.any?
     }
   end
 

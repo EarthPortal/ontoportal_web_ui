@@ -146,7 +146,21 @@ fr:
       not_curated: Non curée
       curated_on: "Curée le %{date}"
       curated_by: "par %{names}"
-      curate: Curate
+      curate: Curer
+      kpi_entries: Entrées
+      kpi_entries_help: ontologies, vues et entrées « métadonnées seulement »
+      kpi_recommended_empty: Champs recommandés vides
+      kpi_recommended_empty_help: dans les dernières versions
+      kpi_curated: Curées
+      kpi_curated_help: avec curatedBy ou curatedOn
+      filter_type: Type
+      filter_curation: Curation
+      all: Tous
+      type_ontology: Ontologies
+      type_view: Vues
+      type_metadata_only: Métadonnées seulement
+      curated: Curées
+      shown: "%{count} affichée(s)"
     catalog_configuration:
       description_text: |
         Utilisez cette page pour configurer les informations du site actuel %{portal_name}.

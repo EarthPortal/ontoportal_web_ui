@@ -140,6 +140,20 @@ en:
       curated_on: "Curated on %{date}"
       curated_by: "by %{names}"
       curate: Curate
+      kpi_entries: Entries
+      kpi_entries_help: ontologies, views and metadata-only entries
+      kpi_recommended_empty: Recommended fields empty
+      kpi_recommended_empty_help: in the latest versions
+      kpi_curated: Curated
+      kpi_curated_help: with curatedBy or curatedOn
+      filter_type: Type
+      filter_curation: Curation
+      all: All
+      type_ontology: Ontologies
+      type_view: Views
+      type_metadata_only: Metadata only
+      curated: Curated
+      shown: "%{count} shown"
     catalog_configuration:
       description_text: |
         Use this page to configure the current site %{portal_name} information.
