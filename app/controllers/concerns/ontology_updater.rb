@@ -314,7 +314,8 @@ module OntologyUpdater
   def copyable_submission_params?(key, value)
     return false if value.nil? || (value.respond_to?(:empty?) && value.empty?)
 
-    attr_to_not_copy = [:versionIRI, :version, :deprecated, :valid, :curatedOn,
+    # curatedOn, curatedBy: a new version is not curated until a save of its Edit page (CurationRecorder)
+    attr_to_not_copy = [:versionIRI, :version, :deprecated, :valid, :curatedOn, :curatedBy,
                         :pullLocation, :uploadFilePath, :metadataVoc, :hasPriorVersion,
                         :creationDate, :submissionStatus]
 
