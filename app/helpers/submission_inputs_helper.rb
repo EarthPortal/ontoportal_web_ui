@@ -119,6 +119,9 @@ module SubmissionInputsHelper
     attr = SubmissionMetadataInput.new(attribute_key: attr_key, submission: @submission, label: label,
                                        attr_metadata: attr_metadata(attr_key))
 
+    # Curation date and Curator: filled in by the system, never by hand (CurationRecorder)
+    return generate_curation_input(attr) if CurationRecorder::CURATION_ATTRIBUTES.include?(attr_key.to_s)
+
     if attr.type?('Agent')
       if attr.type?('list')
         generate_list_agent_input(attr, helper_text: help)
@@ -642,6 +645,21 @@ module SubmissionInputsHelper
 
   def portal_generated_locked?(attr_key)
     PORTAL_GENERATED_ATTRIBUTES.include?(attr_key.to_s) && !current_user_admin?
+  end
+
+  # Curation date and Curator, greyed for everybody (administrators too): the system fills them in at each save
+  # of the Edit page (CurationRecorder). disabled: the browser does not send the field (the server ignores it anyway).
+  # The date is shown without its time: a date input shows an empty box for "2026-11-20T00:00:00.000+00:00".
+  def generate_curation_input(attr)
+    values = Array(attr.values).map do |value|
+      if attr.type?('Agent')
+        value.respond_to?(:name) && value.name.present? ? value.name : value.to_s.split('/').last
+      else
+        (Date.parse(value.to_s).to_s rescue value.to_s)
+      end
+    end
+    text_input(label: attr_header_label(attr), name: attr.name, value: values.reject(&:blank?).join(', '), disabled: true,
+               help: t('submission_inputs.curation_automatic_help'))
   end
 
   def generate_ontology_select_input(name, label, selected, multiple, reject_ontology: @ontology)

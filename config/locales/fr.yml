@@ -1845,6 +1845,7 @@ fr:
     ontology_view_of_another_ontology: Cette ontologie est-elle une vue d'une autre
       ontologie ?
     portal_generated_help: "Rempli automatiquement par %{portal_name}. Seule l'équipe %{portal_name} peut le modifier."
+    curation_automatic_help: "Rempli automatiquement à chaque enregistrement de la page Edit : la date de l'enregistrement et la personne qui a enregistré."
     recommended: Recommandé
     recommended_help: "Recommandé par le guide des métadonnées. Le remplir améliore la description de l'ontologie."
     recommended_count: Champs recommandés vides dans cet onglet
