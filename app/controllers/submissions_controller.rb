@@ -1,5 +1,5 @@
 class SubmissionsController < ApplicationController
-  include SubmissionsHelper, SubmissionUpdater, OntologyUpdater
+  include SubmissionsHelper, SubmissionUpdater, OntologyUpdater, CurationRecorder
   layout :determine_layout
   before_action :authorize_and_redirect, :only => [:edit, :update, :create, :new]
   before_action :authorize_read_only, :only => [:new, :create, :edit, :update]
@@ -125,6 +125,8 @@ class SubmissionsController < ApplicationController
         @submission = @ontology.explore.submissions({ display: 'submissionId' }, submission_id)
         return render_submission_attribute(params[:attribute])
       end
+      # Edit form with only ontology fields: the save is still a curation (CurationRecorder)
+      record_curation(acronym, submission_id, @ontology) if params[:attribute].nil?
       if defined?(project_messages) && project_messages
         if project_messages[:warning].any?
           all_warnings = Array(flash[:alert]) + Array(project_messages[:warning])
@@ -157,7 +159,11 @@ class SubmissionsController < ApplicationController
       return
     end
 
-    @submission, response = update_submission(update_submission_hash(acronym), submission_id, @ontology)
+    submission_values = update_submission_hash(acronym)
+    # Every save of the Edit page records the curation (CurationRecorder);
+    # not the inline edit (params[:attribute]) of the Metadata administration tool
+    submission_values = with_curation_values(submission_values) if params[:attribute].nil?
+    @submission, response = update_submission(submission_values, submission_id, @ontology)
     if params[:attribute].nil?
       if response_error?(response)
         show_new_errors(response, partial: 'submissions/form_content', id: 'test')
