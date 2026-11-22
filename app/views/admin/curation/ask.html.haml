@@ -8,26 +8,31 @@
       %p= t('admin.curation.ask_none', acronym: @acronym)
     - else
       %p= t('admin.curation.ask_intro', acronym: @acronym)
+      -# Search and shortcuts outside the form: Enter in the search box does not send it
       = text_input(name: 'curation_ask_search', label: '', placeholder: t('admin.curation.ask_search'),
                    data: { 'curation-ask-target': 'search', action: 'input->curation-ask#search' })
       %div.d-flex.my-2
         %a.mr-4{href: '#', data: { action: 'click->curation-ask#selectRecommended' }}= t('admin.curation.ask_select_recommended')
         %a{href: '#', data: { action: 'click->curation-ask#clear' }}= t('admin.curation.ask_clear')
 
-      - @fields_by_tab.each do |tab, fields|
-        %div{data: { 'curation-ask-target': 'group' }}
-          %div.font-weight-bold.mt-3.mb-1= tab.humanize
-          - fields.each do |field|
-            -# data-label: read by the search box
-            %label.d-flex.align-items-center.mb-1{data: { 'curation-ask-target': 'field', label: field[:label].downcase }}
-              = check_box_tag 'fields[]', field[:attribute], false, id: "curation_ask_#{field[:attribute]}", class: 'mr-2',
-                              data: { recommended: field[:recommended].to_s, action: 'change->curation-ask#update' }
-              %span= field[:label]
-              - if field[:recommended]
-                -# Same badge as the Recommended badges of the Edit page
-                %span.badge.badge-pill.ml-2{style: 'background-color: #fff3cd; color: #7a5a00;'}= t('submission_inputs.recommended')
+      -# Next: step 2 in the same window (the form is in the frame of the window)
+      = form_tag admin_curation_ask_mail_path(@acronym), method: :post do
+        = hidden_field_tag :submission_id, @submission_id
+        - @fields_by_tab.each do |tab, fields|
+          %div{data: { 'curation-ask-target': 'group' }}
+            %div.font-weight-bold.mt-3.mb-1= tab.humanize
+            - fields.each do |field|
+              -# data-label: read by the search box
+              %label.d-flex.align-items-center.mb-1{data: { 'curation-ask-target': 'field', label: field[:label].downcase }}
+                = check_box_tag 'fields[]', field[:attribute], @ticked.include?(field[:attribute]),
+                                id: "curation_ask_#{field[:attribute]}", class: 'mr-2',
+                                data: { recommended: field[:recommended].to_s, action: 'change->curation-ask#update' }
+                %span= field[:label]
+                - if field[:recommended]
+                  -# Same badge as the Recommended badges of the Edit page
+                  %span.badge.badge-pill.ml-2{style: 'background-color: #fff3cd; color: #7a5a00;'}= t('submission_inputs.recommended')
 
-      -# Enabled when at least one field is ticked (curation_ask_controller.js)
-      %div.d-flex.justify-content-end.mt-3{data: { 'curation-ask-target': 'next' }}
-        = render Buttons::RegularButtonComponent.new(id: 'curation-ask-next', value: t('admin.curation.ask_next'),
-                                                     variant: 'primary', size: 'slim', state: 'disabled', type: 'button')
+        -# Enabled when at least one field is ticked (curation_ask_controller.js); compact button (admin.scss: .curation-actions)
+        %div.curation-actions.d-flex.justify-content-end.mt-3{data: { 'curation-ask-target': 'next' }}
+          = render Buttons::RegularButtonComponent.new(id: 'curation-ask-next', value: t('admin.curation.ask_next'),
+                                                       variant: 'primary', size: 'slim', state: 'disabled', type: 'submit')

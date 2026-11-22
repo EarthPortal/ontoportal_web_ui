@@ -265,8 +265,8 @@ input[type="text"]:readonly {
   opacity: 0.7;
 }
 
-// Curation tab of the administration console: the Curate and Ask buttons side by side on each row
-// (a regular button takes the whole width of its cell by default)
+// Curation tab of the administration console: compact buttons, side by side (the Curate and Ask buttons of each row,
+// the buttons of the "Ask the author" window); a regular button takes the whole width of its container by default
 .curation-actions .regular-button {
   min-width: 0;
 }

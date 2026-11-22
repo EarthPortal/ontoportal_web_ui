@@ -163,6 +163,36 @@ en:
       ask_next: Next
       ask_none: "All the fields of %{acronym} are filled in: there is nothing to ask."
       ask_error: The submission could not be read.
+      ask_from: "From:"
+      ask_to: "To:"
+      ask_cc: "Copy:"
+      ask_admins: "the administrators of %{acronym}: %{names}"
+      ask_subject: Subject
+      ask_body: Message
+      ask_back: "‹ Back"
+      ask_send: Send
+      ask_sent: "Email sent to the administrators of %{acronym} (%{emails})."
+      ask_no_field: "None of the ticked fields is still empty: go back and tick other fields."
+      ask_no_recipient: "No administrator of %{acronym} has an email address: the email can not be sent."
+      ask_empty_mail: The subject and the message can not be empty.
+      ask_send_failed: "The email could not be sent: %{message}"
+      # Default email of the "Ask the author" window, always in English (the authors are not all French speakers)
+      ask_mail:
+        subject: "[%{portal}] %{name} (%{acronym}): please complete the metadata"
+        field: "- %{label} (%{tab} tab)"
+        body: |-
+          Hello,
+
+          The %{portal} team reviewed the metadata of %{name} (%{acronym}).
+          Could you please fill in the following fields? They are a priority:
+          %{fields}
+
+          You can complete them in the Edit page of the ontology:
+          %{edit_url}
+          While you are there, you are welcome to also fill in the other empty fields, especially the ones marked "Recommended".
+
+          Thank you,
+          The %{portal} Team
     catalog_configuration:
       description_text: |
         Use this page to configure the current site %{portal_name} information.

@@ -44,25 +44,105 @@ class Admin::CurationController < ApplicationController
 
   # "Ask the author" window, step 1: the empty fields of the submission opened by the Curate button
   # (Recommended or not), by tab of the Edit page. The filled fields are checked with the Curate button.
+  # fields[]: the fields ticked before going back from step 2
   def ask
-    @acronym = params[:acronym]
-    submission = ask_submission(@acronym, params[:submission_id].to_s)
-    # nil when the submission can not be read
-    @fields_by_tab = submission && empty_fields_by_tab(submission)
+    load_ask_fields
+    @ticked = Array(params[:fields]).map(&:to_s)
     render 'ask', layout: false
+  end
+
+  # Step 2: the email to the administrators of the ontology, pre-filled (in English) with the ticked fields
+  def ask_mail
+    load_ask_mail
+    @subject, @body = default_ask_mail
+    @error = t('admin.curation.ask_no_field') if @fields.empty?
+    render 'ask_mail', layout: false
+  end
+
+  # Sends the email written by the administrator, like the processing emails of the portal:
+  # from the support address to the administrators of the ontology, with a copy to the support.
+  # Sent now (not in the background) to tell the administrator when it fails.
+  def ask_send
+    load_ask_mail
+    @subject = params[:subject].to_s.strip
+    @body = params[:body].to_s.strip
+    @error = ask_mail_error
+    if @error.nil?
+      CurationRequestMailer.ask_author(to: @recipients.map { |admin| admin[:email] }, cc: @support, from: @sender,
+                                       subject: @subject, body: @body).deliver_now
+      return render 'ask_sent', layout: false
+    end
+
+    render 'ask_mail', layout: false, status: :unprocessable_entity
+  rescue StandardError => e
+    @error = t('admin.curation.ask_send_failed', message: e.message)
+    render 'ask_mail', layout: false, status: :unprocessable_entity
   end
 
   private
 
-  def ask_submission(acronym, submission_id)
-    return nil if submission_id.empty?
+  def load_ask_fields
+    @acronym = params[:acronym]
+    @submission_id = params[:submission_id].to_s
+    @ontology = begin
+      LinkedData::Client::Models::Ontology.find_by_acronym(@acronym).first
+    rescue StandardError
+      nil
+    end
+    submission = ask_submission(@ontology, @submission_id)
+    # nil when the submission can not be read
+    @fields_by_tab = submission && empty_fields_by_tab(submission)
+  end
 
-    ontology = LinkedData::Client::Models::Ontology.find_by_acronym(acronym).first
-    return nil unless ontology
+  # The ticked fields that are still empty and can be asked (the list of the window, in the order of the Edit tabs),
+  # the administrators of the ontology, and the addresses of the email
+  def load_ask_mail
+    load_ask_fields
+    ticked = Array(params[:fields]).map(&:to_s)
+    @fields = Array(@fields_by_tab).flat_map(&:last).select { |field| ticked.include?(field[:attribute]) }
+    @recipients = ontology_admins(@ontology)
+    @support = $SUPPORT_EMAIL.to_s.strip.presence
+    # Same sender as the processing emails: the support address of the portal (else the sender of the other emails of the site)
+    @sender = @support || ApplicationMailer.default[:from]
+  end
+
+  def ask_submission(ontology, submission_id)
+    return nil if ontology.nil? || submission_id.empty?
 
     submission = ontology.explore.submissions({ display: 'all' }, submission_id)
     submission.nil? || response_error?(submission) ? nil : submission
   rescue StandardError
+    nil
+  end
+
+  # [{ username:, email: }] of the administrators of the ontology that have an email address
+  def ontology_admins(ontology)
+    Array(ontology&.administeredBy).filter_map do |user_id|
+      user = LinkedData::Client::Models::User.find(user_id.to_s, include: 'username,email')
+      email = user.respond_to?(:email) ? user.email.to_s.strip : ''
+      { username: user.username, email: email } unless email.empty?
+    rescue StandardError
+      nil
+    end
+  end
+
+  # Subject and text of the email, in English (the authors are not all French speakers); the administrator can change them.
+  # The link opens the usual Edit page (all the tabs, with the Recommended badges)
+  def default_ask_mail
+    I18n.with_locale(:en) do
+      values = { portal: helpers.portal_name, name: @ontology&.name.presence || @acronym, acronym: @acronym }
+      fields = @fields.map { |field| t('admin.curation.ask_mail.field', label: field[:label], tab: field[:tab].humanize) }
+      edit_url = "#{$UI_URL.to_s.chomp('/')}#{edit_ontology_submission_path(@acronym, @submission_id)}"
+      [t('admin.curation.ask_mail.subject', **values),
+       t('admin.curation.ask_mail.body', **values, fields: fields.join("\n"), edit_url: edit_url)]
+    end
+  end
+
+  def ask_mail_error
+    return t('admin.curation.ask_no_field') if @fields.empty?
+    return t('admin.curation.ask_no_recipient', acronym: @acronym) if @recipients.empty?
+    return t('admin.curation.ask_empty_mail') if @subject.empty? || @body.empty?
+
     nil
   end
 

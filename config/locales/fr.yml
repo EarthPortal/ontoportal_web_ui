@@ -170,6 +170,19 @@ fr:
       ask_next: Suivant
       ask_none: "Tous les champs de %{acronym} sont remplis : il n'y a rien à demander."
       ask_error: Impossible de lire la soumission.
+      ask_from: "De :"
+      ask_to: "À :"
+      ask_cc: "Copie :"
+      ask_admins: "les administrateurs de %{acronym} : %{names}"
+      ask_subject: Objet
+      ask_body: Message
+      ask_back: "‹ Retour"
+      ask_send: Envoyer
+      ask_sent: "Email envoyé aux administrateurs de %{acronym} (%{emails})."
+      ask_no_field: "Aucun des champs cochés n'est encore vide : revenez en arrière et cochez d'autres champs."
+      ask_no_recipient: "Aucun administrateur de %{acronym} n'a d'adresse email : l'email ne peut pas être envoyé."
+      ask_empty_mail: "L'objet et le message ne peuvent pas être vides."
+      ask_send_failed: "L'email n'a pas pu être envoyé : %{message}"
     catalog_configuration:
       description_text: |
         Utilisez cette page pour configurer les informations du site actuel %{portal_name}.

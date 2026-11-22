@@ -1,0 +1,44 @@
+-# "Ask the author" window of the Curation tab, step 2 (Admin::CurationController#ask_mail and #ask_send): the email to the
+-# administrators of the ontology, pre-filled in English and editable, sent like the processing emails of the portal
+= render_in_modal do
+  - fields = Array(@fields)
+  - recipients = Array(@recipients)
+  - if @error
+    = render Display::AlertComponent.new(type: 'danger', message: @error, closable: false)
+  -# Back to step 1, with the same fields ticked
+  - back = admin_curation_ask_path(@acronym, submission_id: @submission_id, fields: fields.map { |field| field[:attribute] })
+
+  - if fields.any?
+    = form_tag admin_curation_ask_send_path(@acronym), method: :post do
+      = hidden_field_tag :submission_id, @submission_id
+      - fields.each do |field|
+        = hidden_field_tag 'fields[]', field[:attribute], id: nil
+      %div.mb-3
+        %div
+          %span.text-muted= t('admin.curation.ask_from')
+          = @sender
+        %div
+          %span.text-muted= t('admin.curation.ask_to')
+          - if recipients.any?
+            = t('admin.curation.ask_admins', acronym: @acronym,
+                names: recipients.map { |admin| "#{admin[:username]} (#{admin[:email]})" }.join(', '))
+          - else
+            %span.text-danger= t('admin.curation.ask_no_recipient', acronym: @acronym)
+        - if @support
+          %div
+            %span.text-muted= t('admin.curation.ask_cc')
+            = @support
+      = text_input(name: 'subject', label: t('admin.curation.ask_subject'), value: @subject)
+      %div.mt-3
+        = render Input::TextAreaComponent.new(label: t('admin.curation.ask_body'), name: 'body', value: @body, rows: '16', resize: true)
+      -# Compact buttons side by side (admin.scss: .curation-actions)
+      %div.curation-actions.d-flex.justify-content-end.mt-3
+        = render Buttons::RegularButtonComponent.new(id: 'curation-ask-back', value: t('admin.curation.ask_back'),
+                                                     variant: 'secondary', size: 'slim', state: 'regular', href: back)
+        %div.ml-2
+          = render Buttons::RegularButtonComponent.new(id: 'curation-ask-send', value: t('admin.curation.ask_send'),
+                                                       variant: 'primary', size: 'slim', state: 'regular', type: 'submit')
+  - else
+    %div.curation-actions.d-flex.justify-content-end.mt-3
+      = render Buttons::RegularButtonComponent.new(id: 'curation-ask-back', value: t('admin.curation.ask_back'),
+                                                   variant: 'secondary', size: 'slim', state: 'regular', href: back)

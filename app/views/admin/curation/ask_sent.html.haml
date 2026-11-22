@@ -1,0 +1,5 @@
+-# "Ask the author" window of the Curation tab: the email is sent (Admin::CurationController#ask_send); close with ×
+= render_in_modal do
+  = render Display::AlertComponent.new(type: 'success', closable: false,
+                                       message: t('admin.curation.ask_sent', acronym: @acronym,
+                                                  emails: @recipients.map { |admin| admin[:email] }.join(', ')))

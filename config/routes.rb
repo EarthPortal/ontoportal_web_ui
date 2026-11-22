@@ -122,6 +122,8 @@ Rails.application.routes.draw do
     resources :analytics, only: [:index]
     get 'curation', to: 'curation#index', as: :curation
     get 'curation/:acronym/ask', to: 'curation#ask', as: :curation_ask, constraints: { acronym: %r{[^/]+} }
+    post 'curation/:acronym/ask/mail', to: 'curation#ask_mail', as: :curation_ask_mail, constraints: { acronym: %r{[^/]+} }
+    post 'curation/:acronym/ask/send', to: 'curation#ask_send', as: :curation_ask_send, constraints: { acronym: %r{[^/]+} }
     constraints lambda { |request| request.session[:user]&.admin? } do
       mount Flipper::UI.app(Flipper) => '/flipper', as: :flipper
     end
