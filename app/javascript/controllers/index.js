@@ -133,8 +133,5 @@ application.register("ror-search", RorSearchController)
 import RecommendedBadgesController from "./recommended_badges_controller.js"
 application.register("recommended-badges", RecommendedBadgesController)
 
-import CurationFiltersController from "./curation_filters_controller.js"
-application.register("curation-filters", CurationFiltersController)
-
 import CurationAskController from "./curation_ask_controller.js"
 application.register("curation-ask", CurationAskController)

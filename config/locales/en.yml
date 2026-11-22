@@ -120,17 +120,13 @@ en:
       curation: Curation
     curation:
       title: Curation
-      description: "All the ontologies, views and metadata-only entries, with the Recommended fields of their latest version that are still empty (out of %{total}). Curate opens the Edit page of this version."
-      search_placeholder: Filter by acronym, name or type
+      description: "All the ontologies, views and metadata-only entries, with the date of their first submission and the fields of their latest version that are still empty (out of %{total}). Curate opens the Edit page of this version; Ask sends an email to its administrators."
+      search_placeholder: Filter by acronym or name
       ontology: Ontology
-      type: Type
-      recommended: Recommended fields
+      submission_date: Submission date
+      empty_fields: Empty fields
       curation: Curation (curatedBy / curatedOn)
       actions: Actions
-      types:
-        ontology: Ontology
-        view: View
-        metadata_only: Metadata only
       private: Private
       empty: "%{count} empty"
       complete: Complete
@@ -142,18 +138,10 @@ en:
       curate: Curate
       kpi_entries: Entries
       kpi_entries_help: ontologies, views and metadata-only entries
-      kpi_recommended_empty: Recommended fields empty
-      kpi_recommended_empty_help: in the latest versions
+      kpi_empty: Empty fields
+      kpi_empty_help: in the latest versions
       kpi_curated: Curated
       kpi_curated_help: with curatedBy or curatedOn
-      filter_type: Type
-      filter_curation: Curation
-      all: All
-      type_ontology: Ontologies
-      type_view: Views
-      type_metadata_only: Metadata only
-      curated: Curated
-      shown: "%{count} shown"
       ask: Ask
       ask_title: "Ask the author of %{acronym}"
       ask_intro: "The fields of %{acronym} that are still empty. Tick the ones the authors (the administrators of the ontology) should fill in."

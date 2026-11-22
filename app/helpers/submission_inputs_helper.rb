@@ -807,8 +807,8 @@ module SubmissionInputsHelper
   end
 
   # Also used by the Curation tab of the administration console (Admin::CurationController):
-  # the Recommended counts of the table, and the empty fields of the "Ask the author" window
-  public :recommended_empty_count, :metadata_value_blank?
+  # the empty fields of the table and of the "Ask the author" window
+  public :metadata_value_blank?
 
   def attribute_help_text(attr)
     label = attr.label

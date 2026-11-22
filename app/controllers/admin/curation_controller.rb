@@ -1,12 +1,11 @@
 # Curation tab of the administration console: every ontology (views, metadata-only and private ones included)
-# with the Recommended fields of its latest submission that are still empty, and its current curation (curatedBy / curatedOn)
+# with the date of its first submission, the fields of its latest submission that are still empty,
+# and its current curation (curatedBy / curatedOn)
 class Admin::CurationController < ApplicationController
   layout :determine_layout
   before_action :authorize_admin
 
-  ONTOLOGY_ATTRIBUTES = %w[acronym name viewOf summaryOnly viewingRestriction].freeze
-  SUBMISSION_ATTRIBUTES = (%w[ontology submissionId curatedBy curatedOn] +
-                           SubmissionInputsHelper::RECOMMENDED_ATTRIBUTES).freeze
+  ONTOLOGY_ATTRIBUTES = %w[acronym name viewingRestriction].freeze
 
   # Same tabs, in the same order, as the Edit page (SubmissionsController#edit)
   EDIT_TABS = ['general', 'description', 'dates', 'licensing', 'agents', 'links', 'media', 'community', 'usage',
@@ -25,19 +24,22 @@ class Admin::CurationController < ApplicationController
     # The latest submission of each ontology, whatever its status: a new deposit (not processed yet)
     # and a metadata-only entry (its processing always ends in error) are listed too.
     # It is the submission opened by the Edit button of the ontology page.
-    submissions = LinkedData::Client::Models::OntologySubmission.all(include: SUBMISSION_ATTRIBUTES.join(','), include_status: 'ANY',
+    attributes = %w[ontology submissionId curatedBy curatedOn] + askable_metadata.map { |metadata| metadata['attribute'].to_s }
+    submissions = LinkedData::Client::Models::OntologySubmission.all(include: attributes.uniq.join(','), include_status: 'ANY',
                                                                      also_include_views: true, display_links: false, display_context: false)
     submissions = Array(submissions).map { |s| s[:ontology] ? [s[:ontology][:id], s] : nil }.compact.to_h
+    first_dates = first_submission_dates
 
-    @recommended_total = SubmissionInputsHelper::RECOMMENDED_ATTRIBUTES.size
-    # Most empty Recommended fields first, the ontologies without submission last
-    @rows = ontologies.map { |ontology| curation_row(ontology, submissions[ontology.id]) }
-                      .sort_by { |row| [-(row[:recommended_empty] || -1), row[:acronym].to_s] }
+    # Number of fields counted in the "Empty fields" column: the fields of the "Ask the author" window
+    @fields_total = askable_metadata.size
+    # Most empty fields first, the ontologies without submission last
+    @rows = ontologies.map { |ontology| curation_row(ontology, submissions[ontology.id], first_dates[ontology.acronym]) }
+                      .sort_by { |row| [-(row[:empty] || -1), row[:acronym].to_s] }
 
     # The numbers at the top of the tab
     @kpis = {
       entries: @rows.size,
-      recommended_empty: @rows.sum { |row| row[:recommended_empty].to_i },
+      empty: @rows.sum { |row| row[:empty].to_i },
       curated: @rows.count { |row| row[:curated] }
     }
   end
@@ -146,20 +148,30 @@ class Admin::CurationController < ApplicationController
     nil
   end
 
+  # The fields of the Edit tabs that can be asked to the authors: the list of the "Ask the author" window,
+  # also counted in the "Empty fields" column of the table
+  def askable_metadata
+    @askable_metadata ||= helpers.submission_metadata.select do |metadata|
+      EDIT_TABS.include?(metadata['category']) && !NOT_ASKED_ATTRIBUTES.include?(metadata['attribute'].to_s)
+    end
+  end
+
+  # Empty: same rule as the Recommended badges of the Edit page (SubmissionInputsHelper#metadata_value_blank?)
+  def empty_field?(submission, attribute)
+    value = begin
+      submission.send(attribute)
+    rescue StandardError
+      nil
+    end
+    helpers.metadata_value_blank?(value)
+  end
+
   # [[tab, [{ attribute:, label:, recommended: }, ...]], ...] for the tabs with at least one empty field.
-  # Empty: same rule as the Recommended badges of the Edit page (SubmissionInputsHelper#metadata_value_blank?).
   # Labels and tab names: the ones of the Edit page (labels of the API, tab names humanized)
   def empty_fields_by_tab(submission)
-    fields = helpers.submission_metadata.filter_map do |metadata|
+    fields = askable_metadata.filter_map do |metadata|
       attribute = metadata['attribute'].to_s
-      next if NOT_ASKED_ATTRIBUTES.include?(attribute) || !EDIT_TABS.include?(metadata['category'])
-
-      value = begin
-        submission.send(attribute)
-      rescue StandardError
-        nil
-      end
-      next unless helpers.metadata_value_blank?(value)
+      next unless empty_field?(submission, attribute)
 
       { attribute: attribute, tab: metadata['category'], label: metadata['label'].presence || attribute.humanize,
         recommended: SubmissionInputsHelper::RECOMMENDED_ATTRIBUTES.include?(attribute) }
@@ -167,42 +179,59 @@ class Admin::CurationController < ApplicationController
     EDIT_TABS.map { |tab| [tab, fields.select { |field| field[:tab] == tab }] }.reject { |_tab, list| list.empty? }
   end
 
-  def curation_row(ontology, submission)
+  # { acronym => date of the first submission of the ontology }: the Submission date (creationDate) of its oldest
+  # version still in the portal (each version has its own date). With a page, the API returns all the submissions,
+  # not only the latest ones: one call for all the ontologies.
+  def first_submission_dates
+    oldest = {}
+    page_number = 1
+    loop do
+      page = LinkedData::Client::HTTP.get('/submissions', { page: page_number, pagesize: 5000, include: 'ontology,submissionId,creationDate',
+                                                            include_status: 'ANY', also_include_views: true,
+                                                            display_links: false, display_context: false })
+      Array(page.respond_to?(:collection) ? page.collection : nil).each do |submission|
+        ontology = submission.ontology
+        acronym = ontology.respond_to?(:acronym) ? ontology.acronym : ontology.to_s.split('/').last
+        oldest[acronym] = submission if oldest[acronym].nil? || submission.submissionId.to_i < oldest[acronym].submissionId.to_i
+      end
+      break unless page.respond_to?(:nextPage) && page.nextPage
+
+      page_number = page.nextPage
+    end
+    oldest.transform_values { |submission| date_text(submission.creationDate) }
+  rescue StandardError
+    {}
+  end
+
+  def curation_row(ontology, submission, first_submission_date)
     curated_on = curation_dates(submission)
     curated_by = curation_agents(submission)
     {
       acronym: ontology.acronym,
       name: ontology.name,
-      type: ontology_type(ontology),
       private: ontology.viewingRestriction.eql?('private'),
+      first_submission_date: first_submission_date.presence,
       submission_id: submission&.submissionId,
-      # Same count as the sum of the tab counters of the Edit page (Recommended badges)
-      recommended_empty: submission && helpers.recommended_empty_count(SubmissionInputsHelper::RECOMMENDED_ATTRIBUTES, submission),
+      # Same list and same rule as the "Ask the author" window
+      empty: submission && askable_metadata.count { |metadata| empty_field?(submission, metadata['attribute'].to_s) },
       curated_on: curated_on,
       curated_by: curated_by,
       curated: curated_on.any? || curated_by.any?
     }
   end
 
-  def ontology_type(ontology)
-    if ontology.viewOf.present?
-      :view
-    elsif ontology.summaryOnly
-      :metadata_only
-    else
-      :ontology
-    end
+  # A date of the API without its time, e.g. 2026-11-18
+  def date_text(date)
+    Date.parse(date.to_s).to_s
+  rescue ArgumentError, TypeError
+    date.to_s
   end
 
   # curatedOn is a list of dates in the API
   def curation_dates(submission)
     return [] unless submission
 
-    Array(submission.curatedOn).map do |date|
-      Date.parse(date.to_s).to_s
-    rescue ArgumentError
-      date.to_s
-    end.reject(&:blank?)
+    Array(submission.curatedOn).map { |date| date_text(date) }.reject(&:blank?)
   end
 
   # curatedBy is a list of Agents (persons or organizations)
