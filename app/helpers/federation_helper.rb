@@ -307,6 +307,17 @@ module FederationHelper
     counts_ontology_ids_by_portal_name(ids)
   end
 
+  def federation_buttons(ontology_sources)
+    out = Array(ontology_sources).map do |id|
+      config = ontology_portal_config(id)&.last || internal_portal_config(id) || {}
+      next if config.blank?
+      content_tag(:span, style: 'padding: 3px 0; margin-right: 0.25rem;') do
+        portal_button(name: config[:name], color: config[:color], light_color: config[:"light-color"], link: ontoportal_ui_link(id), tooltip: "Source #{config[:name]}")
+      end
+    end.join.html_safe
+    content_tag(:div, out, class: 'd-flex align-items-center')
+  end
+
   private
 
   def counts_ontology_ids_by_portal_name(portals_ids)

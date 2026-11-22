@@ -999,7 +999,9 @@ module OntologiesHelper
     label = "#{ontology.name} (#{ontology.acronym})"
     chips_component(id: "selector[#{ontology.id}]", value: ontology.id, name: ontology.acronym) do
       content_tag :div, class: 'd-flex align-items-center justify-content-between' do
-        federation_link(id: ontology.id, title: label, color: config[:color], name: config[:name]) + portal_button(name: config[:name], color: config[:color], light_color: config[:'light-color'])
+        out = federation_link(id: ontology.id, title: label, color: config[:color], name: config[:name])
+        out += federation_buttons(ontology[:sources])
+        out
       end
     end
   end

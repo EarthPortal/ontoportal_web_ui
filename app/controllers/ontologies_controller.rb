@@ -509,6 +509,16 @@ class OntologiesController < ApplicationController
         submissions.any? { |submission| submission.ontology.id == ontology.id }
       end
     end
+
+    merged_ontologies = []
+    @ontologies.group_by { |x| x.acronym }.each do |_acronym, ontologies|
+      ontology = canonical_ontology(ontologies)
+      ontology[:sources] = ontologies.map { |x| x[:id] }
+      ontology[:sources].reject! { |id| id.include?(portal_name.downcase) } if ontology[:sources].size.eql?(1)
+      merged_ontologies << ontology
+    end
+    @ontologies = merged_ontologies.sort { |a, b| a.name.downcase <=> b.name.downcase }
+
     render 'ontologies/ontologies_selector/ontologies_selector_results', layout: false
   end
 

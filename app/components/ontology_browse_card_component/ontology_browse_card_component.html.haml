@@ -76,11 +76,7 @@
           = render ChipButtonComponent.new(type: "clickable", text: t('components.view'), style: style_bg)
 
 
-      - ontology[:sources]&.each do |id|
-        - config = ontology_portal_config(id)&.last || internal_portal_config(id) || {}
-        - unless config.blank?
-          %span{style: "padding: 3px 0; margin-right: 0.25rem;"}
-            = portal_button(name: config[:name], color: config[:color], light_color: config[:"light-color"], link: ontoportal_ui_link(id), tooltip: "Source #{config[:name]}")
+      = federation_buttons(ontology[:sources])
 
       - if session[:user]&.admin?
         %div.mx-1{title: content_tag(:div, debug(ontology), style: 'height: 300px; overflow: scroll'), data:{controller: 'tooltip', 'tooltip-interactive-value': 'true'}}
