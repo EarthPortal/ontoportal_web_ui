@@ -21,13 +21,29 @@ module AnnotatorHelper
     api_params
   end
 
-  def find_annotations(uri, api_params)
-    if request_portals.size == 1
-      LinkedData::Client::HTTP.get(uri, api_params)
-    else
-      LinkedData::Client::Models::Class.federated_get(api_params) do |url|
-        "#{url}/annotator"
-      end
+  def find_annotations(api_params, ontologies)
+    filtered_params = {}
+    request_portals.each do |portal|
+      name = portal.downcase.eql?(portal_name.downcase) ? '' : portal.downcase
+      filtered_params[name] = api_params.dup
+      api_params[:ontologies] ||= ''
+      filtered_params[name][:ontologies] = api_params[:ontologies].split(',').select do |ont|
+        filtered_ontologies = ontologies.values.select { |o| o.acronym == ont.split('/').last }
+        next false if filtered_ontologies.empty?
+
+        filtered_ontologies.any? do |ontology|
+          config = ontology_portal_config(ontology.id)&.last || internal_portal_config(ontology.id) || {}
+          next false if config.blank?
+
+          portal.downcase.eql?(config[:name].downcase)
+        end
+      end.map { |x| x.split('/').last }.uniq.join(',')
+    end
+
+    filtered_params.select! { |_k, v| !v[:ontologies].blank? } unless params[:ontologies].blank?
+
+    LinkedData::Client::Models::Class.federated_get(filtered_params) do |url|
+      "#{url}/annotator"
     end
   end
 
@@ -126,7 +142,7 @@ module AnnotatorHelper
 
     link_to cls[:link] do
       content_tag(:div, class: "class federated-icon-#{config[:name]&.downcase}") do
-        federation_link(title: cls[:text], color: config[:color], name: config[:name])
+        federation_link(id: cls[:id], title: cls[:text], color: config[:color], name: config[:name])
       end
     end
   end
@@ -134,7 +150,7 @@ module AnnotatorHelper
   def annotator_external_ontology(ontology)
     config = ontology_portal_config(ontology[:id])&.last || internal_portal_config(ontology[:id]) || {}
     content_tag(:div, class: 'd-flex align-items-center') do
-      out = federation_link(title: ontology[:text], color: config[:color], name: config[:name])
+      out = federation_link(id: ontology[:id], title: ontology[:text], color: config[:color], name: config[:name])
       out += portal_button(name: config[:name], color: config[:color], light_color: config[:'light-color'])
       out.html_safe
     end
