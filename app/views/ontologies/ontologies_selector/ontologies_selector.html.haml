@@ -59,7 +59,7 @@
                                 = c.item_content do
                                     .field.d-flex.chips
                                         = federation_input_chips(name: "portals[]")
-                = render TurboFrameComponent.new(id: 'selector_results_frame', src: '/ontologies_selector/results', data: {'ontologies-selector-target': 'frame'}) do |container|
+                = render TurboFrameComponent.new(id: 'selector_results_frame', src: "/ontologies_selector/results?portals=#{request_portals.join(',')}", data: {'ontologies-selector-target': 'frame'}) do |container|
                     - container.loader do
                         = render LoaderComponent.new(type: 'pulsing') 
                         

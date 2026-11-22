@@ -447,7 +447,7 @@ class ApplicationController < ActionController::Base
   end
 
   def set_federated_portals
-    params[:portals] = params[:portals].join(',') if params[:portals].is_a?(Array)
+    params[:portals] = Array(params[:portals]).join(',')
     RequestStore.store[:federated_portals] = params[:portals]&.split(',')
     helpers.sync_federated_connections
   end
