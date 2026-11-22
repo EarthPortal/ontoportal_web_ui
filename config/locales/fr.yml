@@ -161,6 +161,15 @@ fr:
       type_metadata_only: Métadonnées seulement
       curated: Curées
       shown: "%{count} affichée(s)"
+      ask: Demander
+      ask_title: "Demander à l'auteur de %{acronym}"
+      ask_intro: "Les champs de %{acronym} encore vides. Cochez ceux que les auteurs (les administrateurs de l'ontologie) doivent remplir."
+      ask_search: Rechercher un champ
+      ask_select_recommended: Cocher les Recommended vides
+      ask_clear: Tout décocher
+      ask_next: Suivant
+      ask_none: "Tous les champs de %{acronym} sont remplis : il n'y a rien à demander."
+      ask_error: Impossible de lire la soumission.
     catalog_configuration:
       description_text: |
         Utilisez cette page pour configurer les informations du site actuel %{portal_name}.

@@ -66,6 +66,13 @@
                   %div.text-muted.small= t('admin.curation.curated_by', names: row[:curated_by].join(', '))
             %td
               - if row[:submission_id]
-                = render Buttons::RegularButtonComponent.new(id: "curate-#{row[:acronym].parameterize}", value: t('admin.curation.curate'),
-                                                             variant: 'secondary', size: 'slim', state: 'regular',
-                                                             href: edit_ontology_submission_path(row[:acronym], row[:submission_id]))
+                -# Curate and Ask on the same line (admin.scss: .curation-actions)
+                %div.curation-actions.d-flex.align-items-center
+                  = render Buttons::RegularButtonComponent.new(id: "curate-#{row[:acronym].parameterize}", value: t('admin.curation.curate'),
+                                                               variant: 'secondary', size: 'slim', state: 'regular',
+                                                               href: edit_ontology_submission_path(row[:acronym], row[:submission_id]))
+                  -# Window with the empty fields of the same submission (same button style as "Add comment" of the site)
+                  = link_to_modal(t('admin.curation.ask'), admin_curation_ask_path(row[:acronym], submission_id: row[:submission_id]),
+                                  id: "ask-#{row[:acronym].parameterize}", class: 'secondary-button regular-button slim ml-2',
+                                  data: { show_modal_title_value: t('admin.curation.ask_title', acronym: row[:acronym]),
+                                          show_modal_size_value: 'modal-lg' })

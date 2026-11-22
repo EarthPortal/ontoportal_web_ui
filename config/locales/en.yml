@@ -154,6 +154,15 @@ en:
       type_metadata_only: Metadata only
       curated: Curated
       shown: "%{count} shown"
+      ask: Ask
+      ask_title: "Ask the author of %{acronym}"
+      ask_intro: "The fields of %{acronym} that are still empty. Tick the ones the authors (the administrators of the ontology) should fill in."
+      ask_search: Search a field
+      ask_select_recommended: Tick the empty Recommended fields
+      ask_clear: Untick all
+      ask_next: Next
+      ask_none: "All the fields of %{acronym} are filled in: there is nothing to ask."
+      ask_error: The submission could not be read.
     catalog_configuration:
       description_text: |
         Use this page to configure the current site %{portal_name} information.
