@@ -43,6 +43,13 @@
                 .ontology-sets-choice
                   = render Input::RadioChipComponent.new(label: t('recommender.ontology_sets'), name: 'output_type', value: '2', checked: !check_output)
 
+            - if federation_enabled?
+              .filter-container
+                .title
+                  = t('federation.results_from_external_portals')
+                .field.d-flex
+                  = federation_input_chips(name: "portals[]")
+
             = show_advanced_options_button(text: t('show_advanced_options'), init: @advanced_options_open || @not_valid_max_num_set)
             = hide_advanced_options_button(text: t('hide_advanced_options'), init: @advanced_options_open || @not_valid_max_num_set)
               
@@ -92,10 +99,7 @@
             - @results.each do |result|
               - t.row do |r|
                 - r.td do
-                  - ontologies = ""
-                  - result[:ontologies].each do |ontology|
-                    %a.recommender-result-ontology{href: ontology_path(id: ontology[:acronym], p: 'summary')}
-                      = ontology[:acronym]
+                  = recommendation_ontology_link(result)
                 - r.td do
                   = render Display::ProgressBarComponent.new(progress: result[:final_score])
                 - r.td do
