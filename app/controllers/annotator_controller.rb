@@ -31,6 +31,7 @@ class AnnotatorController < ApplicationController
   private
 
   def prepare_annotator_page(url, page_name, uri)
+    @results = nil
     @results_table_header = annotator_results_table_header
     @advanced_options_open = !empty_advanced_options
     @time = Benchmark.realtime do
@@ -42,7 +43,6 @@ class AnnotatorController < ApplicationController
     @form_url = url
     @page_name = page_name
     annotator_results(uri)
-    @results ||= []
     add_pull_locations(@results)
     @results = merge_annotator_results(@results)
     @federation_counts = counts_ontology_ids_by_portal_name(
@@ -51,6 +51,8 @@ class AnnotatorController < ApplicationController
   end
 
   def merge_annotator_results(results)
+    return unless results
+
     results.group_by { |x| [x[:class][:id], x[:ontology][:id].split('/').last] }.map do |_, x|
       ontologies = x.map { |y| y[:ontology] }
       canonical_ontology = canonical_ontology(ontologies)
@@ -62,6 +64,8 @@ class AnnotatorController < ApplicationController
   end
 
   def add_pull_locations(results)
+    return unless results
+
     all_submissions = LinkedData::Client::Models::OntologySubmission.all(include: 'pullLocation', include_views: true, display_links: false, display_context: false)
     results.each do |x|
       o = x[:ontology]
@@ -106,9 +110,10 @@ class AnnotatorController < ApplicationController
     @results = []
     annotations.each do |annotation|
       next if annotation.nil? || annotation.errors
+
+      @direct_results += 1
       if Array(annotation.annotations).empty?
         @results.push(direct_annotation(annotation))
-        @direct_results += 1
       else
         row = direct_annotation(annotation)
         add_context_annotations(annotation, row)

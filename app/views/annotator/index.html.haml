@@ -44,10 +44,10 @@
           = render partial: 'annotator/annotator_plus_inputs'
         .annotator-page-button
           = render Buttons::RegularButtonComponent.new(id:'annotator', value: t('annotator.get_annotation'), variant: "primary", type: 'submit')
+    = alert_message_if_federation_error(@federation_errors) { @federation_errors.join('<br/>').html_safe }
+
     - if @results && @results.empty?
       = empty_state(text: t('no_result_was_found'))
-
-    = alert_message_if_federation_error(@federation_errors) { @federation_errors.join('<br/>').html_safe }
 
     - unless @results.nil? || @results.empty?
       .annotator-page-results

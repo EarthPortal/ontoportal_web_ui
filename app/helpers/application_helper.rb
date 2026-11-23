@@ -457,7 +457,7 @@ module ApplicationHelper
       render(Input::SelectComponent.new(id: id, label: label, name: name, value: ontologies, multiple: multiple, selected: selected, placeholder: placeholder)) +
       content_tag(:div, class: 'ontologies-selector-button', 'data-controller': 'ontologies-selector', 'data-ontologies-selector-id-value': id) do      
         content_tag(:div, t('ontologies_selector.clear_selection'), class: 'clear-selection', 'data-action': 'click->ontologies-selector#clear') +
-        (show_advanced_options ? link_to_modal(t('ontologies_selector.ontologies_advanced_selection'), "/ontologies_selector?id=#{id}&portals=#{portals.join(',')}", data: { show_modal_title_value: t('ontologies_selector.ontologies_advanced_selection') }) : ''.html_safe)
+        (show_advanced_options ? link_to_modal(t('ontologies_selector.ontologies_advanced_selection'), "/ontologies_selector?id=#{id}&portals=#{portals.join(',')}", data: { show_modal_title_value: t('ontologies_selector.ontologies_advanced_selection'), show_modal_size_value: 'modal-xl' }) : ''.html_safe)
       end
     end
   end
