@@ -75,7 +75,7 @@
                       = link_to ontoportal_ui_link(ontology[:id]) do
                         %div.my-1
                           - if internal_ontology?(ontology[:id])
-                            = ontology[:text]
+                            = ontology[:name]
                           - else
                             = annotator_external_ontology(ontology)
                 - r.td do

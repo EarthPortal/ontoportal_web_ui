@@ -150,7 +150,7 @@ module AnnotatorHelper
   def annotator_external_ontology(ontology)
     config = ontology_portal_config(ontology[:id])&.last || internal_portal_config(ontology[:id]) || {}
     content_tag(:div, class: 'd-flex align-items-center') do
-      out = federation_link(id: ontology[:id], title: ontology[:text], color: config[:color], name: config[:name])
+      out = federation_link(id: ontology[:id], title: ontology[:name], color: config[:color], name: config[:name])
       out += portal_button(name: config[:name], color: config[:color], light_color: config[:'light-color'])
       out.html_safe
     end

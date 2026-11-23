@@ -177,7 +177,7 @@ class AnnotatorController < ApplicationController
     ontology = @ontologies[ontology_url]
     {
       id: ontology_url,
-      text: ontology.name,
+      name: ontology.name,
       link: ontology_url
     }
   end
