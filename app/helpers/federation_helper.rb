@@ -164,7 +164,7 @@ module FederationHelper
 
 
   def federation_error?(response)
-    !response[:errors].blank?
+    !response[:errors].blank? || !response[:error].blank?
   end
 
   def federation_error(response)
@@ -281,7 +281,7 @@ module FederationHelper
                 'data-controller': 'federation-portals-colors',
                 'data-federation-portals-colors-color-value': color,
                 'data-federation-portals-colors-portal-name-value': name.to_s.downcase) do
-      content_tag(:div, class: 'd-flex align-items-center') do
+      content_tag(:div, class: '') do
         out = title.to_s
         unless id && internal_ontology?(id)
           out += inline_svg_tag 'icons/external-link.svg', class: "ml-1 federated-icon-#{name.to_s.downcase} #{color ? '' : 'd-none'}"
