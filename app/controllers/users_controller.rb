@@ -6,6 +6,9 @@ class UsersController < ApplicationController
 
   include TurboHelper
 
+  # The roles an administrator can give in the Role menu of the user form (users/edit.html.haml)
+  MAIN_ROLES = %w[LIBRARIAN CURATOR ADMINISTRATOR].freeze
+
 
   def index
 
@@ -97,11 +100,8 @@ class UsersController < ApplicationController
       if params[:user][:password]
         error_response = @user.update(values: { password: params[:user][:password] })
       else
-        user_roles = @user.role
-
-        if @user.admin? != (params[:user][:admin].to_i == 1)
-          user_roles = update_role(@user)
-        end
+        # Role chosen by an administrator in the Role menu of the form (only shown to administrators)
+        user_roles = update_role(@user, params[:user][:main_role].to_s)
 
         @user.update_from_params(user_params.merge!(role: user_roles))
         error_response = @user.update
@@ -209,7 +209,7 @@ class UsersController < ApplicationController
     params[:user]["orcidId"] = extract_id_from_url(params[:user]["orcidId"], 'orcid.org')
     params[:user]["githubId"] = extract_id_from_url(params[:user]["githubId"], 'github.com')
     p = params.require(:user).permit(:firstName, :lastName, :username, :orcidId, :githubId, :email, :email_confirmation, :password,
-                                     :password_confirmation, :register_mail_list, :admin, :terms_and_conditions)
+                                     :password_confirmation, :register_mail_list, :terms_and_conditions)
     p.to_h
   end
 
@@ -298,16 +298,13 @@ class UsersController < ApplicationController
     return errors
   end
 
-  def update_role(user)
-    user_roles = user.role
+  # The role chosen by an administrator (Librarian, Curator or Administrator) replaces the current one;
+  # the other roles of the account (e.g. DEVELOPER) are kept. Unchanged when the user is not an administrator.
+  def update_role(user, main_role)
+    user_roles = Array(user.role)
 
-    if session[:user].admin?
-      user_roles = user_roles.dup
-      if user.admin?
-        user_roles.map!{ |role| role == "ADMINISTRATOR" ? "LIBRARIAN" : role}
-      else
-        user_roles.map!{ |role| role == "LIBRARIAN" ? "ADMINISTRATOR" : role}
-      end
+    if session[:user].admin? && MAIN_ROLES.include?(main_role)
+      user_roles = [main_role] + (user_roles - MAIN_ROLES)
     end
 
     user_roles

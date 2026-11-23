@@ -1917,6 +1917,11 @@ en:
       last_name: Last name
       new_password: New password
       orcid_id: ORCID
+      role: Role
+      roles:
+        librarian: Librarian
+        curator: Curator
+        administrator: Administrator
       user_to_admin: Are you sure you want to make this user an admin?
       username: Username
     error_saving_custom_ontologies: Error saving Custom Ontologies, please try again

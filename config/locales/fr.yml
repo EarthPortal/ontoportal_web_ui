@@ -1956,6 +1956,11 @@ fr:
       last_name: Nom
       new_password: Nouveau mot de passe
       orcid_id: ORCID
+      role: Rôle
+      roles:
+        librarian: Librarian
+        curator: Curateur
+        administrator: Administrateur
       user_to_admin: Êtes-vous sûr de vouloir promouvoir cet utilisateur comme administrateur
         ?
       username: Nom d'utilisateur
