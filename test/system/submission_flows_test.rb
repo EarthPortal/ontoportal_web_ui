@@ -187,9 +187,8 @@ class SubmissionFlowsTest < ApplicationSystemTestCase
     open_dropdown "#dates"
     assert_date submission_2.released
     assert_date submission_2.valid
-    submission_2.curatedOn.each do |date|
-      assert_date date
-    end
+    # the curation date is not typed: it is the date of the save of the Edit page (CurationRecorder)
+    assert_date Date.today.to_s
     assert_date submission_2.creationDate
     assert_date submission_2.modificationDate
 
@@ -467,10 +466,8 @@ class SubmissionFlowsTest < ApplicationSystemTestCase
 
     date_picker_fill_in 'submission[released]', submission.released
     date_picker_fill_in 'submission[valid]', submission.valid
-    list_inputs "#submissioncuratedOn_from_group_input",
-                "submission[curatedOn]", submission.curatedOn do |selector, value, index|
-      date_picker_fill_in selector, value, index + 1
-    end
+    # Curation date: greyed, filled in by the system at the save (CurationRecorder)
+    assert_selector 'input[name="submission[curatedOn]"][disabled]'
 
     date_picker_fill_in 'submission[creationDate]', submission.creationDate
     date_picker_fill_in 'submission[modificationDate]', submission.modificationDate
@@ -502,7 +499,10 @@ class SubmissionFlowsTest < ApplicationSystemTestCase
     agent1 = fixtures(:agents)[:agent1]
     agent2 = fixtures(:agents)[:agent2]
 
-    [:hasCreator, :hasContributor, :curatedBy].each do |key|
+    # Curator: greyed, the person who saves the Edit page (CurationRecorder)
+    assert_selector 'input[name="submission[curatedBy]"][disabled]'
+
+    [:hasCreator, :hasContributor].each do |key|
       list_inputs "#submission#{key}_from_group_input", "submission[#{key}]", [agent1, agent2] do |selector, value, index|
         element = all("turbo-frame:last-of-type").last
         within element do
