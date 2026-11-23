@@ -128,6 +128,7 @@ class OntologiesController < ApplicationController
 
   def create
     @is_update_ontology = false
+    set_deposit_modification_date
 
     # Fields required by the interface only: refuse before creating anything
     interface_errors = interface_required_errors(params[:submission], params[:ontology])
@@ -176,7 +177,6 @@ class OntologiesController < ApplicationController
     @submission = LinkedData::Client::Models::OntologySubmission.new
     @submission.hasOntologyLanguage = 'OWL'
     @submission.released = Date.today.to_s
-    @submission.modificationDate = Date.today.to_s
     @submission.status = 'production'
     @ontologies = LinkedData::Client::Models::Ontology.all(include: 'acronym', include_views: true, display_links: false, display_context: false)
     @categories = LinkedData::Client::Models::Category.all

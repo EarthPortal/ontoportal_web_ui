@@ -48,8 +48,7 @@
                   - unless @is_update_ontology
                     .upload-ontology-input-field-container
                       = attribute_input('released',  label: t("ontologies.date_of_original_creation"),  max_date: Date.today)
-                  .upload-ontology-input-field-container
-                    = attribute_input('modificationDate', label: t("ontologies.modification_date"), max_date: Date.today)
+                  -# No modification date here: the date of the deposit, set when the form is saved (set_deposit_modification_date)
                   .upload-ontology-contact{id: "submissioncontact_from_group_input"}
                     = contact_input(show_help: false)
                   .upload-ontology-input-field-container.mt-3{id: "submissionhasCreator_from_group_input"}

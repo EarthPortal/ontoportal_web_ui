@@ -26,8 +26,6 @@ class SubmissionsController < ApplicationController
     @ontology = LinkedData::Client::Models::Ontology.find_by_acronym(params[:ontology_id]).first
     @submission = @ontology.explore.latest_submission || LinkedData::Client::Models::OntologySubmission.new
     @submission.id = nil
-    # A new version is a new modification: today by default, not the date of the previous version
-    @submission.modificationDate = Date.today.to_s
     @categories = LinkedData::Client::Models::Category.all
     @groups = LinkedData::Client::Models::Group.all
     @user_select_list = LinkedData::Client::Models::User.all.map {|u| [u.username, u.id]}
@@ -39,6 +37,8 @@ class SubmissionsController < ApplicationController
   # Called when form to "Add submission" is submitted
   def create
     @is_update_ontology = true
+    # A new version is a new modification: the date of the deposit, not the date of the previous version
+    set_deposit_modification_date
 
     # Fields required by the interface only: refuse before saving anything (the ontology fields of page 1 included)
     interface_errors = interface_required_errors(params[:submission], params[:ontology])
