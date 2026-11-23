@@ -16,6 +16,10 @@
         - if !session[:user].nil? && session[:user].admin?
           %li.nav-ul-li
             %a{href: "/admin", class: ("active" if current_page?("/admin"))} Admin
+        - elsif current_user_curator?
+          -# Curators: the Curation page (the Curation tab of the administration console), in place of Admin
+          %li.nav-ul-li
+            %a{href: curation_page_path, class: ("active" if current_page?(curation_page_path))}= t('admin.index.curation')
       .right-nav-items{style: "margin-left: 10px;"} 
         - if current_page?('/')
           .nav-search-container{style:'visibility: hidden'}

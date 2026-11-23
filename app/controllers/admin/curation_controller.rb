@@ -1,9 +1,10 @@
 # Curation tab of the administration console: every ontology (views, metadata-only and private ones included)
 # with the date of its first submission, the fields of its latest submission that are still empty,
 # and its current curation (curatedBy / curatedOn)
+# Also used by the curators (CURATOR role): the Curation page of the top bar shows the same content (#page)
 class Admin::CurationController < ApplicationController
   layout :determine_layout
-  before_action :authorize_admin
+  before_action :authorize_curation
 
   ONTOLOGY_ATTRIBUTES = %w[acronym name viewingRestriction].freeze
 
@@ -42,6 +43,13 @@ class Admin::CurationController < ApplicationController
       empty: @rows.sum { |row| row[:empty].to_i },
       curated: @rows.count { |row| row[:curated] }
     }
+  end
+
+  # Curation page of the curators (link "Curation" of the top bar): the same content as the Curation tab
+  # of the administration console, as a full page
+  def page
+    index
+    render 'page'
   end
 
   # "Ask the author" window, step 1: the empty fields of the submission opened by the Curate button

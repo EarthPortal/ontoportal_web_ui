@@ -129,6 +129,9 @@ Rails.application.routes.draw do
     end
   end
 
+  # Curation page of the curators (link "Curation" of the top bar): the Curation tab of the administration console as a page
+  get 'curation', to: 'admin/curation#page', as: :curation_page
+
   post 'admin/clearcache', to: 'admin#clearcache'
   post 'admin/resetcache', to: 'admin#resetcache'
   post 'admin/clear_goo_cache', to: 'admin#clear_goo_cache'

@@ -104,6 +104,11 @@ module ApplicationHelper
     session[:user] && session[:user].admin?
   end
 
+  # Curator (CURATOR role): sees the "Curation" link of the top bar
+  def current_user_curator?
+    Array(session[:user]&.role).include?('CURATOR')
+  end
+
   def child_id(child)
     child.id.to_s.split('/').last
   end
