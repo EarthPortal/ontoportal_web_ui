@@ -647,6 +647,30 @@ module SubmissionInputsHelper
     PORTAL_GENERATED_ATTRIBUTES.include?(attr_key.to_s) && !current_user_admin?
   end
 
+  # Curation: a curator who does not administer the ontology can not change its administrators, its visibility and
+  # the location of its file (the API refuses it too: curation_protected attributes of ontologies_linked_data).
+  # These fields are shown greyed with their value, and not sent by the Edit form (SubmissionsHelper#render_submission_inputs)
+  def curator_locked?(ontology = @ontology)
+    return false if current_user_admin? || !current_user_curator?
+
+    Array(ontology&.administeredBy).map(&:to_s).exclude?(session[:user]&.id.to_s)
+  end
+
+  def curator_locked_input(name, label, value)
+    text_input(name: name, label: label, value: value, disabled: true, help: t('submission_inputs.curator_locked_help'))
+  end
+
+  # The location of the file, as the choices of the location input of the Edit page
+  def curator_locked_location
+    if summary_only?
+      t('ontologies.metadata_only')
+    elsif ontology_pull_location?
+      "#{t('ontologies.load_from_url')}: #{@submission.pullLocation}"
+    else
+      t('ontologies.upload_local_file')
+    end
+  end
+
   # Curation date and Curator, greyed for everybody (administrators too): the system fills them in at each save
   # of the Edit page (CurationRecorder). disabled: the browser does not send the field (the server ignores it anyway).
   # The date is shown without its time: a date input shows an empty box for "2026-11-20T00:00:00.000+00:00".
