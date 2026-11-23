@@ -69,6 +69,23 @@ class SubmissionFlowsTest < ApplicationSystemTestCase
       assert_text group.name
     end
 
+    # the modification date is not asked in the submission form (fill_ontology): it is the date of the deposit
+    open_dropdown "#dates"
+    assert_date Date.today.to_s
+  end
+
+  test "submit a new ontology without category is refused" do
+    visit new_ontology_url
+
+    assert_text 'Submit new ontology', wait: 10
+
+    @new_ontology[:hasDomain] = []
+    fill_ontology(@new_ontology, @new_submission)
+
+    # the form comes back with the error and nothing is created
+    assert_text 'Errors in fields Categories'
+    assert_text 'Submit new ontology'
+    refute_selector 'h2', text: 'Ontology submitted successfully!'
   end
 
   test "click on button edit submission and change all the fields and save" do
@@ -334,7 +351,8 @@ class SubmissionFlowsTest < ApplicationSystemTestCase
 
     click_button 'Next'
 
-    assert_equal Date.parse(existent_submission.modificationDate).to_s, find('[name="submission[modificationDate]"]', visible: false).value
+    # a new version is a new modification: the modification date is not asked, it is the date of the deposit
+    refute_selector '[name="submission[modificationDate]"]', visible: :all
     assert_equal existent_submission.contact.map(&:values).flatten.sort, all('[name^="submission[contact]"]').map(&:value).sort
 
     # fill new version metadata
@@ -379,7 +397,7 @@ class SubmissionFlowsTest < ApplicationSystemTestCase
     end
 
     open_dropdown "#dates"
-    assert_date submission_2.modificationDate
+    assert_date Date.today.to_s # the date of the deposit of the new version
     assert_date existent_submission.released
 
     refute_text 'Validity date'
@@ -630,6 +648,7 @@ class SubmissionFlowsTest < ApplicationSystemTestCase
       end
       tom_select 'submission[hasOntologyLanguage]', new_submission.hasOntologyLanguage
       tom_select 'submission[status]', new_submission.status
+      tom_select 'submission[hasLicense]', 'CC Attribution 3.0'
 
       choose 'submission[isRemote]', option: new_submission.isRemote
       fill_in 'submission[pullLocation]', with: new_submission.pullLocation
@@ -637,13 +656,18 @@ class SubmissionFlowsTest < ApplicationSystemTestCase
       click_button 'Next'
 
       # Page 3
-      if add_submission
-        date_picker_fill_in 'submission[modificationDate]', new_submission.modificationDate
-      else
-        date_picker_fill_in 'submission[released]', new_submission.released
-      end
+      date_picker_fill_in 'submission[released]', new_submission.released unless add_submission
+      # not asked: the date of the deposit (SubmissionUpdater#set_deposit_modification_date)
+      refute_selector '[name="submission[modificationDate]"]', visible: :all
 
       list_inputs "#submissioncontact_from_group_input", "submission[contact]", new_submission.contact
+
+      list_inputs "#submissionhasCreator_from_group_input", "submission[hasCreator]", [fixtures(:agents)[:agent1]] do |selector, value, index|
+        within all("turbo-frame:last-of-type").last do
+          agent_id = agent_search(value.name)
+          agent_fill(value, parent_id: agent_id) if agent_id
+        end
+      end
 
       click_button 'Finish'
     end

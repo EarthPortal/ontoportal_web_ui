@@ -1751,6 +1751,10 @@ en:
     ontology_umls_language_link: by the UMLS2RDF tool.
     ontology_xlsx_language_help: 'Crop Ontology Template (TDv5). The file must contain a sheet named "Template for submission" with Variable, Trait, Method, and Scale columns. The uploaded TDv5 template will be automatically converted to OWL by %{portal_name}.'
     ontology_view_of_another_ontology: Is this ontology a view of another ontology?
+    portal_generated_help: Filled in automatically by %{portal_name}. Only the %{portal_name} team can change it.
+    recommended: Recommended
+    recommended_help: Recommended by the metadata guidelines. Filling it in improves the description of the ontology.
+    recommended_count: Empty recommended fields in this tab
     validators: Validators
     version_help: For more information on how to encode versioning information in
       an ontology, see %{link}
@@ -1788,6 +1792,11 @@ en:
       sort_by_submitted_date: Submitted date
     go_to_api: Go to API
     id: ID
+    interface_required:
+      hasCreator: At least one creator is required
+      hasDomain: At least one category is required
+      hasLicense: License is required
+      modificationDate: Modification date is required
     modified: Modified
     no_submissions_for_ontology: 'No submissions for ontology: %{ontology}'
     save_button: Save

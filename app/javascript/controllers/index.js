@@ -129,3 +129,6 @@ application.register("password-toggle", PasswordToggleController)
 
 import RorSearchController from "./ror_search_controller.js"
 application.register("ror-search", RorSearchController)
+
+import RecommendedBadgesController from "./recommended_badges_controller.js"
+application.register("recommended-badges", RecommendedBadgesController)
