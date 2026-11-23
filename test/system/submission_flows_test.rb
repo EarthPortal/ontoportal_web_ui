@@ -69,22 +69,9 @@ class SubmissionFlowsTest < ApplicationSystemTestCase
       assert_text group.name
     end
 
+    # the modification date is not asked in the submission form (fill_ontology): it is the date of the deposit
     open_dropdown "#dates"
-    assert_date @new_submission.modificationDate
-  end
-
-  test "submit a new ontology without modification date is refused" do
-    visit new_ontology_url
-
-    assert_text 'Submit new ontology', wait: 10
-
-    @new_submission[:modificationDate] = ''
-    fill_ontology(@new_ontology, @new_submission)
-
-    # the form comes back with the error and nothing is created
-    assert_text 'Errors in fields Modification date'
-    assert_text 'Submit new ontology'
-    refute_selector 'h2', text: 'Ontology submitted successfully!'
+    assert_date Date.today.to_s
   end
 
   test "submit a new ontology without category is refused" do
@@ -364,8 +351,8 @@ class SubmissionFlowsTest < ApplicationSystemTestCase
 
     click_button 'Next'
 
-    # a new version is a new modification: today by default, not the date of the previous version
-    assert_equal Date.today.to_s, find('[name="submission[modificationDate]"]', visible: false).value
+    # a new version is a new modification: the modification date is not asked, it is the date of the deposit
+    refute_selector '[name="submission[modificationDate]"]', visible: :all
     assert_equal existent_submission.contact.map(&:values).flatten.sort, all('[name^="submission[contact]"]').map(&:value).sort
 
     # fill new version metadata
@@ -410,7 +397,7 @@ class SubmissionFlowsTest < ApplicationSystemTestCase
     end
 
     open_dropdown "#dates"
-    assert_date submission_2.modificationDate
+    assert_date Date.today.to_s # the date of the deposit of the new version
     assert_date existent_submission.released
 
     refute_text 'Validity date'
@@ -670,7 +657,8 @@ class SubmissionFlowsTest < ApplicationSystemTestCase
 
       # Page 3
       date_picker_fill_in 'submission[released]', new_submission.released unless add_submission
-      date_picker_fill_in 'submission[modificationDate]', new_submission.modificationDate
+      # not asked: the date of the deposit (SubmissionUpdater#set_deposit_modification_date)
+      refute_selector '[name="submission[modificationDate]"]', visible: :all
 
       list_inputs "#submissioncontact_from_group_input", "submission[contact]", new_submission.contact
 

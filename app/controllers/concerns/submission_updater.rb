@@ -36,6 +36,12 @@ module SubmissionUpdater
   # The API does not require them, so the ontologies saved before this rule stay valid.
   # Both checks return the errors in the same shape as the API ones, e.g. { hasLicense: { existence: '...' } }, or {}
 
+  # Submission form (new ontology or new version): the modification date is not asked to the author,
+  # it is the date of the deposit (the Edit page still shows it)
+  def set_deposit_modification_date
+    params[:submission][:modificationDate] = Date.today.to_s if params[:submission]
+  end
+
   # Submission form (new ontology or new version): each of these fields must be filled
   def interface_required_errors(submission_values, ontology_values)
     interface_required_values(submission_values, ontology_values).each_with_object({}) do |(attr, value), errors|
