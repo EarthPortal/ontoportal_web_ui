@@ -32,8 +32,16 @@ export default class extends Controller {
         const values = this.#selectedOntologies(this.ontologyTargets);
         for (const value of values) {
             tsControl.value = value;
-            tsControl.dispatchEvent(new Event('input', { bubbles: true }));
-            select.parentNode.querySelector(`div[data-value="${value}"]`).click();
+            tsControl.dispatchEvent(new Event('input', {bubbles: true}));
+            let selectorVal = select.parentNode.querySelector(`div[data-value="${value}"]`)
+            if (selectorVal) {
+                selectorVal.click();
+            } else {
+                select.tomselect.addOption({value: value.name, text: value.name});
+                select.tomselect.addItem(value.name)
+                selectorVal = select.parentNode.querySelector(`div[data-value="${value.name}"]`)
+                selectorVal.click();
+            }
         }
         this.exitTarget.click();
     }
@@ -47,7 +55,10 @@ export default class extends Controller {
     #selectedOntologies(ontologies) {
         return ontologies
             .filter(ontology => ontology.querySelector('input').checked)
-            .map(ontology => ontology.querySelector('input').name);
+            .map(ontology => {
+                const input = ontology.querySelector('input');
+                return {name: input.name, value: input.value};
+            });
     }
     
     #updateTableNumbers() {
