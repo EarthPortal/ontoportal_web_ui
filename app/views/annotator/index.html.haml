@@ -25,7 +25,13 @@
                 = render(ChipsComponent.new(name: 'expand_mappings', label: t('annotator.include_mappings'), checked: params[:expand_mappings]))
                 = render(ChipsComponent.new(name: 'exclude_numbers', label: t('annotator.exclude_numbers'), checked: params[:exclude_numbers]))
                 = render(ChipsComponent.new(name: 'exclude_synonyms', label: t('annotator.exclude_synonyms'), checked: params[:exclude_synonyms]))
-              
+
+            - if federation_enabled?
+              .filter-container
+                .title
+                  = t('federation.results_from_external_portals')
+                .field.d-flex
+                  = federation_input_chips(name: "portals[]")
             .select-ontologies
               = ontologies_selector(id:'annotator_page_ontologies', label: t('annotator.select_ontologies') ,name: 'ontologies[]', selected: params[:ontologies]&.split(','))
             = show_advanced_options_button(text: t('show_advanced_options'), init: @advanced_options_open)
@@ -35,26 +41,24 @@
             = render Input::SelectComponent.new(label: t('annotator.select_umls_sementic_types'), id: 'umls_semantic_types', name: 'semantic_types[]', value: @semantic_types_for_select, multiple: true, selected: params[:semantic_types]&.split(','))
             = render Input::SelectComponent.new(label: t('annotator.select_umls_sementic_groups'), id: 'umls_semantic_groups', name: 'semantic_groups[]', value: @semantic_groups_for_select, multiple: true, selected: params[:semantic_groups]&.split(','))
             = render Input::SelectComponent.new(label: t('annotator.include_ancestors'), id: 'ancestors_level', name: 'class_hierarchy_max_level', value: @ancestors_levels, selected: params[:class_hierarchy_max_level])
-          .filters_line
-            - include_score_helper = 'Score annotations following previous NCBO 2009 measure (old) or Score annotations following C-Value measure (cvalue) or Score annotations following C-Value measure with hierarchy expansion (cvalueh).'
-
-            = render Input::SelectComponent.new(label: t('annotator.include_score'), id: 'include_score', name: 'score', value: @include_score, tooltip: include_score_helper, selected: params[:score])
-            = render Input::NumberComponent.new(label: t('annotator.score_threshold'), name: "score_threshold", value: params[:score_threshold] || 0, tooltip: 'Specify minimum score value for annotations.')
-            = render Input::NumberComponent.new(label: t('annotator.confidence_threshold'), name: 'confidence_threshold', value: params[:confidence_threshold] || 0, tooltip: 'Specify the minimum position in the score distribution (between 1 and 100).')
-          .chips
-            = render(ChipsComponent.new(name: 'fast_context', label: t('annotator.fastcontext'), checked: params[:fast_context]))
-            = render(ChipsComponent.new(name: 'lemmatize', label: t('annotator.lemmatize'), checked: params[:lemmatize]))
+          = render partial: 'annotator/annotator_plus_inputs'
         .annotator-page-button
           = render Buttons::RegularButtonComponent.new(id:'annotator', value: t('annotator.get_annotation'), variant: "primary", type: 'submit')
+    = alert_message_if_federation_error(@federation_errors) { @federation_errors.join('<br/>').html_safe }
+
     - if @results && @results.empty?
       = empty_state(text: t('no_result_was_found'))
+
     - unless @results.nil? || @results.empty?
       .annotator-page-results
         .cont
           .title
             Annotations
-          .details
-            = "#{t('annotator.total_results')} #{@results.length} (direct: #{@direct_results} / parents: #{@parents_results})"
+          .details.d-flex.align-items-end.flex-column
+            %div
+              = "#{t('annotator.total_results')} #{@results.length} (direct: #{@direct_results} / parents: #{@parents_results})".html_safe
+            %div
+              = "#{request_portals_names(@federation_counts, @time)}".html_safe
         .annotator-table-container
           = render TableComponent.new(id: 'annotator-table', borderless: true, layout_fixed: false, outline: true, sort_column: '0', no_init_sort: true) do |t|
             - t.header do |h|
@@ -63,20 +67,28 @@
                   = header
             - @results.each do |result|
               - t.row do |r|
+                - r.td(width: "40%") do
+                  = annotator_class_label_fetcher(result[:class], result[:ontology])
                 - r.td do
-                  .class
-                    = link_to result[:class][:text], result[:class][:link]
-                - r.td do
-                  = link_to result[:ontology][:text], result[:ontology][:link]
+                  %div.d-flex.flex-column
+                    - Array(result[:ontologies]).each do |ontology|
+                      = link_to ontoportal_ui_link(ontology[:id]) do
+                        %div.my-1
+                          - if internal_ontology?(ontology[:id])
+                            = ontology[:text]
+                          - else
+                            = annotator_external_ontology(ontology)
                 - r.td do
                   - result[:context].each do |context|
                     - if !context[:child]
                       .annotation-context{'data-from': context[:from], 'data-to': context[:to], 'data-annotator-target': 'context'}
                     - else
-                      .annotation-parent
+                      .annotation-parent.align-items-center.d-flex
+                        - cls = context[:child]
                         .text
-                          Parent of: 
-                        = link_to context[:child][:text], context[:child][:link]
+                          Parent of:
+                        %span
+                          = get_link_for_cls_ajax(cls[:id], cls[:ont_acronym], '_blank')
                         .gray
                           |
                         .text
@@ -94,7 +106,7 @@
                     = result[:certainty]
                 - if params[:score] && !params[:score].eql?('none')
                   - r.td do
-                    = result[:score] 
+                    = result[:score]
         .annotator-bottom-actions
           .json-button
             - json_href, json_target = api_button_link_and_target(@json_link)

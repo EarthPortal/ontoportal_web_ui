@@ -8,7 +8,7 @@
         .ontologies
             - @ontologies.each do |ontology|
                 .ontology{'data-ontologies-selector-target': 'ontology'}
-                    = chips_component(id: "selector[#{ontology.acronym}]",value: ontology.acronym, label: "#{ontology.name} (#{ontology.acronym})", name: ontology.acronym)
+                    = ontology_select_result(ontology)
         .horizontal-line                    
         .save-cancel-buttons
             = cancel_button_component(class_name: 'button', id:'cancel-selector', value: t('ontologies_selector.cancel'), data: {action: "click->turbo-modal#hide", 'ontologies-selector-target': 'exit'})

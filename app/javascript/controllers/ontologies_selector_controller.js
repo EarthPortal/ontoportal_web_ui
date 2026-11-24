@@ -1,17 +1,19 @@
 import {Controller} from "@hotwired/stimulus"
 
 export default class extends Controller {
-    static targets = ['submit', 'ontology', 'table', 'exit']
+    static targets = ['ontology', 'table', 'exit', 'form', 'frame']
     static values = {
         id: String,
         selectAll: String,
         unselectAll: String
       }
-    input(){
-        this.submitTarget.click()
+    input(event){
+        this.change(event)
     }
     change(event){
-        this.submitTarget.click()
+        const formData = new FormData(this.formTarget);
+        const url = this.frameTarget.getAttribute('src').split('?')[0];
+        this.frameTarget.src = url + '?' + new URLSearchParams(formData).toString();
         this.#updateTableNumbers(event)
     }
     selectall(event) {
