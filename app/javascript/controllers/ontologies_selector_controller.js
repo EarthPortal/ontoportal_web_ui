@@ -1,17 +1,19 @@
 import {Controller} from "@hotwired/stimulus"
 
 export default class extends Controller {
-    static targets = ['submit', 'ontology', 'table', 'exit']
+    static targets = ['ontology', 'table', 'exit', 'form', 'frame']
     static values = {
         id: String,
         selectAll: String,
         unselectAll: String
       }
-    input(){
-        this.submitTarget.click()
+    input(event){
+        this.change(event)
     }
     change(event){
-        this.submitTarget.click()
+        const formData = new FormData(this.formTarget);
+        const url = this.frameTarget.getAttribute('src').split('?')[0];
+        this.frameTarget.src = url + '?' + new URLSearchParams(formData).toString();
         this.#updateTableNumbers(event)
     }
     selectall(event) {
@@ -30,8 +32,16 @@ export default class extends Controller {
         const values = this.#selectedOntologies(this.ontologyTargets);
         for (const value of values) {
             tsControl.value = value;
-            tsControl.dispatchEvent(new Event('input', { bubbles: true }));
-            select.parentNode.querySelector(`div[data-value="${value}"]`).click();
+            tsControl.dispatchEvent(new Event('input', {bubbles: true}));
+            let selectorVal = select.parentNode.querySelector(`div[data-value="${value}"]`)
+            if (selectorVal) {
+                selectorVal.click();
+            } else {
+                select.tomselect.addOption({value: value.name, text: value.name});
+                select.tomselect.addItem(value.name)
+                selectorVal = select.parentNode.querySelector(`div[data-value="${value.name}"]`)
+                selectorVal.click();
+            }
         }
         this.exitTarget.click();
     }
@@ -45,7 +55,10 @@ export default class extends Controller {
     #selectedOntologies(ontologies) {
         return ontologies
             .filter(ontology => ontology.querySelector('input').checked)
-            .map(ontology => ontology.querySelector('input').name);
+            .map(ontology => {
+                const input = ontology.querySelector('input');
+                return {name: input.name, value: input.value};
+            });
     }
     
     #updateTableNumbers() {

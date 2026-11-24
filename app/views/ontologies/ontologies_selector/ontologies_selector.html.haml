@@ -1,6 +1,6 @@
 = render_in_modal do
-    = form_tag('/ontologies_selector/results', method: :get, novalidate: true, data: {turbo_frame: 'selector_results_frame'}) do
-        .d-flex.align-items-center.justify-content-center{'data-controller': 'ontologies-selector', 'data-ontologies-selector-id-value': @select_id, 'data-ontologies-selector-select-all-value': t('ontologies_selector.select_all'), 'data-ontologies-selector-unselect-all-value': t('ontologies_selector.unselect_all')}
+    .d-flex.align-items-center.justify-content-center{'data-controller': 'ontologies-selector', 'data-ontologies-selector-id-value': @select_id, 'data-ontologies-selector-select-all-value': t('ontologies_selector.select_all'), 'data-ontologies-selector-unselect-all-value': t('ontologies_selector.unselect_all')}
+        = form_tag('/ontologies_selector/results', method: :get, novalidate: true, data: {turbo_frame: 'selector_results_frame', 'ontologies-selector-target': 'form'}) do
             .ontologies-selector-container
                 .ontologies-selector-input
                     = text_input(label: '', placeholder: t('ontologies_selector.search_hint'), name: 'input', data: {action: 'input->ontologies-selector#input'})
@@ -22,7 +22,7 @@
                             = c.item_content do
                                 .chips.categories
                                     - @filters[:categories][0].each do |item|
-                                        = chips_component(label: item.acronym, id: item.acronym, value: item.id, name: 'categories[]', tooltip: item.name)
+                                        = chips_component(label: item.acronym, id: item.acronym, value: item.acronym, name: 'categories[]', tooltip: item.name)
                             = c.item(title: t('ontologies_selector.tabs_title.groups'))
                             = c.item_content do
                                 .chips.groups
@@ -53,8 +53,13 @@
                                 .chips
                                     - @filters[:isOfType][0].each do |item|
                                         = chips_component(label: item["name"],id: item["acronym"], name: 'isOfType[]', value: item["id"])
-                %input.d-none{type: 'submit', 'data-ontologies-selector-target': 'submit'}
-                = render TurboFrameComponent.new(id: 'selector_results_frame', src: '/ontologies_selector/results') do |container|
+
+                            - if federation_enabled?
+                                = c.item(title: t('federation.results_from_external_portals'))
+                                = c.item_content do
+                                    .field.d-flex.chips
+                                        = federation_input_chips(name: "portals[]")
+                = render TurboFrameComponent.new(id: 'selector_results_frame', src: "/ontologies_selector/results?portals=#{request_portals.join(',')}", data: {'ontologies-selector-target': 'frame'}) do |container|
                     - container.loader do
                         = render LoaderComponent.new(type: 'pulsing') 
                         
