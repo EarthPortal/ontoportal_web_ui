@@ -89,9 +89,10 @@ class SubmissionsController < ApplicationController
     if @selected_attributes.empty?
       @categories_order = ['general', 'description', 'dates', 'licensing', 'agents', 'links', 'media', 'community', 'usage' ,'relations', 'content','methodology', 'object description properties']
       @category_attributes = category_attributes
-      # values of the Recommended fields, to count the empty ones next to each tab (SubmissionInputsHelper#recommended_empty_count)
-      @recommended_values = recommended_values_submission(params[:id])
     end
+    # values of the fields of the Edit tabs: the empty Recommended ones are counted next to each tab
+    # (SubmissionInputsHelper#recommended_empty_count), and all of them in the completeness bar (completeness_percent)
+    @recommended_values = recommended_values_submission(params[:id])
     render 'submissions/edit', layout: params[:container_id] ?  nil : 'ontology'
   end
 
@@ -194,9 +195,12 @@ class SubmissionsController < ApplicationController
 
   private
 
-  # The submission with only the Recommended fields, or nil if it can not be read (then no count is shown)
+  # The submission with only the fields of the Edit tabs (Recommended ones included), or nil if it can not be read
+  # (then no count and no completeness bar are shown)
   def recommended_values_submission(submission_id)
-    submission = @ontology.explore.submissions({ display: SubmissionInputsHelper::RECOMMENDED_ATTRIBUTES.join(',') }, submission_id)
+    attributes = helpers.completeness_metadata.map { |attr_metadata| attr_metadata['attribute'].to_s } |
+                 SubmissionInputsHelper::RECOMMENDED_ATTRIBUTES
+    submission = @ontology.explore.submissions({ display: attributes.join(',') }, submission_id)
     submission.nil? || response_error?(submission) ? nil : submission
   rescue StandardError
     nil

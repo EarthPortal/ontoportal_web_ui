@@ -1818,6 +1818,7 @@ en:
     portal_generated_help: Filled in automatically by %{portal_name}. Only the %{portal_name} team can change it.
     curation_automatic_help: 'Filled in automatically at each save of the Edit page: the date of the save and the person who saved.'
     curator_locked_help: Only the administrators of the ontology can change this field.
+    completeness: Metadata completeness
     recommended: Recommended
     recommended_help: Recommended by the metadata guidelines. Filling it in improves the description of the ontology.
     recommended_count: Empty recommended fields in this tab

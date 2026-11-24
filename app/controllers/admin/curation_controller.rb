@@ -8,15 +8,6 @@ class Admin::CurationController < ApplicationController
 
   ONTOLOGY_ATTRIBUTES = %w[acronym name viewingRestriction].freeze
 
-  # Same tabs, in the same order, as the Edit page (SubmissionsController#edit)
-  EDIT_TABS = ['general', 'description', 'dates', 'licensing', 'agents', 'links', 'media', 'community', 'usage',
-               'relations', 'content', 'methodology', 'object description properties'].freeze
-  # Never asked to the authors: the curation fields (filled in by the system, CurationRecorder), the portal links
-  # (greyed for the authors), and the fields the Edit page changes with other inputs
-  # (pullLocation: the location of the file, hasDomain: the categories of the ontology)
-  NOT_ASKED_ATTRIBUTES = (CurationRecorder::CURATION_ATTRIBUTES + SubmissionInputsHelper::PORTAL_GENERATED_ATTRIBUTES +
-                          %w[pullLocation hasDomain]).freeze
-
   def index
     ontologies = LinkedData::Client::Models::Ontology.all(include: ONTOLOGY_ATTRIBUTES.join(','), also_include_views: true,
                                                           display_links: false, display_context: false)
@@ -157,11 +148,9 @@ class Admin::CurationController < ApplicationController
   end
 
   # The fields of the Edit tabs that can be asked to the authors: the list of the "Ask the author" window,
-  # also counted in the "Empty fields" column of the table
+  # also counted in the "Empty fields" column of the table and in the completeness bar of the Edit page
   def askable_metadata
-    @askable_metadata ||= helpers.submission_metadata.select do |metadata|
-      EDIT_TABS.include?(metadata['category']) && !NOT_ASKED_ATTRIBUTES.include?(metadata['attribute'].to_s)
-    end
+    @askable_metadata ||= helpers.completeness_metadata
   end
 
   # Empty: same rule as the Recommended badges of the Edit page (SubmissionInputsHelper#metadata_value_blank?)
@@ -184,7 +173,8 @@ class Admin::CurationController < ApplicationController
       { attribute: attribute, tab: metadata['category'], label: metadata['label'].presence || attribute.humanize,
         recommended: SubmissionInputsHelper::RECOMMENDED_ATTRIBUTES.include?(attribute) }
     end
-    EDIT_TABS.map { |tab| [tab, fields.select { |field| field[:tab] == tab }] }.reject { |_tab, list| list.empty? }
+    SubmissionInputsHelper::EDIT_TABS.map { |tab| [tab, fields.select { |field| field[:tab] == tab }] }
+                                     .reject { |_tab, list| list.empty? }
   end
 
   # { acronym => date of the first submission of the ontology }: the Submission date (creationDate) of its oldest

@@ -1,0 +1,7 @@
+-# Completeness of the metadata in the Edit page: the percentage of the fields of the Edit tabs that are filled
+-# (SubmissionInputsHelper#completeness_percent), with the progress bar of EarthPortal colored by level (edit-ontology.scss)
+- percent = completeness_percent(@recommended_values)
+- if percent
+  %div.completeness-bar.mb-3{class: "completeness-#{completeness_level(percent)}"}
+    %div.edit-ontology-desc.mb-1= t('submission_inputs.completeness')
+    = render Display::ProgressBarComponent.new(progress: percent.to_s)

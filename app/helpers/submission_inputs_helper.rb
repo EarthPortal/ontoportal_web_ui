@@ -54,6 +54,16 @@ module SubmissionInputsHelper
     usedOntologyEngineeringTool accrualMethod accrualPeriodicity accrualPolicy competencyQuestion
   ].freeze
 
+  # The tabs of the Edit page, in their order (SubmissionsController#edit)
+  EDIT_TABS = ['general', 'description', 'dates', 'licensing', 'agents', 'links', 'media', 'community', 'usage',
+               'relations', 'content', 'methodology', 'object description properties'].freeze
+  # Fields of the Edit tabs that are not counted in the completeness (completeness_metadata) and never asked to the
+  # authors (Ask window of the Curation tab): the curation fields (filled in by the system, CurationRecorder),
+  # the portal links (greyed for the authors), and the fields the Edit page changes with other inputs
+  # (pullLocation: the location of the file, hasDomain: the categories of the ontology)
+  NOT_COUNTED_ATTRIBUTES = (CurationRecorder::CURATION_ATTRIBUTES + PORTAL_GENERATED_ATTRIBUTES +
+                            %w[pullLocation hasDomain]).freeze
+
   class SubmissionMetadataInput
     include MetadataHelper, ApplicationHelper
 
@@ -660,6 +670,41 @@ module SubmissionInputsHelper
     text_input(name: name, label: label, value: value, disabled: true, help: t('submission_inputs.curator_locked_help'))
   end
 
+  # Completeness of the metadata: the fields of the Edit tabs filled by the authors (all of them: required, Recommended
+  # or optional), without NOT_COUNTED_ATTRIBUTES. Same fields as the "Empty fields" column of the Curation tab.
+  def completeness_metadata(metadata = submission_metadata)
+    metadata.select do |attr_metadata|
+      EDIT_TABS.include?(attr_metadata['category']) && !NOT_COUNTED_ATTRIBUTES.include?(attr_metadata['attribute'].to_s)
+    end
+  end
+
+  # Percentage (0-100) of these fields that are filled in the submission; nil when its values could not be read
+  def completeness_percent(submission)
+    fields = completeness_metadata
+    return nil if submission.nil? || fields.empty?
+
+    filled = fields.count do |attr_metadata|
+      value = begin
+        submission.send(attr_metadata['attribute'].to_s)
+      rescue StandardError
+        nil
+      end
+      !metadata_value_blank?(value)
+    end
+    (filled * 100.0 / fields.size).round
+  end
+
+  # Color of the completeness bar (edit-ontology.scss)
+  def completeness_level(percent)
+    if percent < 40
+      'low'
+    elsif percent < 70
+      'medium'
+    else
+      'high'
+    end
+  end
+
   # The location of the file, as the choices of the location input of the Edit page
   def curator_locked_location
     if summary_only?
@@ -830,9 +875,9 @@ module SubmissionInputsHelper
     end
   end
 
-  # Also used by the Curation tab of the administration console (Admin::CurationController):
-  # the empty fields of the table and of the "Ask the author" window
-  public :metadata_value_blank?
+  # Also used by the controllers: the empty fields of the Curation tab and of its "Ask the author" window
+  # (Admin::CurationController), and the values read for the completeness bar of the Edit page (SubmissionsController)
+  public :metadata_value_blank?, :completeness_metadata
 
   def attribute_help_text(attr)
     label = attr.label
