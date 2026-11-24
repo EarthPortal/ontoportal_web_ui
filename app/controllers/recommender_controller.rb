@@ -30,14 +30,34 @@ class RecommenderController < ApplicationController
     }
 
     set_federated_portals
-    recommendations = LinkedData::Client::Models::Class.federated_get(api_params) do |url|
+    @ontologies = LinkedData::Client::Models::Ontology.all({ include_views: true }).map { |o| [o.id.to_s, o] }.to_h
+
+    filtered_params = {}
+    request_portals.each do |portal|
+      name = portal.downcase.eql?(portal_name.downcase) ? '' : portal.downcase
+      filtered_params[name] = api_params.dup
+      api_params[:ontologies] ||= ''
+      filtered_params[name][:ontologies] = api_params[:ontologies].split(',').select do |ont|
+        filtered_ontologies = @ontologies.values.select { |o| o.acronym == ont.split('/').last }
+        next false if filtered_ontologies.empty?
+
+        filtered_ontologies.any? do |ontology|
+          config = ontology_portal_config(ontology.id)&.last || internal_portal_config(ontology.id) || {}
+          next false if config.blank?
+
+          portal.downcase.eql?(config[:name].downcase)
+        end
+      end.map { |x| x.split('/').last }.uniq.join(',')
+    end
+    filtered_params.select! { |_k, v| !v[:ontologies].blank? } unless params[:ontologies].blank?
+
+    recommendations = LinkedData::Client::Models::Class.federated_get(filtered_params) do |url|
       "#{url}/recommender"
     end
 
     recommendations, @federation_errors = recommendations.partition { |x| !federation_error?(x) }
     @json_link = "#{rest_url}/recommender"
     @json_link += "?#{api_params.to_query}"
-    @ontologies = LinkedData::Client::Models::Ontology.all({ include_views: true }).map { |o| [o.id.to_s, o] }.to_h
     recommendations.each do |recommendation|
       row = {
         ontologies: recommendation_ontologies(recommendation),
