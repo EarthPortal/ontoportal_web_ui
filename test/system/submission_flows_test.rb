@@ -214,8 +214,10 @@ class SubmissionFlowsTest < ApplicationSystemTestCase
     agent1 = fixtures(:agents)[:agent1]
     agent2 = fixtures(:agents)[:agent2]
 
+    # Creator and Contributor; agent1 also as Curator: the curator is the person who saved the Edit page
+    # (CurationRecorder), the logged user John Doe, who has the same name as agent1
     assert_text agent1.name, count: 3
-    assert_text agent2.name, count: 3
+    assert_text agent2.name, count: 2
 
     # Assert usage
     open_dropdown "#projects_section"
@@ -478,7 +480,7 @@ class SubmissionFlowsTest < ApplicationSystemTestCase
     wait_for_text "Visibility"
 
     tom_select 'ontology[viewingRestriction]', ontology.viewingRestriction
-    tom_select 'submission[hasLicense]', 'CC Attribution 3.0'
+    tom_select 'submission[hasLicense]', 'Attribution 3.0' # in the old and in the SPDX list of licenses
     fill_in 'submission[useGuidelines]', with: submission.useGuidelines
     fill_in 'submission[morePermissions]', with: submission.morePermissions
 
@@ -648,7 +650,7 @@ class SubmissionFlowsTest < ApplicationSystemTestCase
       end
       tom_select 'submission[hasOntologyLanguage]', new_submission.hasOntologyLanguage
       tom_select 'submission[status]', new_submission.status
-      tom_select 'submission[hasLicense]', 'CC Attribution 3.0'
+      tom_select 'submission[hasLicense]', 'Attribution 3.0' # in the old and in the SPDX list of licenses
 
       choose 'submission[isRemote]', option: new_submission.isRemote
       fill_in 'submission[pullLocation]', with: new_submission.pullLocation
