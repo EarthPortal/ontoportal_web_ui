@@ -120,10 +120,17 @@ Rails.application.routes.draw do
       get ':collection/data', to: 'search#search'
     end
     resources :analytics, only: [:index]
+    get 'curation', to: 'curation#index', as: :curation
+    get 'curation/:acronym/ask', to: 'curation#ask', as: :curation_ask, constraints: { acronym: %r{[^/]+} }
+    post 'curation/:acronym/ask/mail', to: 'curation#ask_mail', as: :curation_ask_mail, constraints: { acronym: %r{[^/]+} }
+    post 'curation/:acronym/ask/send', to: 'curation#ask_send', as: :curation_ask_send, constraints: { acronym: %r{[^/]+} }
     constraints lambda { |request| request.session[:user]&.admin? } do
       mount Flipper::UI.app(Flipper) => '/flipper', as: :flipper
     end
   end
+
+  # Curation page of the curators (link "Curation" of the top bar): the Curation tab of the administration console as a page
+  get 'curation', to: 'admin/curation#page', as: :curation_page
 
   post 'admin/clearcache', to: 'admin#clearcache'
   post 'admin/resetcache', to: 'admin#resetcache'

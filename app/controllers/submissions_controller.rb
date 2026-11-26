@@ -1,5 +1,5 @@
 class SubmissionsController < ApplicationController
-  include SubmissionsHelper, SubmissionUpdater, OntologyUpdater
+  include SubmissionsHelper, SubmissionUpdater, OntologyUpdater, CurationRecorder
   layout :determine_layout
   before_action :authorize_and_redirect, :only => [:edit, :update, :create, :new]
   before_action :authorize_read_only, :only => [:new, :create, :edit, :update]
@@ -89,9 +89,10 @@ class SubmissionsController < ApplicationController
     if @selected_attributes.empty?
       @categories_order = ['general', 'description', 'dates', 'licensing', 'agents', 'links', 'media', 'community', 'usage' ,'relations', 'content','methodology', 'object description properties']
       @category_attributes = category_attributes
-      # values of the Recommended fields, to count the empty ones next to each tab (SubmissionInputsHelper#recommended_empty_count)
-      @recommended_values = recommended_values_submission(params[:id])
     end
+    # values of the fields of the Edit tabs: the empty Recommended ones are counted next to each tab
+    # (SubmissionInputsHelper#recommended_empty_count), and all of them in the completeness bar (completeness_percent)
+    @recommended_values = recommended_values_submission(params[:id])
     render 'submissions/edit', layout: params[:container_id] ?  nil : 'ontology'
   end
 
@@ -125,6 +126,8 @@ class SubmissionsController < ApplicationController
         @submission = @ontology.explore.submissions({ display: 'submissionId' }, submission_id)
         return render_submission_attribute(params[:attribute])
       end
+      # Edit form with only ontology fields: the save is still a curation (CurationRecorder)
+      record_curation(acronym, submission_id, @ontology) if params[:attribute].nil?
       if defined?(project_messages) && project_messages
         if project_messages[:warning].any?
           all_warnings = Array(flash[:alert]) + Array(project_messages[:warning])
@@ -157,7 +160,11 @@ class SubmissionsController < ApplicationController
       return
     end
 
-    @submission, response = update_submission(update_submission_hash(acronym), submission_id, @ontology)
+    submission_values = update_submission_hash(acronym)
+    # Every save of the Edit page records the curation (CurationRecorder);
+    # not the inline edit (params[:attribute]) of the Metadata administration tool
+    submission_values = with_curation_values(submission_values) if params[:attribute].nil?
+    @submission, response = update_submission(submission_values, submission_id, @ontology)
     if params[:attribute].nil?
       if response_error?(response)
         show_new_errors(response, partial: 'submissions/form_content', id: 'test')
@@ -188,9 +195,12 @@ class SubmissionsController < ApplicationController
 
   private
 
-  # The submission with only the Recommended fields, or nil if it can not be read (then no count is shown)
+  # The submission with only the fields of the Edit tabs (Recommended ones included), or nil if it can not be read
+  # (then no count and no completeness bar are shown)
   def recommended_values_submission(submission_id)
-    submission = @ontology.explore.submissions({ display: SubmissionInputsHelper::RECOMMENDED_ATTRIBUTES.join(',') }, submission_id)
+    attributes = helpers.completeness_metadata.map { |attr_metadata| attr_metadata['attribute'].to_s } |
+                 SubmissionInputsHelper::RECOMMENDED_ATTRIBUTES
+    submission = @ontology.explore.submissions({ display: attributes.join(',') }, submission_id)
     submission.nil? || response_error?(submission) ? nil : submission
   rescue StandardError
     nil

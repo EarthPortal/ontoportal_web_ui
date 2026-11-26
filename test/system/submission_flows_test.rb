@@ -187,9 +187,8 @@ class SubmissionFlowsTest < ApplicationSystemTestCase
     open_dropdown "#dates"
     assert_date submission_2.released
     assert_date submission_2.valid
-    submission_2.curatedOn.each do |date|
-      assert_date date
-    end
+    # the curation date is not typed: it is the date of the save of the Edit page (CurationRecorder)
+    assert_date Date.today.to_s
     assert_date submission_2.creationDate
     assert_date submission_2.modificationDate
 
@@ -215,8 +214,10 @@ class SubmissionFlowsTest < ApplicationSystemTestCase
     agent1 = fixtures(:agents)[:agent1]
     agent2 = fixtures(:agents)[:agent2]
 
+    # Creator and Contributor; agent1 also as Curator: the curator is the person who saved the Edit page
+    # (CurationRecorder), the logged user John Doe, who has the same name as agent1
     assert_text agent1.name, count: 3
-    assert_text agent2.name, count: 3
+    assert_text agent2.name, count: 2
 
     # Assert usage
     open_dropdown "#projects_section"
@@ -467,10 +468,8 @@ class SubmissionFlowsTest < ApplicationSystemTestCase
 
     date_picker_fill_in 'submission[released]', submission.released
     date_picker_fill_in 'submission[valid]', submission.valid
-    list_inputs "#submissioncuratedOn_from_group_input",
-                "submission[curatedOn]", submission.curatedOn do |selector, value, index|
-      date_picker_fill_in selector, value, index + 1
-    end
+    # Curation date: greyed, filled in by the system at the save (CurationRecorder)
+    assert_selector 'input[name="submission[curatedOn]"][disabled]'
 
     date_picker_fill_in 'submission[creationDate]', submission.creationDate
     date_picker_fill_in 'submission[modificationDate]', submission.modificationDate
@@ -481,7 +480,7 @@ class SubmissionFlowsTest < ApplicationSystemTestCase
     wait_for_text "Visibility"
 
     tom_select 'ontology[viewingRestriction]', ontology.viewingRestriction
-    tom_select 'submission[hasLicense]', 'CC Attribution 3.0'
+    tom_select 'submission[hasLicense]', 'Attribution 3.0' # in the old and in the SPDX list of licenses
     fill_in 'submission[useGuidelines]', with: submission.useGuidelines
     fill_in 'submission[morePermissions]', with: submission.morePermissions
 
@@ -502,7 +501,10 @@ class SubmissionFlowsTest < ApplicationSystemTestCase
     agent1 = fixtures(:agents)[:agent1]
     agent2 = fixtures(:agents)[:agent2]
 
-    [:hasCreator, :hasContributor, :curatedBy].each do |key|
+    # Curator: greyed, the person who saves the Edit page (CurationRecorder)
+    assert_selector 'input[name="submission[curatedBy]"][disabled]'
+
+    [:hasCreator, :hasContributor].each do |key|
       list_inputs "#submission#{key}_from_group_input", "submission[#{key}]", [agent1, agent2] do |selector, value, index|
         element = all("turbo-frame:last-of-type").last
         within element do
@@ -648,7 +650,7 @@ class SubmissionFlowsTest < ApplicationSystemTestCase
       end
       tom_select 'submission[hasOntologyLanguage]', new_submission.hasOntologyLanguage
       tom_select 'submission[status]', new_submission.status
-      tom_select 'submission[hasLicense]', 'CC Attribution 3.0'
+      tom_select 'submission[hasLicense]', 'Attribution 3.0' # in the old and in the SPDX list of licenses
 
       choose 'submission[isRemote]', option: new_submission.isRemote
       fill_in 'submission[pullLocation]', with: new_submission.pullLocation

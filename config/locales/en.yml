@@ -117,6 +117,70 @@ en:
       users: Users
       valid_till: Valid till
       catalog_config: Site description
+      curation: Curation
+    curation:
+      title: Curation
+      description: "All the ontologies, views and metadata-only entries, with the date of their first submission and the fields of their latest version that are still empty (out of %{total}). Curate opens the Edit page of this version; Ask sends an email to its administrators."
+      search_placeholder: Filter by acronym or name
+      ontology: Ontology
+      submission_date: Submission date
+      empty_fields: Empty fields
+      curation: Curation (curatedBy / curatedOn)
+      actions: Actions
+      private: Private
+      empty: "%{count} empty"
+      complete: Complete
+      filled: "%{filled}/%{total} filled"
+      no_submission: No submission
+      not_curated: Not curated
+      curated_on: "Curated on %{date}"
+      curated_by: "by %{names}"
+      curate: Curate
+      kpi_entries: Entries
+      kpi_entries_help: ontologies, views and metadata-only entries
+      kpi_empty: Empty fields
+      kpi_empty_help: in the latest versions
+      kpi_curated: Curated
+      kpi_curated_help: with curatedBy or curatedOn
+      ask: Ask
+      ask_title: "Ask the author of %{acronym}"
+      ask_intro: "The fields of %{acronym} that are still empty. Tick the ones the authors (the administrators of the ontology) should fill in."
+      ask_search: Search a field
+      ask_select_recommended: Tick the empty Recommended fields
+      ask_clear: Untick all
+      ask_next: Next
+      ask_none: "All the fields of %{acronym} are filled in: there is nothing to ask."
+      ask_error: The submission could not be read.
+      ask_from: "From:"
+      ask_to: "To:"
+      ask_cc: "Copy:"
+      ask_admins: "the administrators of %{acronym}: %{names}"
+      ask_subject: Subject
+      ask_body: Message
+      ask_back: "‹ Back"
+      ask_send: Send
+      ask_sent: "Email sent to the administrators of %{acronym} (%{emails})."
+      ask_no_field: "None of the ticked fields is still empty: go back and tick other fields."
+      ask_no_recipient: "No administrator of %{acronym} has an email address: the email can not be sent."
+      ask_empty_mail: The subject and the message can not be empty.
+      ask_send_failed: "The email could not be sent: %{message}"
+      # Default email of the "Ask the author" window, always in English (the authors are not all French speakers)
+      ask_mail:
+        subject: "[%{portal}] %{name} (%{acronym}): please complete the metadata"
+        field: "- %{label} (%{tab} tab)"
+        body: |-
+          Hello,
+
+          The %{portal} team reviewed the metadata of %{name} (%{acronym}).
+          Could you please fill in the following fields? They are a priority:
+          %{fields}
+
+          You can complete them in the Edit page of the ontology:
+          %{edit_url}
+          While you are there, you are welcome to also fill in the other empty fields, especially the ones marked "Recommended".
+
+          Thank you,
+          The %{portal} Team
     catalog_configuration:
       description_text: |
         Use this page to configure the current site %{portal_name} information.
@@ -1752,6 +1816,9 @@ en:
     ontology_xlsx_language_help: 'Crop Ontology Template (TDv5). The file must contain a sheet named "Template for submission" with Variable, Trait, Method, and Scale columns. The uploaded TDv5 template will be automatically converted to OWL by %{portal_name}.'
     ontology_view_of_another_ontology: Is this ontology a view of another ontology?
     portal_generated_help: Filled in automatically by %{portal_name}. Only the %{portal_name} team can change it.
+    curation_automatic_help: 'Filled in automatically at each save of the Edit page: the date of the save and the person who saved.'
+    curator_locked_help: Only the administrators of the ontology can change this field.
+    completeness: Metadata completeness
     recommended: Recommended
     recommended_help: Recommended by the metadata guidelines. Filling it in improves the description of the ontology.
     recommended_count: Empty recommended fields in this tab
@@ -1852,6 +1919,11 @@ en:
       last_name: Last name
       new_password: New password
       orcid_id: ORCID
+      role: Role
+      roles:
+        librarian: Librarian
+        curator: Curator
+        administrator: Administrator
       user_to_admin: Are you sure you want to make this user an admin?
       username: Username
     error_saving_custom_ontologies: Error saving Custom Ontologies, please try again

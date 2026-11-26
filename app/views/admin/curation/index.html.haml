@@ -1,0 +1,68 @@
+= turbo_frame_tag 'curation-tab' do
+  .d-flex.flex-column.py-4
+    = render PageHeaderComponent.new(title: t('admin.curation.title'), description: t('admin.curation.description', total: @fields_total))
+
+    -# Same cards as the Analytics tab (their text style is defined under .analytics in admin.scss)
+    %div.analytics.mb-4
+      %div.d-flex
+        - kpis = [[:entries, 'mr-2'], [:empty, 'mr-2'], [:curated, '']]
+        - kpis.each do |key, margin|
+          %div.col.card.d-flex.justify-content-center.p-2.text-center.container-gradient{class: margin}
+            %div.card-header-2= t("admin.curation.kpi_#{key}")
+            %div.card-header-1= @kpis[key]
+            %div.card-header-3.py-2.mt-1= t("admin.curation.kpi_#{key}_help")
+
+    -# Turbo off for the links of the table: a full page load, so that Cancel (history back) and the browser back button
+    -# of the Edit page come back here (Turbo does not restore the ?section=curation entry added by the admin tabs)
+    %div{data: { turbo: 'false' }}
+      = render TableComponent.new(id: 'admin_curation', borderless: true, outline: true, searching: true,
+                                  sort_column: '2', search_placeholder: t('admin.curation.search_placeholder')) do |t|
+        - t.header do |h|
+          - h.th { t('admin.curation.ontology') }
+          - h.th { t('admin.curation.submission_date') }
+          - h.th { t('admin.curation.empty_fields') }
+          - h.th { t('admin.curation.curation') }
+          - h.th { t('admin.curation.actions') }
+        - @rows.each do |row|
+          %tr
+            %td
+              = link_to row[:acronym], ontology_path(row[:acronym]), class: 'font-weight-bold'
+              %div.text-muted.small.text-truncate{style: 'max-width: 320px', title: row[:name]}= row[:name]
+              - if row[:private]
+                = render ChipButtonComponent.new(text: t('admin.curation.private'), type: 'static')
+            -# Date of the first submission (first deposit); data-order: sorted by date
+            %td.text-nowrap{data: { order: row[:first_submission_date].to_s }}
+              - if row[:first_submission_date]
+                = row[:first_submission_date]
+              - else
+                %span.text-muted —
+            %td{data: { order: row[:empty] || -1 }}
+              - if row[:empty].nil?
+                %span.text-muted= t('admin.curation.no_submission')
+              - elsif row[:empty].zero?
+                = render ChipButtonComponent.new(text: t('admin.curation.complete'), type: 'static')
+              - else
+                -# Same badge as the Recommended badges of the Edit page
+                %span.badge.badge-pill{style: 'background-color: #fff3cd; color: #7a5a00;'}= t('admin.curation.empty', count: row[:empty])
+              - unless row[:empty].nil?
+                %div.text-muted.small= t('admin.curation.filled', filled: @fields_total - row[:empty], total: @fields_total)
+            %td
+              - if row[:curated_on].empty? && row[:curated_by].empty?
+                %span.text-muted= t('admin.curation.not_curated')
+              - else
+                - if row[:curated_on].any?
+                  %div= t('admin.curation.curated_on', date: row[:curated_on].join(', '))
+                - if row[:curated_by].any?
+                  %div.text-muted.small= t('admin.curation.curated_by', names: row[:curated_by].join(', '))
+            %td
+              - if row[:submission_id]
+                -# Curate and Ask on the same line (admin.scss: .curation-actions)
+                %div.curation-actions.d-flex.align-items-center
+                  = render Buttons::RegularButtonComponent.new(id: "curate-#{row[:acronym].parameterize}", value: t('admin.curation.curate'),
+                                                               variant: 'secondary', size: 'slim', state: 'regular',
+                                                               href: edit_ontology_submission_path(row[:acronym], row[:submission_id]))
+                  -# Window with the empty fields of the same submission (same button style as "Add comment" of the site)
+                  = link_to_modal(t('admin.curation.ask'), admin_curation_ask_path(row[:acronym], submission_id: row[:submission_id]),
+                                  id: "ask-#{row[:acronym].parameterize}", class: 'secondary-button regular-button slim ml-2',
+                                  data: { show_modal_title_value: t('admin.curation.ask_title', acronym: row[:acronym]),
+                                          show_modal_size_value: 'modal-lg' })

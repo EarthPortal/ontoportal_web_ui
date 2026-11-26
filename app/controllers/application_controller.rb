@@ -276,6 +276,16 @@ class ApplicationController < ActionController::Base
     session[:admin_user]&.admin?
   end
 
+  # Curator (CURATOR role): the rights of a librarian, plus the Curation page (Admin::CurationController)
+  def current_user_curator?
+    Array(session[:user]&.role).include?('CURATOR')
+  end
+
+  # The Curation page and its "Ask the author" window: administrators and curators
+  def authorize_curation
+    redirect_to_home unless current_user_admin? || current_user_curator?
+  end
+
   def ontology_restricted?(acronym)
     restrict_downloads = $NOT_DOWNLOADABLE
     restrict_downloads.include? acronym

@@ -297,11 +297,23 @@ module SubmissionsHelper
       output += ontology_groups_input
     end
 
-    output += ontology_administered_by_input if selected_attribute?('administeredBy')
+    # Administrators, location and visibility: greyed for a curator who does not administer the ontology (curator_locked?)
+    if selected_attribute?('administeredBy')
+      output += if curator_locked?
+                  curator_locked_input('curator_locked_administeredBy', t('submission_inputs.administrators'),
+                                       Array(@ontology.administeredBy).map { |id| id.to_s.split('/').last }.join(', '))
+                else
+                  ontology_administered_by_input
+                end
+    end
 
     if selected_attribute?('location')
       output += attribute_form_group_container('location') do
-        render partial: 'ontologies/submission_location_form'
+        if curator_locked?
+          curator_locked_input('curator_locked_location', t('ontologies.location'), curator_locked_location)
+        else
+          render partial: 'ontologies/submission_location_form'
+        end
       end
     end
 
@@ -315,7 +327,12 @@ module SubmissionsHelper
 
     if selected_attribute?('viewingRestriction')
       output += attribute_form_group_container('viewingRestriction') do
-        ontology_visibility_input
+        if curator_locked?
+          curator_locked_input('curator_locked_viewingRestriction', t('submission_inputs.visibility'),
+                               @ontology.viewingRestriction.to_s.capitalize)
+        else
+          ontology_visibility_input
+        end
       end
     end
 

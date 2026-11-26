@@ -30,6 +30,8 @@
                     = recommended_count_badge(recommended_empty_count(@category_attributes[key]))
 
           #myTabContent.edit-ontology-right-column.w-100
+            -# Above the tabs content: visible in every tab and with the metadata selector
+            = render 'submissions/completeness_bar'
             = render TurboFrameComponent.new(id:"metadata_by_ontology") do
               = metadata_help_link
               %div.tab-content

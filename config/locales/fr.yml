@@ -124,6 +124,53 @@ fr:
       users: Utilisateurs
       valid_till: Valide jusqu'à
       catalog_config: Description du site
+      curation: Curation
+    curation:
+      title: Curation
+      description: "Toutes les ontologies, vues et entrées « métadonnées seulement », avec la date de leur première soumission et les champs encore vides dans leur dernière version (sur %{total}). Curer ouvre la page Edit de cette version ; Demander envoie un email à ses administrateurs."
+      search_placeholder: Filtrer par acronyme ou nom
+      ontology: Ontologie
+      submission_date: Date de soumission
+      empty_fields: Champs vides
+      curation: Curation (curatedBy / curatedOn)
+      actions: Actions
+      private: Privée
+      empty: "%{count} vide(s)"
+      complete: Complet
+      filled: "%{filled}/%{total} remplis"
+      no_submission: Aucune soumission
+      not_curated: Non curée
+      curated_on: "Curée le %{date}"
+      curated_by: "par %{names}"
+      curate: Curer
+      kpi_entries: Entrées
+      kpi_entries_help: ontologies, vues et entrées « métadonnées seulement »
+      kpi_empty: Champs vides
+      kpi_empty_help: dans les dernières versions
+      kpi_curated: Curées
+      kpi_curated_help: avec curatedBy ou curatedOn
+      ask: Demander
+      ask_title: "Demander à l'auteur de %{acronym}"
+      ask_intro: "Les champs de %{acronym} encore vides. Cochez ceux que les auteurs (les administrateurs de l'ontologie) doivent remplir."
+      ask_search: Rechercher un champ
+      ask_select_recommended: Cocher les Recommended vides
+      ask_clear: Tout décocher
+      ask_next: Suivant
+      ask_none: "Tous les champs de %{acronym} sont remplis : il n'y a rien à demander."
+      ask_error: Impossible de lire la soumission.
+      ask_from: "De :"
+      ask_to: "À :"
+      ask_cc: "Copie :"
+      ask_admins: "les administrateurs de %{acronym} : %{names}"
+      ask_subject: Objet
+      ask_body: Message
+      ask_back: "‹ Retour"
+      ask_send: Envoyer
+      ask_sent: "Email envoyé aux administrateurs de %{acronym} (%{emails})."
+      ask_no_field: "Aucun des champs cochés n'est encore vide : revenez en arrière et cochez d'autres champs."
+      ask_no_recipient: "Aucun administrateur de %{acronym} n'a d'adresse email : l'email ne peut pas être envoyé."
+      ask_empty_mail: "L'objet et le message ne peuvent pas être vides."
+      ask_send_failed: "L'email n'a pas pu être envoyé : %{message}"
     catalog_configuration:
       description_text: |
         Utilisez cette page pour configurer les informations du site actuel %{portal_name}.
@@ -1808,6 +1855,9 @@ fr:
     ontology_view_of_another_ontology: Cette ontologie est-elle une vue d'une autre
       ontologie ?
     portal_generated_help: "Rempli automatiquement par %{portal_name}. Seule l'équipe %{portal_name} peut le modifier."
+    curation_automatic_help: "Rempli automatiquement à chaque enregistrement de la page Edit : la date de l'enregistrement et la personne qui a enregistré."
+    curator_locked_help: "Seuls les administrateurs de l'ontologie peuvent changer ce champ."
+    completeness: Complétude des métadonnées
     recommended: Recommandé
     recommended_help: "Recommandé par le guide des métadonnées. Le remplir améliore la description de l'ontologie."
     recommended_count: Champs recommandés vides dans cet onglet
@@ -1908,6 +1958,11 @@ fr:
       last_name: Nom
       new_password: Nouveau mot de passe
       orcid_id: ORCID
+      role: Rôle
+      roles:
+        librarian: Librarian
+        curator: Curateur
+        administrator: Administrateur
       user_to_admin: Êtes-vous sûr de vouloir promouvoir cet utilisateur comme administrateur
         ?
       username: Nom d'utilisateur

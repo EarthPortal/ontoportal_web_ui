@@ -108,9 +108,12 @@
         %img.register-input-icon{:src => "#{asset_path("github-icon.svg")}"}/
         = text_field :user, :githubId, value: @user.githubId, class: "register-input-long register-input-with-icon no-margin"
         - if session[:user].admin?
-          .d-flex{:style => "margin-top: 10px;"}
-            = check_box :user, :admin?, { class: (@user.admin? ? 'admin' : '') , id: "user_register_mail_list" }
-            %p#register-check-text Grant admin privileges
+          -# Role of the account, chosen by an administrator (UsersController#update_role); the current one is selected
+          - roles = Array(@user.role)
+          - current_role = %w[ADMINISTRATOR CURATOR].find { |role| roles.include?(role) } || 'LIBRARIAN'
+          %div{style: 'margin-top: 10px;'}
+            = select_input(id: 'user_main_role', name: 'user[main_role]', label: t('users.edit.role'), selected: current_role,
+                           values: UsersController::MAIN_ROLES.map { |role| [t("users.edit.roles.#{role.downcase}"), role] })
       - else
         = hidden_field :user, :username, value: @user.username
         = hidden_field :user, :firstName, value: @user.firstName

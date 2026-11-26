@@ -144,3 +144,14 @@
   width: 90px;
 }
 
+
+// Completeness bar of the Edit page (submissions/_completeness_bar.html.haml): the progress bar of EarthPortal
+// (Display::ProgressBarComponent) colored by level; the other progress bars of the site keep their color
+.completeness-bar {
+  &.completeness-low {
+    .progress-bar-component-progress { background-color: #FBC02D; } // yellow of the FAIR scores (not obtained)
+    .progress-bar-component-text { color: #7a5a00; } // readable on the yellow and on the grey
+  }
+  &.completeness-medium .progress-bar-component-progress { background-color: var(--secondary-color); }
+  &.completeness-high .progress-bar-component-progress { background-color: #66BB6A; } // green of the FAIR scores (obtained)
+}

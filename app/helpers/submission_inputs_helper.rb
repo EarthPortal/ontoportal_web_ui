@@ -54,6 +54,16 @@ module SubmissionInputsHelper
     usedOntologyEngineeringTool accrualMethod accrualPeriodicity accrualPolicy competencyQuestion
   ].freeze
 
+  # The tabs of the Edit page, in their order (SubmissionsController#edit)
+  EDIT_TABS = ['general', 'description', 'dates', 'licensing', 'agents', 'links', 'media', 'community', 'usage',
+               'relations', 'content', 'methodology', 'object description properties'].freeze
+  # Fields of the Edit tabs that are not counted in the completeness (completeness_metadata) and never asked to the
+  # authors (Ask window of the Curation tab): the curation fields (filled in by the system, CurationRecorder),
+  # the portal links (greyed for the authors), and the fields the Edit page changes with other inputs
+  # (pullLocation: the location of the file, hasDomain: the categories of the ontology)
+  NOT_COUNTED_ATTRIBUTES = (CurationRecorder::CURATION_ATTRIBUTES + PORTAL_GENERATED_ATTRIBUTES +
+                            %w[pullLocation hasDomain]).freeze
+
   class SubmissionMetadataInput
     include MetadataHelper, ApplicationHelper
 
@@ -118,6 +128,9 @@ module SubmissionInputsHelper
   def attribute_input(attr_key, long_text: false, label: nil, show_tooltip: true, max_date: nil, help: nil)
     attr = SubmissionMetadataInput.new(attribute_key: attr_key, submission: @submission, label: label,
                                        attr_metadata: attr_metadata(attr_key))
+
+    # Curation date and Curator: filled in by the system, never by hand (CurationRecorder)
+    return generate_curation_input(attr) if CurationRecorder::CURATION_ATTRIBUTES.include?(attr_key.to_s)
 
     if attr.type?('Agent')
       if attr.type?('list')
@@ -644,6 +657,80 @@ module SubmissionInputsHelper
     PORTAL_GENERATED_ATTRIBUTES.include?(attr_key.to_s) && !current_user_admin?
   end
 
+  # Curation: a curator who does not administer the ontology can not change its administrators, its visibility and
+  # the location of its file (the API refuses it too: curation_protected attributes of ontologies_linked_data).
+  # These fields are shown greyed with their value, and not sent by the Edit form (SubmissionsHelper#render_submission_inputs)
+  def curator_locked?(ontology = @ontology)
+    return false if current_user_admin? || !current_user_curator?
+
+    Array(ontology&.administeredBy).map(&:to_s).exclude?(session[:user]&.id.to_s)
+  end
+
+  def curator_locked_input(name, label, value)
+    text_input(name: name, label: label, value: value, disabled: true, help: t('submission_inputs.curator_locked_help'))
+  end
+
+  # Completeness of the metadata: the fields of the Edit tabs filled by the authors (all of them: required, Recommended
+  # or optional), without NOT_COUNTED_ATTRIBUTES. Same fields as the "Empty fields" column of the Curation tab.
+  def completeness_metadata(metadata = submission_metadata)
+    metadata.select do |attr_metadata|
+      EDIT_TABS.include?(attr_metadata['category']) && !NOT_COUNTED_ATTRIBUTES.include?(attr_metadata['attribute'].to_s)
+    end
+  end
+
+  # Percentage (0-100) of these fields that are filled in the submission; nil when its values could not be read
+  def completeness_percent(submission)
+    fields = completeness_metadata
+    return nil if submission.nil? || fields.empty?
+
+    filled = fields.count do |attr_metadata|
+      value = begin
+        submission.send(attr_metadata['attribute'].to_s)
+      rescue StandardError
+        nil
+      end
+      !metadata_value_blank?(value)
+    end
+    (filled * 100.0 / fields.size).round
+  end
+
+  # Color of the completeness bar (edit-ontology.scss)
+  def completeness_level(percent)
+    if percent < 40
+      'low'
+    elsif percent < 70
+      'medium'
+    else
+      'high'
+    end
+  end
+
+  # The location of the file, as the choices of the location input of the Edit page
+  def curator_locked_location
+    if summary_only?
+      t('ontologies.metadata_only')
+    elsif ontology_pull_location?
+      "#{t('ontologies.load_from_url')}: #{@submission.pullLocation}"
+    else
+      t('ontologies.upload_local_file')
+    end
+  end
+
+  # Curation date and Curator, greyed for everybody (administrators too): the system fills them in at each save
+  # of the Edit page (CurationRecorder). disabled: the browser does not send the field (the server ignores it anyway).
+  # The date is shown without its time: a date input shows an empty box for "2026-11-20T00:00:00.000+00:00".
+  def generate_curation_input(attr)
+    values = Array(attr.values).map do |value|
+      if attr.type?('Agent')
+        value.respond_to?(:name) && value.name.present? ? value.name : value.to_s.split('/').last
+      else
+        (Date.parse(value.to_s).to_s rescue value.to_s)
+      end
+    end
+    text_input(label: attr_header_label(attr), name: attr.name, value: values.reject(&:blank?).join(', '), disabled: true,
+               help: t('submission_inputs.curation_automatic_help'))
+  end
+
   def generate_ontology_select_input(name, label, selected, multiple, reject_ontology: @ontology)
     unless @ontology_acronyms
       @ontology_acronyms = LinkedData::Client::Models::Ontology.all(include: 'acronym,name', display_links: false, display_context: false, include_views: true)
@@ -787,6 +874,10 @@ module SubmissionInputsHelper
     else false
     end
   end
+
+  # Also used by the controllers: the empty fields of the Curation tab and of its "Ask the author" window
+  # (Admin::CurationController), and the values read for the completeness bar of the Edit page (SubmissionsController)
+  public :metadata_value_blank?, :completeness_metadata
 
   def attribute_help_text(attr)
     label = attr.label
